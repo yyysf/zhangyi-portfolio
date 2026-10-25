@@ -2,7 +2,7 @@
 
 白底青绿、水彩插画与艺术展览风格的个人作品集演示站。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
 
-本次视觉升级已通过本地检查并提交为 Git 提交 `1f3d3d5`。站点改为 GitHub Pages 托管，`gh-pages` 分支已由 `dist` 生成，推送后即可上线，见下方部署说明。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
+本次视觉升级已通过本地检查并提交为 Git 提交 `1f3d3d5`，现已发布到 GitHub Pages：https://yyysf.github.io/zhangyi-portfolio/ 。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
 
 ## 本地预览
 
@@ -70,23 +70,26 @@ npm run check
 
 当前采用 GitHub Pages 托管：`gh-pages` 分支存放 **dist 的全部内容**，站点文件位于该分支根层，并带一个空的 `.nojekyll` 以跳过 Jekyll 处理。页面源码仍在 `main` 分支，二者互不干扰。
 
-首次发布（把 `仓库地址` 换成你自己的）：
+- 线上地址：https://yyysf.github.io/zhangyi-portfolio/
+- 仓库：https://github.com/yyysf/zhangyi-portfolio
+- Pages 设置：Source 为 **Deploy from a branch**，分支 `gh-pages`、目录 `/ (root)`，已启用 HTTPS。
+
+以后每次更新：
 
 ```powershell
-git remote add origin 仓库地址
-git push -u origin main
+git add -A; git commit -m "更新内容"
 npm run deploy:pages
+git push origin main
 git push origin gh-pages
 ```
 
-然后在 GitHub 仓库的 Settings → Pages，把 Source 选为 **Deploy from a branch**，分支选 `gh-pages`、目录选 `/ (root)`，保存后等一两分钟。
+脚本从 `dist` 当前内容重建分支，所以务必先提交源码，否则线上版本无法对应到提交。若远端分支被网页端改过而推送被拒，用 `git push origin gh-pages --force-with-lease`。
 
-- 地址形如 `https://用户名.github.io/仓库名/`。仓库名是 `用户名.github.io` 时才是根地址。
 - 站点内全部引用均为相对路径，放在仓库子路径下可以正常访问，无需改代码。
 - 免费账号的 Pages 要求仓库为公开。
 - 中国大陆公网与微信访问的稳定性取决于网络环境，未做实测。
 
-以后每次更新：先提交 `main`，再执行 `npm run deploy:pages` 和 `git push origin gh-pages`。脚本从 `dist` 当前内容重建分支，所以务必先提交源码，否则线上版本无法对应到提交。若远端分支被网页端改过而推送被拒，用 `git push origin gh-pages --force-with-lease`。
+换到新仓库时，另需 `git remote add origin 仓库地址`、推送 `main` 与 `gh-pages`，再在 Settings → Pages 选好分支。
 
 ### 备选：更新 Sites
 
