@@ -46,6 +46,20 @@ npm start
 
 姓名、站点名称和封面简介在 JSON 的 `profile` 中编辑，剧本摘句使用作品的可选 `excerpt` 字段。其他封面文字、个人介绍、致谢和分类介绍在 `dist/index.html` 中编辑；视觉参数在 `dist/assets/style.css` 中编辑。
 
+## 视觉系统
+
+`dist/assets/style.css` 顶部是一组设计令牌，改配色和字号优先改这里，不要在具体规则里写死数值。
+
+- 颜色：`--paper` 纸白、`--ink` 墨、`--muted` 次级文字、`--green` 青绿、`--accent` 暖赭（只用于强调线、当前项与标签）、`--wash` 水洗底、`--cinema` 幕框深绿。
+- 字号：`--fs-xs` 11 / `--fs-sm` 13 / `--fs-base` 15 / `--fs-body` 18 / `--fs-md` 24 / `--fs-lg` 34 / `--fs-xl` 44 / `--fs-2xl` 62。断点只覆盖令牌数值，不新增档位。
+- 版心：`--shell`、`--gutter`、`--measure`。所有区块共用同一左边缘，新增区块不要另设宽度。
+
+分享卡片与图标由脚本生成，输出在 `dist/assets/brand/`：
+
+```powershell
+python scripts/make-brand-assets.py
+```
+
 ## 字体与图片
 
 标题使用本地霞鹜文楷子集，字体项目：https://github.com/lxgw/LxgwWenKai 。原始字体按 SIL OFL 1.1 授权，许可证位于 `dist/assets/fonts/OFL.txt`。子集重命名为 Portfolio WenKai，保留原版权与许可记录。正文使用系统中文字体。

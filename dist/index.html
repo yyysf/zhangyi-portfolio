@@ -4,9 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#FCFDFC">
-  <meta name="description" content="张艺的个人作品集。探索故事如何被书写、被表演、被听见、被看见。">
+  <meta name="description" content="张艺的个人作品集：原创剧本、影评随笔、影像成片、舞台实践与声音作品。探索故事如何被书写、被表演、被听见、被看见。">
   <title>张艺的作品集</title>
-  <link rel="icon" href="data:,">
+  <link rel="canonical" href="https://yyysf.github.io/zhangyi-portfolio/">
+  <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="张艺的作品集">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="张艺的作品集">
+  <meta property="og:description" content="原创剧本、影评随笔、影像成片、舞台实践与声音作品。">
+  <meta property="og:url" content="https://yyysf.github.io/zhangyi-portfolio/">
+  <meta property="og:image" content="https://yyysf.github.io/zhangyi-portfolio/assets/brand/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="张艺的作品集封面：青绿草地的水彩风景">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="assets/fonts/wenkai-subset.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/style.css">
   <script type="module" src="assets/app.js"></script>
@@ -23,26 +36,29 @@
     </div>
   </header>
   <main id="main">
-    <section class="hero shell wide" id="home" aria-labelledby="hero-title">
+    <section class="hero shell" id="home" aria-labelledby="hero-title">
       <div class="hero-copy">
         <h1 id="hero-title">我叫张艺。</h1>
         <p class="hero-quote">在这里，我记录了那些<br class="desktop-break">一闪而过的东西——</p>
         <p class="hero-intro">我探索故事如何被书写、被表演、<br class="desktop-break">被听见、被看见。</p>
-        <a class="text-link hero-link" href="#about">浏览作品<span aria-hidden="true">↗</span></a>
+        <a class="text-link hero-link" href="#about">浏览作品<span aria-hidden="true">→</span></a>
       </div>
       <figure class="hero-art"><img src="assets/images/meadow.webp" srcset="assets/images/meadow-small.webp 768w, assets/images/meadow.webp 1536w" sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1400px) 58vw, 740px" alt="青绿色的草地通向远处湖泊，一个小小的身影行走其间的水彩插画" width="1536" height="1024" fetchpriority="high"></figure>
     </section>
 
     <section class="about section shell" id="about" aria-labelledby="about-title">
-      <div class="about-intro"><h2 id="about-title">关于我与创作</h2><p>从一段文字出发，走向影像、舞台与声音。<br>这里是我整理故事与创作思考的地方。</p></div>
+      <div class="about-head">
+        <h2 id="about-title">关于我与创作</h2>
+        <p class="about-lead">从一段文字出发，走向影像、舞台与声音。<br>这里是我整理故事与创作思考的地方。</p>
+      </div>
       <nav class="category-nav" aria-label="作品分类">
-        <a href="#scripts"><span>原创剧本</span><small>把故事写下来</small><span class="category-arrow" aria-hidden="true">↗</span></a>
-        <a href="#essays"><span>影评随笔</span><small>在观看之后思考</small><span class="category-arrow" aria-hidden="true">↗</span></a>
-        <a href="#films"><span>影像成片</span><small>让文字成为画面</small><span class="category-arrow" aria-hidden="true">↗</span></a>
-        <a href="#stage"><span>舞台实践</span><small>在现场感受故事</small><span class="category-arrow" aria-hidden="true">↗</span></a>
-        <a href="#sound"><span>声音时间</span><small>听见画面之外</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+        <a href="#scripts"><span>原创剧本</span><small>把故事写下来</small><span class="category-arrow" aria-hidden="true">→</span></a>
+        <a href="#essays"><span>影评随笔</span><small>在观看之后思考</small><span class="category-arrow" aria-hidden="true">→</span></a>
+        <a href="#films"><span>影像成片</span><small>让文字成为画面</small><span class="category-arrow" aria-hidden="true">→</span></a>
+        <a href="#stage"><span>舞台实践</span><small>在现场感受故事</small><span class="category-arrow" aria-hidden="true">→</span></a>
+        <a href="#sound"><span>声音时间</span><small>听见画面之外</small><span class="category-arrow" aria-hidden="true">→</span></a>
       </nav>
-      <p class="demo-notice">当前为排版与交互演示。以下标注“示例内容”的作品与配图用于展示页面效果，后续替换为真实作品。</p>
+      <p class="demo-notice">当前为排版与交互演示。标注“示例”的作品与配图用于展示页面效果，后续替换为真实作品。</p>
     </section>
 
     <section class="section shell scripts-section" id="scripts" aria-labelledby="scripts-title">
@@ -55,7 +71,7 @@
       <div id="essays-list" class="essay-list" aria-busy="true"><p class="loading-message">正在整理文章…</p></div>
     </div></section>
 
-    <section class="section shell wide film-section" id="films" aria-labelledby="films-title">
+    <section class="section shell film-section" id="films" aria-labelledby="films-title">
       <div class="section-heading"><h2 id="films-title">影像成片</h2><p>把一瞬间，留在时间里。</p></div>
       <div id="films-list" aria-busy="true"><p class="loading-message">正在整理影像…</p></div>
     </section>
@@ -71,7 +87,7 @@
     </div></section>
 
     <section class="thanks section shell" id="thanks" aria-labelledby="thanks-title">
-      <img class="thanks-art" src="assets/images/meadow-small.webp" width="768" height="512" loading="lazy" decoding="async" alt="远处湖泊与草地的小幅水彩风景">
+      <span class="thanks-rule" aria-hidden="true"></span>
       <p class="thanks-note">感谢你的时间与阅读</p><h2 id="thanks-title">故事还在继续。</h2>
       <p>谢谢你，愿意在这里停留片刻。</p><a class="text-link" href="#home">返回顶部<span aria-hidden="true">↑</span></a>
     </section>

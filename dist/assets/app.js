@@ -32,7 +32,7 @@ function workLink(work, text = '阅读作品', className = 'text-link work-link'
   const link = element('a', `${className} work-link-target`, text);
   link.href = `work.html?id=${encodeURIComponent(work.id)}`;
   link.dataset.category = work.category;
-  const arrow = element('span', '', '↗');
+  const arrow = element('span', '', '→');
   arrow.setAttribute('aria-hidden', 'true');
   link.append(arrow);
   return link;
@@ -144,7 +144,7 @@ function renderEssays(works, container) {
   works.forEach(work => {
     const article = element('article', 'essay-item');
     const heading = title(work);
-    const arrow = element('span', 'title-arrow', '↗'); arrow.setAttribute('aria-hidden', 'true');
+    const arrow = element('span', 'title-arrow', '→'); arrow.setAttribute('aria-hidden', 'true');
     heading.firstElementChild.append(arrow);
     article.append(metadata(work), heading, element('p', 'work-summary', work.summary));
     const quote = work.sections?.[0]?.paragraphs?.[1];
@@ -263,10 +263,11 @@ function restorePosition() {
   })));
 }
 function returnLink(category, className = 'text-link') {
-  const link = element('a', className, '返回作品集');
+  const link = element('a', className);
+  const arrow = element('span', '', '←');
+  arrow.setAttribute('aria-hidden', 'true');
+  link.append(arrow, '返回作品集');
   link.href = `index.html#${categories.includes(category) ? category : 'home'}`;
-  link.append(element('span', '', '↗'));
-  link.lastElementChild.setAttribute('aria-hidden', 'true');
   link.addEventListener('click', e => {
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
     const saved = getStored(returnKey);
