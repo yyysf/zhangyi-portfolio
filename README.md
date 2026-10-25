@@ -2,7 +2,7 @@
 
 白底青绿、水彩插画与艺术展览风格的个人作品集演示站。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
 
-本次视觉升级已通过本地检查并提交为 Git 提交 `1f3d3d5`。Sites 没有文件上传界面，更新方式是在 ChatGPT 或 Codex 中打开本项目，让 sites 保存新版本后再部署，详见下方部署说明。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
+本次视觉升级已通过本地检查并提交为 Git 提交 `1f3d3d5`。站点改为 GitHub Pages 托管，`gh-pages` 分支已由 `dist` 生成，推送后即可上线，见下方部署说明。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
 
 ## 本地预览
 
@@ -64,18 +64,40 @@ python scripts/prepare-assets.py
 npm run check
 ```
 
-`dist` 是完整静态发布目录。站点身份与静态目录配置保存在 `.openai/hosting.json`（`project_id` 即现有站点），后续更新应复用同一站点。无需安装依赖或执行构建命令。
+`dist` 是完整静态发布目录，无需安装依赖或执行构建命令。
 
-### 更新 Sites
+### 发布到 GitHub Pages
 
-Sites 两端只有「保存版本」和「部署版本」两步，没有文件上传或文件管理器界面，因此不要尝试上传 `dist` 或压缩包。
+当前采用 GitHub Pages 托管：`gh-pages` 分支存放 **dist 的全部内容**，站点文件位于该分支根层，并带一个空的 `.nojekyll` 以跳过 Jekyll 处理。页面源码仍在 `main` 分支，二者互不干扰。
 
-1. 在 ChatGPT 桌面应用或 Codex 中打开本项目目录（`.openai/hosting.json` 把关本地源码和线上站点关联起来）。
+首次发布（把 `仓库地址` 换成你自己的）：
+
+```powershell
+git remote add origin 仓库地址
+git push -u origin main
+npm run deploy:pages
+git push origin gh-pages
+```
+
+然后在 GitHub 仓库的 Settings → Pages，把 Source 选为 **Deploy from a branch**，分支选 `gh-pages`、目录选 `/ (root)`，保存后等一两分钟。
+
+- 地址形如 `https://用户名.github.io/仓库名/`。仓库名是 `用户名.github.io` 时才是根地址。
+- 站点内全部引用均为相对路径，放在仓库子路径下可以正常访问，无需改代码。
+- 免费账号的 Pages 要求仓库为公开。
+- 中国大陆公网与微信访问的稳定性取决于网络环境，未做实测。
+
+以后每次更新：先提交 `main`，再执行 `npm run deploy:pages` 和 `git push origin gh-pages`。脚本从 `dist` 当前内容重建分支，所以务必先提交源码，否则线上版本无法对应到提交。若远端分支被网页端改过而推送被拒，用 `git push origin gh-pages --force-with-lease`。
+
+### 备选：更新 Sites
+
+Sites 只有「保存版本」和「部署版本」两步，没有文件上传界面，不要尝试上传 `dist` 或压缩包。`.openai/hosting.json` 保留原有站点关联。
+
+1. 在 ChatGPT 桌面应用或 Codex 中打开本项目目录（`hosting.json` 把关本地源码和线上站点关联起来）。
 2. 让 sites 为当前提交构建并保存一个版本，例如：「用 sites 保存这个项目的版本，沿用现有站点（project_id appgprj_6addb7ba141081918227cd31378bc3de），先不要部署」。
 3. 核对预览无误后再让它部署该版本；部署成功后它会返回线上地址。
 4. 想确认历史版本时，让 ChatGPT 列出已保存的版本。
 
-每次保存版本会关联构建所用的 Git 提交，所以务必先提交改动再让 sites 构建，否则线上版本对应的代码无法追溯。
+每次保存版本会关联构建所用的 Git 提交，所以务必先提交改动再让 sites 构建。
 
 ### 其他托管平台
 
