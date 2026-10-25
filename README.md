@@ -1,6 +1,8 @@
 # 张艺的作品集
 
-白底青绿、水彩风景明信片风格的个人作品集演示站。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
+白底青绿、水彩插画与艺术展览风格的个人作品集演示站。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
+
+本次视觉升级已通过本地检查，并打包为根目录的 `zhangyi-portfolio-site.zip`，上传该包即可更新 Sites。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
 
 ## 本地预览
 
@@ -54,7 +56,7 @@ npm start
 python scripts/prepare-assets.py
 ```
 
-该维护脚本需要 Pillow、fontTools 和 Brotli。普通预览、编辑与发布不需要 Python。原始字体与四张生成插画保留于 `source-assets/`，网站实际使用本地压缩 WebP。插画使用内置 imagegen 生成，提示词与素材用途见 `source-assets/art-prompts.md`，不代表实际剧照或排练照片。
+该维护脚本需要 Pillow、fontTools 和 Brotli。普通预览、编辑与发布不需要 Python。原始字体与五张生成插画保留于 `source-assets/`，网站实际使用本地压缩 WebP。新增声音静物提供 1536px 与 768px 两种尺寸。插画使用内置 imagegen 生成，提示词与素材用途见 `source-assets/art-prompts.md`，不代表实际剧照或排练照片。
 
 ## 检查与部署文件
 
@@ -63,5 +65,21 @@ npm run check
 ```
 
 `dist` 是完整静态发布目录。当前按用户要求使用 Sites 发布，站点身份与静态目录配置保存在 `.openai/hosting.json`，后续更新应复用同一站点。也可在其他静态托管平台上传 **dist 内的全部内容**，确保 `index.html` 位于上传目录根层；不要上传 `source-assets`、测试或预览服务器。无需安装依赖或执行构建命令。
+
+`zhangyi-portfolio-site.zip` 是 `dist` 的打包结果（17 个文件，`index.html` 位于根层），改动 `dist` 后需重新打包（条目分隔符统一为 `/`）：
+
+```powershell
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$dist = (Resolve-Path .\dist).Path
+Remove-Item zhangyi-portfolio-site.zip -Force -ErrorAction SilentlyContinue
+$zip = [System.IO.Compression.ZipFile]::Open((Join-Path $PWD 'zhangyi-portfolio-site.zip'), 'Create')
+Get-ChildItem -Recurse -File $dist | ForEach-Object {
+  $name = $_.FullName.Substring($dist.Length + 1).Replace('\', '/')
+  [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $name) | Out-Null
+}
+$zip.Dispose()
+```
+
+上传后在浏览器硬刷新确认新首页生效。Sites 上的旧文件若与新包不同名（例如替换图片后改了文件名），需一并删除。
 
 当前首版的剧本、文章、实践及声音条目均为明确标注的示例。真实音视频播放、微信及大陆公网访问需要有实际素材和公开地址后验收。本地预览网址只在运行服务器的电脑上可用，不是公开分享链接。

@@ -11,7 +11,7 @@ source = root / 'source-assets'
 output = root / 'dist' / 'assets'
 (output / 'images').mkdir(parents=True, exist_ok=True)
 (output / 'fonts').mkdir(parents=True, exist_ok=True)
-for name in ('meadow', 'platform', 'rehearsal', 'river'):
+for name in ('meadow', 'platform', 'rehearsal', 'river', 'listening'):
     img = Image.open(source / 'illustrations' / f'{name}.png').convert('RGB')
     img.thumbnail((1536, 1024), Image.Resampling.LANCZOS)
     destination = output / 'images' / f'{name}.webp'
@@ -30,6 +30,11 @@ corpus += data['profile']['name'] + data['profile']['siteTitle']
 for work in data['works']:
     corpus += work['title'] + work.get('excerpt', '')
     corpus += ''.join(section.get('title', '') for section in work.get('sections', []))
+    # Pull quotes and dialogue excerpts also use the local hand-written face.
+    if work['category'] == 'essays':
+        corpus += work.get('sections', [{}])[0].get('paragraphs', ['', ''])[1].split('。')[0] + '。'
+    if work['category'] == 'scripts':
+        corpus += ''.join(block.get('text', '') for section in work.get('sections', []) for block in section.get('blocks', []) if block.get('type') == 'dialogue')
 for path in (root / 'dist').glob('*.html'):
     text = path.read_text(encoding='utf-8')
     for match in re.finditer(r'<h[123][^>]*>(.*?)</h[123]>|<p class="hero-quote">(.*?)</p>|<a class="wordmark"[^>]*>(.*?)</a>', text, re.S):

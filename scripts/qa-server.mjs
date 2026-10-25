@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 let retryCount = 0;
-const cases = new Set(['empty', 'bad-image', 'retry-data', 'long-title', 'audio', 'media-error']);
+const cases = new Set(['empty', 'bad-image', 'retry-data', 'long-title', 'audio', 'media-error', 'text-scale']);
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webp': 'image/webp', '.woff2': 'font/woff2' };
 function silence() {
   const size = 24000 * 30 * 2;
@@ -22,6 +22,13 @@ http.createServer(async (req, res) => {
     const relative = parts.join('/') || 'index.html';
     const path = resolve(root, relative);
     if (!path.startsWith(resolve(root) + sep)) { res.writeHead(403).end(); return; }
+    // Text-only 200% enlargement fixture; production CSS stays untouched.
+    if (scenario === 'text-scale' && relative === 'assets/style.css') {
+      const css = (await readFile(path, 'utf8'))
+        .replace(/(font-size\s*:\s*)([\d.]+)px/g, (_, prefix, size) => `${prefix}${Number(size) * 2}px`)
+        .replace(/font:([^;{}]+)/g, (_, value) => `font:${value.replace(/([\d.]+)px/, (match, size) => `${Number(size) * 2}px`)}`);
+      res.writeHead(200, { 'Content-Type': types['.css'], 'Cache-Control': 'no-store' }); res.end(css); return;
+    }
     if (relative === 'data/portfolio.json' && scenario) {
       if (scenario === 'retry-data' && retryCount++ === 0) { res.writeHead(503).end(); return; }
       const data = JSON.parse(await readFile(path, 'utf8'));

@@ -17,3 +17,11 @@ Use case: illustration-story. Original hand-painted watercolor and gouache wide 
 ## river.png：影像封面示意
 
 Use case: illustration-story. Original quiet hand-painted watercolor and gouache panoramic landscape, 16:9 aspect ratio, cinematic composition. A still small green river in a Chinese small town on a cloudy summer afternoon, viewed through leaves from a riverbank. One simple pale footbridge in the distance, green trees reflected in the water, subtle slanted patch of sunlight on opposite bank. No people or lettering. Seafoam, muted blue-green, deep sage and light grey-white watercolor paper, gentle dry-brush texture, softly bleeding watercolor edges. Sophisticated restrained picture-book postcard, calm literary mood. Wide complete scene, not an inset picture on large blank page. NO text, borders, logos, UI or watermarks, no photorealism, no vector, no neon, no anime.
+# 声音主题补充插画（本地视觉升级）
+
+原始生成提示词：
+
+Use case: illustration-story. Asset type: original hand-painted watercolor and dry-brush gouache still life for the sound chapter of a Chinese literary student's portfolio. Wide landscape 3:2 canvas. On an almost-white #FCFDFC paper background, a small unbranded pale sage-green portable cassette voice recorder rests beside two lightly folded sheets of blank letter paper, an understated pair of dark teal wired headphones loosely curving around the objects. A few touches of muted blue-green watercolor shadow and natural visible pigment grain. Objects form a carefully balanced asymmetrical still life in the lower center, softly unfinished edges fade into white, generous empty white space around. Sophisticated calm editorial illustration, tangible paper and gentle watercolor blooms, same restrained hand-painted look as watercolor meadow and rehearsal-room postcards. No people, no photography, no vector shapes, no digital gradient, no dramatic spotlight, no bright colors, no sepia. NO letters, no numbers, no brand, no logos, no watermarks, NO waveform, NO user interface, NO text on the recorder or paper.
+
+录音机、耳机与空白信纸，低饱和青绿水彩静物，近白纸面，柔和边缘，横幅 3:2。无文字、品牌、水印、波形或播放界面。生成源图为 listening.png；站内压缩为 listening.webp 与 listening-small.webp。
+

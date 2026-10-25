@@ -2,6 +2,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const categories = ['scripts', 'essays', 'films', 'stage', 'sound'];
 const returnKey = 'zhangyi-portfolio:return';
 const restoreKey = 'zhangyi-portfolio:restore';
+const historyKey = 'zhangyi-portfolio:history';
 const isHome = document.body.dataset.page === 'home';
 let siteTitle = '张艺的作品集';
 
@@ -115,9 +116,27 @@ function media(work, showPending = true) {
 function renderScripts(works, container) {
   works.forEach((work, i) => {
     const article = element('article', i === 0 ? 'script-feature' : 'script-secondary');
-    if (i === 0 && safeUrl(work.image)) article.append(imageLink(work));
-    article.append(metadata(work), title(work), element('p', 'work-summary', work.summary), workLink(work, '阅读剧本'));
-    if (i !== 0 && work.excerpt) article.append(element('p', 'secondary-quote', work.excerpt));
+    const copy = element('div', 'script-copy');
+    copy.append(metadata(work), title(work), element('p', 'work-summary', work.summary), workLink(work, '阅读剧本'));
+    if (i === 0) {
+      const visual = element('div', 'script-visual');
+      if (safeUrl(work.image)) visual.append(imageLink(work));
+      visual.append(copy);
+      const manuscript = element('div', 'manuscript');
+      manuscript.append(element('p', 'manuscript-label', '剧本节选'));
+      const blocks = work.sections?.flatMap(section => section.blocks || []) || [];
+      blocks.slice(0, 4).forEach(block => {
+        if (block.type === 'dialogue') {
+          const dialogue = element('dl', 'dialogue');
+          dialogue.append(element('dt', '', block.speaker), element('dd', '', block.text)); manuscript.append(dialogue);
+        } else manuscript.append(element('p', block.type === 'scene' ? 'manuscript-scene' : 'manuscript-text', block.text));
+      });
+      manuscript.append(workLink(work, '翻开完整剧本'));
+      article.append(visual, manuscript);
+    } else {
+      article.append(copy);
+      if (work.excerpt) article.append(element('p', 'secondary-quote', work.excerpt));
+    }
     container.append(article);
   });
 }
@@ -128,13 +147,18 @@ function renderEssays(works, container) {
     const arrow = element('span', 'title-arrow', '↗'); arrow.setAttribute('aria-hidden', 'true');
     heading.firstElementChild.append(arrow);
     article.append(metadata(work), heading, element('p', 'work-summary', work.summary));
+    const quote = work.sections?.[0]?.paragraphs?.[1];
+    if (quote) article.append(element('blockquote', 'essay-quote', quote.split('。')[0] + '。'));
+    article.append(workLink(work, '阅读全文'));
     container.append(article);
   });
 }
 function renderFilms(works, container) {
   works.forEach(work => {
     const article = element('article', 'film-feature');
-    if (safeUrl(work.image)) article.append(imageLink(work));
+    const screen = element('div', 'film-screen');
+    if (safeUrl(work.image)) screen.append(imageLink(work));
+    article.append(screen);
     const caption = element('div', 'film-caption');
     const info = element('div');
     info.append(metadata(work), title(work));
@@ -152,14 +176,17 @@ function renderStage(works, container) {
     const copy = element('div');
     copy.append(metadata(work), title(work), element('p', 'work-summary', work.summary));
     const notes = element('div', 'stage-notes');
-    ['文本', '排演', '回看'].forEach(text => notes.append(element('span', '', text)));
+    (work.sections || []).filter(section => ['排演过程', '实践思考'].includes(section.title)).forEach(section => {
+      const note = element('div', 'stage-note');
+      note.append(element('h4', '', section.title), element('p', '', section.paragraphs?.[0] || ''));
+      notes.append(note);
+    });
     copy.append(notes, workLink(work, '阅读实践记录')); article.append(figure, copy); container.append(article);
   });
 }
 function renderSound(works, container) {
   works.forEach(work => {
     const article = element('article', 'sound-item');
-    const emblem = element('span', 'sound-emblem', '听'); emblem.setAttribute('aria-hidden', 'true');
     const copy = element('div');
     copy.append(metadata(work), title(work), element('p', 'work-summary', work.summary));
     const actions = element('div', 'sound-actions');
@@ -167,7 +194,7 @@ function renderSound(works, container) {
     const player = media(work, false);
     if (!player) actions.append(element('span', 'pending-media', work.media?.caption || '录音待补充'));
     copy.append(actions); if (player) copy.append(player);
-    article.append(emblem, copy); container.append(article);
+    article.append(copy); container.append(article);
   });
 }
 const renderers = { scripts: renderScripts, essays: renderEssays, films: renderFilms, stage: renderStage, sound: renderSound };
@@ -175,6 +202,17 @@ const renderers = { scripts: renderScripts, essays: renderEssays, films: renderF
 function setupNavigation() {
   const toggle = $('.menu-toggle');
   const nav = $('#main-nav');
+  const header = $('.site-header');
+  if (header && 'ResizeObserver' in window) {
+    const sizing = new ResizeObserver(() => {
+      // Keep anchor headings visible when text enlargement makes the header taller.
+      // Ignore the expanded directory, whose height is temporary.
+      if (toggle?.getAttribute('aria-expanded') !== 'true') {
+        document.documentElement.style.setProperty('--header-height', `${header.getBoundingClientRect().height}px`);
+      }
+    });
+    sizing.observe(header);
+  }
   if (!toggle || !nav) return;
   function closeMenu() {
     toggle.setAttribute('aria-expanded', 'false'); nav.classList.remove('is-open');
@@ -201,6 +239,9 @@ function setupNavigation() {
   }
 }
 function setupReturnTracking() {
+  window.addEventListener('pagehide', () => {
+    store(historyKey, { y: window.scrollY, hash: location.hash, time: Date.now() });
+  });
   document.addEventListener('click', e => {
     const link = e.target.closest('a.work-link-target');
     if (!link || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
@@ -208,7 +249,10 @@ function setupReturnTracking() {
   });
 }
 function restorePosition() {
-  const request = getStored(restoreKey);
+  // On a normal history reload, native restoration can run before JSON fills
+  // the page. Restore after rendering, just as for the explicit return link.
+  const isHistoryReturn = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+  const request = getStored(restoreKey) || (isHistoryReturn ? getStored(historyKey) : null);
   if (!request) return;
   removeStored(restoreKey);
   if (!Number.isFinite(request.y) || Date.now() - request.time > 1000 * 60 * 120) return;
@@ -236,6 +280,7 @@ function returnLink(category, className = 'text-link') {
   return link;
 }
 function renderWork(work) {
+  document.body.dataset.category = work.category;
   const main = $('#main');
   main.replaceChildren();
   const container = element('article', 'work-container');
@@ -244,6 +289,11 @@ function renderWork(work) {
   if (work.summary) header.append(element('p', 'work-lead', work.summary));
   if (work.demo) header.append(element('p', 'work-demo-note', '本页为示例内容，用于演示作品排版与阅读体验，不代表张艺的真实创作成果。'));
   container.append(header);
+  if (work.category === 'sound') {
+    const stillLife = element('figure', 'detail-sound-art');
+    stillLife.append(image({ title: '声音主题', image: 'assets/images/listening.webp', imageSmall: 'assets/images/listening-small.webp', imageAlt: '录音机、耳机与信纸的声音主题水彩插画' }, true));
+    container.append(stillLife);
+  }
   if (safeUrl(work.image)) {
     const figure = element('figure', 'work-figure');
     const button = element('button', 'image-toggle');
@@ -323,7 +373,14 @@ async function loadContent() {
     document.querySelectorAll('.site-footer>span:first-child').forEach(node => { node.textContent = siteTitle; });
     if (isHome) {
       document.title = siteTitle;
-      if (data.profile?.intro) $('.hero-intro').textContent = data.profile.intro;
+      if (data.profile?.intro) {
+        const intro = data.profile.intro;
+        const cut = intro.indexOf('被听见');
+        const node = $('.hero-intro');
+        // Preserve the original semantic line break without injecting HTML.
+        if (cut > 0) node.replaceChildren(document.createTextNode(intro.slice(0, cut)), element('br'), document.createTextNode(intro.slice(cut)));
+        else node.textContent = intro;
+      }
       categories.forEach(category => {
         const container = $(`#${category}-list`);
         const works = data.works.filter(work => work.category === category);
