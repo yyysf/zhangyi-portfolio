@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FCFDFC">
+  <meta name="description" content="张艺的个人作品集。探索故事如何被书写、被表演、被听见、被看见。">
+  <title>张艺的作品集</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="assets/fonts/wenkai-subset.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/style.css">
+  <script type="module" src="assets/app.js"></script>
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="#home" aria-label="张艺的作品集，返回首页">张艺<span>的作品集</span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav">目录<span aria-hidden="true">＋</span></button>
+      <nav id="main-nav" aria-label="主导航">
+        <a href="#home" aria-current="location">首页</a><a href="#about">关于</a><a href="#scripts">剧本</a><a href="#essays">影评</a><a href="#films">影像</a><a href="#stage">舞台</a><a href="#sound">声音</a><a href="#thanks">致谢</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero shell" id="home" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">我叫张艺。</h1>
+        <p class="hero-quote">在这里，我记录了那些<br class="desktop-break">一闪而过的东西——</p>
+        <p class="hero-intro">我探索故事如何被书写、被表演、<br class="desktop-break">被听见、被看见。</p>
+        <a class="text-link hero-link" href="#about">浏览作品<span aria-hidden="true">↗</span></a>
+      </div>
+      <figure class="hero-art"><img src="assets/images/meadow.webp" srcset="assets/images/meadow-small.webp 768w, assets/images/meadow.webp 1536w" sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 52vw, 650px" alt="青绿色的草地通向远处湖泊，一个小小的身影行走其间的水彩插画" width="1536" height="1024" fetchpriority="high"></figure>
+    </section>
+
+    <section class="about section shell" id="about" aria-labelledby="about-title">
+      <div class="about-intro"><h2 id="about-title">关于我与创作</h2><p>从一段文字出发，走向影像、舞台与声音。<br>这里是我整理故事与创作思考的地方。</p></div>
+      <nav class="category-nav" aria-label="作品分类">
+        <a href="#scripts"><span>原创剧本</span><small>把故事写下来</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+        <a href="#essays"><span>影评随笔</span><small>在观看之后思考</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+        <a href="#films"><span>影像成片</span><small>让文字成为画面</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+        <a href="#stage"><span>舞台实践</span><small>在现场感受故事</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+        <a href="#sound"><span>声音时间</span><small>听见画面之外</small><span class="category-arrow" aria-hidden="true">↗</span></a>
+      </nav>
+      <p class="demo-notice">当前为排版与交互演示。以下标注“示例内容”的作品与配图用于展示页面效果，后续替换为真实作品。</p>
+    </section>
+
+    <section class="section shell scripts-section" id="scripts" aria-labelledby="scripts-title">
+      <div class="section-heading"><h2 id="scripts-title">原创剧本</h2><p>人物、对白，以及尚未说出口的部分。</p></div>
+      <div id="scripts-list" class="scripts-layout" aria-busy="true"><p class="loading-message">正在整理剧本…</p></div>
+    </section>
+
+    <section class="section essay-section" id="essays" aria-labelledby="essays-title"><div class="shell essay-layout">
+      <div class="section-heading"><h2 id="essays-title">影评随笔</h2><p>离开放映厅，<br>有些画面仍然留在心里。</p></div>
+      <div id="essays-list" class="essay-list" aria-busy="true"><p class="loading-message">正在整理文章…</p></div>
+    </div></section>
+
+    <section class="section shell" id="films" aria-labelledby="films-title">
+      <div class="section-heading"><h2 id="films-title">影像成片</h2><p>把一瞬间，留在时间里。</p></div>
+      <div id="films-list" aria-busy="true"><p class="loading-message">正在整理影像…</p></div>
+    </section>
+
+    <section class="section shell" id="stage" aria-labelledby="stage-title">
+      <div class="section-heading"><h2 id="stage-title">舞台实践</h2><p>当故事有了空间，也有了呼吸。</p></div>
+      <div id="stage-list" aria-busy="true"><p class="loading-message">正在整理舞台记录…</p></div>
+    </section>
+
+    <section class="section sound-section" id="sound" aria-labelledby="sound-title"><div class="shell sound-layout">
+      <div class="section-heading"><h2 id="sound-title">声音时间</h2><p>闭上眼睛，<br>故事也可以被听见。</p></div>
+      <div id="sound-list" class="sound-list" aria-busy="true"><p class="loading-message">正在整理声音…</p></div>
+    </div></section>
+
+    <section class="thanks section shell" id="thanks" aria-labelledby="thanks-title">
+      <p class="thanks-note">感谢你的时间与阅读</p><h2 id="thanks-title">故事还在继续。</h2>
+      <p>谢谢你，愿意在这里停留片刻。</p><a class="text-link" href="#home">返回顶部<span aria-hidden="true">↑</span></a>
+    </section>
+  </main>
+  <footer class="site-footer shell"><span>张艺的作品集</span><span>个人学术展示</span></footer>
+  <noscript><p class="shell error-message">请启用浏览器 JavaScript 以查看作品列表与详情。页面目录和封面仍可浏览。</p></noscript>
+</body>
+</html>

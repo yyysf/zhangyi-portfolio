@@ -1,0 +1,8 @@
+node_modules/
+qa/
+source-assets/*
+!source-assets/art-prompts.md
+*.zip
+*.tar
+*.tar.gz
+.env*
