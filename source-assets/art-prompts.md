@@ -25,3 +25,11 @@ Use case: illustration-story. Asset type: original hand-painted watercolor and d
 
 录音机、耳机与空白信纸，低饱和青绿水彩静物，近白纸面，柔和边缘，横幅 3:2。无文字、品牌、水印、波形或播放界面。生成源图为 listening.png；站内压缩为 listening.webp 与 listening-small.webp。
 
+
+## noon.png：影评《日掛中天》卡片配图（2026-10 补图）
+
+原图：`illustrations/Use_case__illustration_story___2026-10-27T09-07-43.png`（1536 × 1024，生成时右下角带 AI 生成水印，站内版本裁掉底部 184px 后为 1536 × 840，另存 768 宽小图）。
+
+Use case: illustration-story. Original hand-painted watercolor and dry-brush gouache wide cityscape illustration, 16:10 aspect ratio, for a Chinese film-review card about a scorching southern Chinese summer. Subject: a narrow old-town alley in Guangzhou at blazing noon, whitewashed walls overexposed into near-white, one deep green shuttered window, damp stone pavement reflecting harsh light, a thin strip of deep shade under an eave, faint heat haze, a single green electric fan silhouette in a doorway, no people. Extremely bright, bleached, humid atmosphere; the sun is felt but never shown as a disc. Muted seafoam, sage, deep teal and pale grey-white watercolor paper palette, visible dry brush and pigment grain, softly bleeding watercolor edges, restrained editorial postcard style consistent with a quiet literary portfolio. Complete framed composition, strong diagonal of light and shade. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no neon, no digital gradients.
+
+用途：首页「影评随笔」中《日掛中天》卡片左侧配图，图注写「氛围配图 · 正午的巷子（非影片剧照）」。这部影评没有官方海报，故不使用影片剧照以外的真实剧照素材。

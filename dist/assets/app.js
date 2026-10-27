@@ -539,6 +539,42 @@ function renderScripts(works, container) {
     heading.append(headingLink);
     body.append(heading, element('p', 'script-summary', work.summary), scriptExcerpt(work), workLink(work, '阅读完整剧本'));
 
+    const pages = Array.isArray(work.pagePreviews)
+      ? work.pagePreviews.filter(page => safeUrl(page.image)).slice(0, 2)
+      : [];
+    if (pages.length) {
+      const strip = element('figure', 'script-pages');
+      const frame = element('div', 'script-pages__strip');
+      pages.forEach((page, pageIndex) => {
+        const thumb = element('button', 'script-page');
+        thumb.type = 'button';
+        thumb.dataset.lightboxSrc = safeUrl(page.image);
+        thumb.dataset.lightboxCaption = `${work.title} · ${page.caption || `原页 ${pageIndex + 1}`}`;
+        thumb.dataset.lightboxAlt = page.imageAlt || `${work.title}剧本原页`;
+        thumb.setAttribute('aria-label', `放大查看${work.title}剧本原页 ${pageIndex + 1}`);
+        const thumbImage = element('img');
+        thumbImage.src = safeUrl(page.imageSmall) || thumb.dataset.lightboxSrc;
+        thumbImage.alt = page.imageAlt || `${work.title}剧本原页`;
+        thumbImage.width = 640;
+        thumbImage.height = 853;
+        thumbImage.loading = 'lazy';
+        thumbImage.decoding = 'async';
+        thumb.append(thumbImage);
+        frame.append(thumb);
+      });
+      strip.append(frame);
+      const caption = element('figcaption', 'script-pages__caption');
+      caption.append(element('span', '', `剧本原页 · 共 ${work.pageCount || pages.length} 页`));
+      if (safeUrl(work.pdf)) {
+        const download = element('a', 'script-pages__pdf', '下载 PDF ↗');
+        download.href = safeUrl(work.pdf);
+        download.setAttribute('download', '');
+        caption.append(download);
+      }
+      strip.append(caption);
+      body.append(strip);
+    }
+
     if (hasImage) {
       const figure = element('figure', `script-media reveal-figure ${ratioClass(work)}`);
       const link = coverLink(work, 'script-media__link');
@@ -564,17 +600,36 @@ function renderEssays(works, container) {
   works.forEach((work, index) => {
     const article = element('article', 'essay-card reveal');
     article.style.setProperty('--delay', `${Math.min(index * .1, .2)}s`);
-    article.append(element('span', 'essay-no', String(index + 1).padStart(2, '0')), metadata(work));
+
+    const content = element('div', 'essay-content');
+    content.append(element('span', 'essay-no', String(index + 1).padStart(2, '0')), metadata(work));
     const heading = element('h3');
     const link = workLink(work, work.title, '');
     link.lastElementChild.remove();
     heading.append(link);
-    article.append(heading, element('p', 'essay-summary', work.summary));
+    content.append(heading, element('p', 'essay-summary', work.summary));
     const quote = work.sections?.[0]?.paragraphs?.[1];
-    if (quote) article.append(element('blockquote', 'essay-quote', firstSentence(quote)));
+    if (quote) content.append(element('blockquote', 'essay-quote', firstSentence(quote)));
     const footer = element('div', 'essay-foot');
     footer.append(element('span', 'essay-time', `阅读约 ${readingTime(work)} 分钟`), workLink(work, '阅读全文'));
-    article.append(footer);
+    content.append(footer);
+
+    if (safeUrl(work.image)) {
+      const portrait = work.imageRatio === 'portrait';
+      const figure = element('figure', `essay-visual essay-visual--${portrait ? 'portrait' : 'landscape'} reveal-figure`);
+      const coverAnchor = coverLink(work, 'essay-visual__link');
+      coverAnchor.append(
+        image(work, index === 0, portrait
+          ? '(max-width: 767px) 62vw, (max-width: 980px) 44vw, 340px'
+          : '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 520px'),
+        cue('阅读')
+      );
+      figure.append(coverAnchor);
+      if (work.imageCaption) figure.append(element('figcaption', '', work.imageCaption));
+      article.append(figure, content);
+    } else {
+      article.append(content);
+    }
     container.append(article);
   });
 }
@@ -670,7 +725,32 @@ function renderStage(works, container) {
       note.append(element('span', 'stage-note-no', String(index + 1).padStart(2, '0')), text);
       notes.append(note);
     });
-    body.append(notes, workLink(work, '阅读实践记录'));
+    body.append(notes);
+
+    const stills = (work.gallery || []).filter(item => safeUrl(item.image)).slice(0, 3);
+    if (stills.length) {
+      const strip = element('div', 'stage-strip');
+      stills.forEach(still => {
+        const shot = element('button', 'stage-strip__item');
+        shot.type = 'button';
+        shot.dataset.lightboxSrc = safeUrl(still.image);
+        shot.dataset.lightboxCaption = still.caption || '';
+        shot.dataset.lightboxAlt = still.imageAlt || '';
+        shot.setAttribute('aria-label', `放大查看${still.caption || work.title + '剧照'}`);
+        const stillImage = element('img');
+        stillImage.src = safeUrl(still.imageSmall) || safeUrl(still.image);
+        stillImage.alt = still.imageAlt || '';
+        stillImage.width = 700;
+        stillImage.height = 467;
+        stillImage.loading = 'lazy';
+        stillImage.decoding = 'async';
+        shot.append(stillImage);
+        strip.append(shot);
+      });
+      body.append(strip);
+    }
+
+    body.append(workLink(work, '阅读实践记录'));
     article.append(body);
     container.append(article);
 
@@ -691,6 +771,21 @@ function renderStage(works, container) {
   container.append(quote);
 }
 
+function soundThumb(work) {
+  const wrap = element('span', 'sound-item__thumb');
+  const source = safeUrl(work.imageSmall) || safeUrl(work.image);
+  if (!source) { wrap.classList.add('is-empty'); return wrap; }
+  const img = element('img');
+  img.src = source;
+  img.alt = '';
+  img.width = 128;
+  img.height = 128;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  wrap.append(img);
+  return wrap;
+}
+
 function renderSound(works, container) {
   works.forEach((work, index) => {
     const article = element('article', 'sound-item reveal');
@@ -700,6 +795,7 @@ function renderSound(works, container) {
     head.setAttribute('aria-expanded', 'false');
     head.id = `sound-head-${index}`;
     head.append(
+      soundThumb(work),
       element('span', 'sound-item__no', String(index + 1).padStart(2, '0')),
       element('span', 'sound-item__title', work.title),
       element('span', 'sound-item__meta', work.subtitle || work.categoryLabel),

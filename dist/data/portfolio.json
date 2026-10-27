@@ -23,6 +23,21 @@
       "imageWidth": 1100,
       "imageHeight": 1101,
       "pdf": "assets/media/baiyuan.pdf",
+      "pageCount": 6,
+      "pagePreviews": [
+        {
+          "image": "assets/works/baiyuan-page.webp",
+          "imageSmall": "assets/works/baiyuan-page-small.webp",
+          "imageAlt": "《百元大钞》剧本原页第一页，含剧情介绍与人物表",
+          "caption": "原页 01 · 剧情介绍与人物表"
+        },
+        {
+          "image": "assets/works/baiyuan-page-2.webp",
+          "imageSmall": "assets/works/baiyuan-page-2-small.webp",
+          "imageAlt": "《百元大钞》剧本原页第二页，第一幕楚汉争第一场",
+          "caption": "原页 02 · 第一幕 第一场"
+        }
+      ],
       "demo": false,
       "sections": [
         {
@@ -109,6 +124,21 @@
       "imageWidth": 1200,
       "imageHeight": 1564,
       "pdf": "assets/media/tade-qiu.pdf",
+      "pageCount": 29,
+      "pagePreviews": [
+        {
+          "image": "assets/works/tade-qiu-page.webp",
+          "imageSmall": "assets/works/tade-qiu-page-small.webp",
+          "imageAlt": "《她的秋》剧本原页第一页，田埂与付家厨房两场",
+          "caption": "原页 01 · 田埂与付家厨房"
+        },
+        {
+          "image": "assets/works/tade-qiu-page-2.webp",
+          "imageSmall": "assets/works/tade-qiu-page-2-small.webp",
+          "imageAlt": "《她的秋》剧本原页第二页，麦田一场",
+          "caption": "原页 02 · 麦田"
+        }
+      ],
       "demo": false,
       "sections": [
         {
@@ -204,13 +234,13 @@
       "year": "2025",
       "award": "2025 丽水市大学生电影季「光影青春」电影评论单元 · 专业组一等奖",
       "summary": "一篇关于《日掛中天》的评论：从极简的叙事结构、片名与画面的反差，到“热”与“汗水”的感官隐喻，再到三种社会性命题，试着拆开这部影片里那场没有散去的南方暑气。",
-      "image": "assets/images/river.webp",
-      "imageSmall": "assets/images/river-small.webp",
-      "imageAlt": "河流穿过村庄与石桥的水彩插画",
-      "imageCaption": "氛围配图 · 河流（非影片剧照）",
+      "image": "assets/images/noon.webp",
+      "imageSmall": "assets/images/noon-small.webp",
+      "imageAlt": "南方老巷被正午强光晒白的水彩插画",
+      "imageCaption": "氛围配图 · 正午的巷子（非影片剧照）",
       "imageRatio": "landscape",
       "imageWidth": 1536,
-      "imageHeight": 1024,
+      "imageHeight": 840,
       "demo": false,
       "sections": [
         {
