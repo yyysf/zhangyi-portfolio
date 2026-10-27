@@ -16,6 +16,11 @@ for (const work of data.works) {
   for (const asset of [work.image, work.imageSmall, work.pdf, work.media?.src].filter(Boolean)) {
     if (!/^https?:\/\//.test(asset)) assert.ok((await stat(resolve(root, asset))).isFile(), `Missing ${asset}`);
   }
+  for (const photo of work.gallery || []) {
+    for (const asset of [photo.image, photo.imageSmall].filter(Boolean)) {
+      if (!/^https?:\/\//.test(asset)) assert.ok((await stat(resolve(root, asset))).isFile(), `Missing gallery asset ${asset}`);
+    }
+  }
 }
 const home = await load('index.html');
 assert.equal((home.match(/<section\b/g) || []).length, 8, 'Homepage must have eight sections');
@@ -25,7 +30,7 @@ for (const path of ['index.html', 'work.html', 'assets/style.css']) {
   const contents = await load(path);
   for (const match of contents.matchAll(/(?:src|href)="([^"#?]+)(?:[?#][^"]*)?"|url\(['"]?([^)'"?#]+)['"]?\)/g)) {
     const value = match[1] || match[2];
-    if (/^(?:https?:|data:)/.test(value)) continue;
+    if (/^(?:https?:|data:|%23)/.test(value)) continue;
     assert.ok((await stat(resolve(root, dirname(path), value))).isFile(), `Missing reference in ${path}: ${value}`);
   }
 }

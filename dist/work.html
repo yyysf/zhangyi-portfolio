@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#FCFDFC">
-  <meta name="description" content="张艺作品集的作品正文与创作阐述。">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f6f3">
+  <meta name="description" content="张艺作品集的作品正文、剧本节选、影评与创作记录。">
   <title>作品详情 · 张艺的作品集</title>
   <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="张艺的作品集">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:title" content="作品详情 · 张艺的作品集">
-  <meta property="og:description" content="原创剧本、影评随笔、影像成片、舞台实践与声音作品。">
+  <meta property="og:description" content="张艺的个人作品集：剧本、影评、影像、声音与舞台。">
   <meta property="og:image" content="https://yyysf.github.io/zhangyi-portfolio/assets/brand/og-cover.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -23,9 +23,39 @@
 </head>
 <body data-page="work">
   <a class="skip-link" href="#main">跳到作品正文</a>
-  <header class="site-header"><div class="shell header-inner"><a class="wordmark" href="index.html">张艺<span>的作品集</span></a><a class="back-link" id="header-back" href="index.html"><span aria-hidden="true">←</span>返回作品集</a></div></header>
+  <div class="paper-grain" aria-hidden="true"></div>
+  <div class="page-fade" aria-hidden="true"></div>
+  <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="张艺的作品集，返回首页">张艺<span>的作品集</span></a>
+      <span class="header-edition" aria-hidden="true">作品阅读</span>
+      <a class="back-link" id="header-back" href="index.html"><span aria-hidden="true">←</span>返回作品集</a>
+    </div>
+  </header>
+
   <main class="work-main" id="main" aria-busy="true"><p class="shell loading-message">正在打开作品…</p></main>
-  <footer class="site-footer shell"><span>张艺的作品集</span><span>个人学术展示</span></footer>
-  <noscript><p class="shell error-message">请启用浏览器 JavaScript 以阅读作品正文，或<a href="index.html">返回作品集</a>。</p></noscript>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <span>张艺的作品集</span>
+      <span>个人学术作品展示 · 非商用</span>
+      <span>二〇二六 · 秋</span>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="图像预览">
+    <button class="lightbox-close" type="button" aria-label="关闭预览"><span>关闭</span><i aria-hidden="true"></i></button>
+    <button class="lightbox-nav lightbox-prev" type="button" aria-label="上一张"><span aria-hidden="true">←</span>上一张</button>
+    <button class="lightbox-nav lightbox-next" type="button" aria-label="下一张">下一张<span aria-hidden="true">→</span></button>
+    <figure>
+      <img id="lightbox-image" src="assets/images/meadow-small.webp" alt="">
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="shell error-message">请启用浏览器的脚本功能以阅读作品正文，或<a href="index.html">返回作品集</a>。</p></noscript>
 </body>
 </html>

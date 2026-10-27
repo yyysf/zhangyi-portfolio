@@ -1,8 +1,33 @@
 # 张艺的作品集
 
-白底青绿、水彩插画与艺术展览风格的个人作品集演示站。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
+青灰纸色、低饱和青绿与手绘水彩质感的个人作品集。原生 HTML / CSS / JavaScript，无运行时第三方依赖、后台或数据库。
 
-本次视觉升级已通过本地检查并提交为 Git 提交 `1f3d3d5`，现已发布到 GitHub Pages：https://yyysf.github.io/zhangyi-portfolio/ 。八个模块采用封面风景、中文目录、剧本手稿、刊物影评、深青绿放映框、舞台过程记录、声音静物与风景致谢的不同构图。详情页按类别区分开篇，长正文统一为最大 700px 阅读宽度。
+线上地址：https://yyysf.github.io/zhangyi-portfolio/ 。整站以「四间房间」为结构：草甸水彩封面 → 文 / 影 / 声 / 台四张水彩章页 → 深青致谢；详情页是安静的书页，带目录、阅读进度与上一篇 / 下一篇。
+
+## 内容
+
+当前收录 8 件真实作品：
+
+- 剧本：《百元大钞》《她的秋》
+- 影评随笔：《日掛中天：日挂中天上，爱恨无尽时》（2025 丽水市大学生电影季影评专业组一等奖）、《我观葡萄》（获奖随笔）
+- 影像：《绍兴暖契》（「我与中国的美丽邂逅」二等奖）
+- 声音：《今晚，稻田没有睡》《守岁的电波》
+- 舞台：《作为树的形象》
+
+## 视觉与交互
+
+- 封面：整幅草甸水彩铺满首屏，左侧纸面写标题，右侧放《我观葡萄》《她的秋》两张真实封面；无胶带、无印章、无英文装饰，页眉有细进度与章节读数。
+- 关于：房间索引支持悬停预览真实作品封面，并列出获奖记录。
+- 全屏目录：`dialog` 实现，支持 `Esc`、焦点圈与悬停预览图；目录行逐条错峰浮起。
+- 章页：剧本「文」、影评与影像「影」、声音「声」、舞台「台」各用一张整幅水彩 + 一个淡到像纸纹的大字，内容在画下方展开。
+- 剧本：竖版 / 方形封面按原始比例完整呈现，封面即入口，配手稿摘录卡。
+- 影评：双栏杂志式卡片，小号编号 + 摘句 + 阅读时长；详情页展示获奖信息。
+- 影像：深绿银幕，首页「观看作品」打开真实短片播放层；详情页内置 720p 视频与拍摄现场图集。
+- 舞台：原创舞台海报 + 文字式的「开灯 / 关灯」控制，详情页含 4 张舞台剧照。
+- 声音：真实音频试听（《今晚，稻田没有睡》04:01），文字式播放控制 + 波形与时间；详情页可收听两件声音作品。
+- 致谢：深青结尾、淡「谢」字水印、随便翻一页、复制链接与版权页。
+- 全站：无自定义光标、无 3D 倾斜、无指针视差；页眉在「影像」「致谢」两个深色段落自动切换为深色玻璃态（`is-on-dark`），不再出现浅色横条切断画面；保留缓慢渐显、章页浮现、图片淡淡晕开、细进度、当前章节、图片灯箱（支持上一张 / 下一张与键盘）、页面淡入淡出；支持 `prefers-reduced-motion` 与键盘访问。
+- 详情页：三栏阅读版式（目录 / 正文 / 工具），目录随滚动高亮，含上一篇 / 下一篇与复制链接。
 
 ## 本地预览
 
@@ -21,14 +46,18 @@ npm start
 编辑 `dist/data/portfolio.json` 的 `works` 数组。每项作品包含：
 
 - `id`：唯一英文标识，发布后尽量保持不变，详情地址为 `work.html?id=标识`。
-- `category`：`scripts`（剧本）、`essays`（影评）、`films`（影像）、`stage`（舞台）、`sound`（声音）。
+- `category`：`scripts`（剧本）、`essays`（影评）、`films`（影像）、`sound`（声音）、`stage`（舞台）。
 - `categoryLabel`、`title`、`subtitle`、`summary`：作品分类、标题、类型及摘要。
-- `demo`：演示内容为 `true`；替换成确属本人创作的作品后改为 `false`，并检查正文中的示例说明。
-- `image`、`imageAlt`、`imageCaption`：可选配图路径、图片描述、图注。`imageSmall` 为可选的 768px 缩略版本；替换图片时同时替换或删除此字段，避免仍显示旧缩略图。
+- `role`、`year`、`award`：可选，作者职责、年份与获奖信息；有 `award` 时首页卡片与详情页会显示获奖标记。
+- `demo`：当前真实作品均为 `false`。若临时加入演示内容可设为 `true`，页面会显示示例提示。
+- `image`、`imageSmall`、`imageAlt`、`imageCaption`：封面路径、700px 缩略图、图片描述与图注。
+- `imageRatio`：`portrait`（竖版，3:4 展示）、`square`（1:1）或 `landscape`（16:9）。封面会以 `contain` 完整呈现，不裁切标题。
+- `imageWidth`、`imageHeight`：原图尺寸，用于避免布局跳动。
+- `gallery`：可选图集数组，每项含 `image`、`imageSmall`、`imageAlt`、`caption`；详情页会以 2 列网格展示并可点击放大。
 - `sections`：正文段落。普通文章使用 `title` 和 `paragraphs`；剧本还支持 `blocks`，其 `type` 可为 `scene`、`paragraph`、`dialogue`。对白增加 `speaker` 字段。
 - `pdf`：可选 PDF 路径，提供后详情页显示下载入口。
 
-图片放入 `dist/assets/images/`，媒体放入 `dist/assets/media/`（按需新建）。JSON 文件路径从 `dist` 根目录起写，例如 `assets/images/my-work.webp`。
+作品封面放入 `dist/assets/works/`，媒体放入 `dist/assets/media/`。JSON 文件路径从 `dist` 根目录起写，例如 `assets/works/my-work.webp`。
 
 音视频配置示例：
 
@@ -36,29 +65,31 @@ npm start
 "media": {
   "type": "video",
   "src": "assets/media/my-film.mp4",
-  "externalUrl": "https://你的作品原链接",
-  "caption": "视频待补充",
-  "description": "真实素材待补充。"
+  "externalUrl": null,
+  "caption": "文本 + 影像作品 · 01:26",
+  "description": "文案：张艺。"
 }
 ```
 
-音频把 `type` 改为 `audio`，使用 MP3 / M4A / WAV 等浏览器支持的格式。`src` 与 `externalUrl` 没有时写 `null`。只提供外部链接也可以，网站会显示跳转链接，不尝试绕过视频平台的嵌入限制。媒体不会自动播放，播放一个时会暂停页面上的其他媒体。
+音频把 `type` 改为 `audio`，使用 MP3 / M4A / WAV 等浏览器支持的格式。`src` 与 `externalUrl` 没有时写 `null`。只提供外部链接也可以，网站会显示跳转链接，不尝试绕过视频平台的嵌入限制。媒体不会自动播放，播放一个时会暂停页面上的其他媒体；详情页头部会自动显示 `caption` 中的时长。
 
 姓名、站点名称和封面简介在 JSON 的 `profile` 中编辑，剧本摘句使用作品的可选 `excerpt` 字段。其他封面文字、个人介绍、致谢和分类介绍在 `dist/index.html` 中编辑；视觉参数在 `dist/assets/style.css` 中编辑。
+
+当前真实素材来自仓库外 `作品所有/` 目录：剧本 PDF 与音频、视频已分别放入 `dist/assets/media/`，封面与剧照已转为 WebP 放入 `dist/assets/works/`。原始 Word / PDF / 音视频请保留备份，网站只引用发布副本。
 
 ## 视觉系统
 
 `dist/assets/style.css` 顶部是一组设计令牌，改配色和字号优先改这里，不要在具体规则里写死数值。
 
-- 颜色：`--paper` 纸白、`--ink` 墨、`--muted` 次级文字、`--green` 青绿、`--accent` 暖赭（只用于强调线、当前项与标签）、`--wash` 水洗底、`--cinema` 幕框深绿。
-- 字号：`--fs-xs` 11 / `--fs-sm` 13 / `--fs-base` 15 / `--fs-body` 18 / `--fs-md` 24 / `--fs-lg` 34 / `--fs-xl` 44 / `--fs-2xl` 62。断点只覆盖令牌数值，不新增档位。
-- 版心：`--shell`、`--gutter`、`--measure`。所有区块共用同一左边缘，新增区块不要另设宽度。
+- 颜色：`--paper` 青灰纸、`--ink` 深蓝绿、`--muted` 次级文字、`--green` 低饱和青绿、`--accent` 青灰绿（强调线与标签）、`--tint` 水洗底、`--film` 银幕深绿、`--green-deep` 致谢深绿。**文字用 `--green-ink` / `--accent-ink`，线条与色块用 `--green` / `--accent`。** 前者是为 4.5:1 对比度调深的版本（5.07 / 4.90），后者保持原亮度给 1px 细线；两者混用会让小字掉到 4.36 / 3.86。
+- 字体：标题本地霞鹜文楷（WenKai），正文系统中文衬线，小号编号与说明用无衬线；站内不出现英文装饰字。
+- 字号：`--fs-xs` 11 / `--fs-sm` 13 / `--fs-base` 15 / `--fs-body` 17 / `--fs-md` 22 / `--fs-lg` 34 / `--fs-xl` 48 / `--fs-2xl` 64。封面与章节大标题使用 `clamp()` 按视口缩放。**全站最小字号 11px，不再出现 8–10px 的中文标签。**
+- 行高：按层级分四档，不再逐处写中间值。大标题（≥56px）1.02–1.25（字号越大行高越紧）；小节标题 1.3；正文与说明 1.9；导语 1.75。新增规则请落到这四档之一，不要写 2.0、2.05、2.1。
+- 版式：`--shell` 1320 / `--gutter` clamp(20px, 4.6vw, 74px) / `--measure` 640。所有区块共用同一左边缘，新增区块不要另设宽度。
+- **行宽一律用 `em`，不要用 `ch`。** 中文排版里 `1em` 才等于一个汉字宽；`ch` 量的是数字 "0" 的宽度，在中文字体里只有半个字，写成 `40ch` 实际每行只有 19 字，会把正文压成窄栏。当前各处的 `N em` 即"每行 N 个汉字"，正文 26–32em、说明 22–26em、导语 18–20em。
+- 对比度：`--muted`（#5a6f69）对纸色为 4.7:1，是次级文字的下限，不要再调浅。深色段落（`--film` / `--green-deep`）上的文字用 `rgba(233,238,230,.72)` 起步，不要低于 `.68`。
 
-分享卡片与图标由脚本生成，输出在 `dist/assets/brand/`：
-
-```powershell
-python scripts/make-brand-assets.py
-```
+分享卡片已按真实作品封面重新制作，输出在 `dist/assets/brand/og-cover.jpg`（1200 × 630）。如需调整，直接替换该文件即可；`make-brand-assets.py` 中的旧水彩版脚本不再用于当前封面。
 
 ## 字体与图片
 
@@ -70,7 +101,7 @@ python scripts/make-brand-assets.py
 python scripts/prepare-assets.py
 ```
 
-该维护脚本需要 Pillow、fontTools 和 Brotli。普通预览、编辑与发布不需要 Python。原始字体与五张生成插画保留于 `source-assets/`，网站实际使用本地压缩 WebP。新增声音静物提供 1536px 与 768px 两种尺寸。插画使用内置 imagegen 生成，提示词与素材用途见 `source-assets/art-prompts.md`，不代表实际剧照或排练照片。
+该维护脚本需要 Pillow、fontTools 和 Brotli。普通预览、编辑与发布不需要 Python。原始字体与五张生成插画保留于 `source-assets/`，网站实际使用本地压缩 WebP。新增声音静物提供 1536px 与 768px 两种尺寸。插画使用内置 imagegen 生成，提示词与素材用途见 `source-assets/art-prompts.md`，不代表实际剧照或排练照片。仓库外 `素材/` 目录为本次改版参考图，不参与站点构建。
 
 ## 检查与部署文件
 
@@ -118,7 +149,7 @@ Sites 只有「保存版本」和「部署版本」两步，没有文件上传�
 
 ### 其他托管平台
 
-如果要换用 Cloudflare Pages、Netlify、Vercel 等支持文件上传的平台，可上传 **dist 内的全部内容**，确保 `index.html` 位于上传目录根层；不要上传 `source-assets`、测试或预览服务器。`zhangyi-portfolio-site.zip` 是 `dist` 的打包结果（17 个文件，`index.html` 位于根层），仅用于这类平台或留档，改动 `dist` 后需重新打包（条目分隔符统一为 `/`）：
+如果要换用 Cloudflare Pages、Netlify、Vercel 等支持文件上传的平台，可上传 **dist 内的全部内容**，确保 `index.html` 位于上传目录根层；不要上传 `source-assets`、测试或预览服务器。`zhangyi-portfolio-site.zip` 是 `dist` 的打包结果（`index.html` 位于根层），仅用于这类平台或留档，改动 `dist` 后需重新打包（条目分隔符统一为 `/`）：
 
 ```powershell
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -134,4 +165,4 @@ $zip.Dispose()
 
 上传后在浏览器硬刷新确认新首页生效。目标平台上的旧文件若与新包不同名（例如替换图片后改了文件名），需一并删除。
 
-当前首版的剧本、文章、实践及声音条目均为明确标注的示例。真实音视频播放、微信及大陆公网访问需要有实际素材和公开地址后验收。本地预览网址只在运行服务器的电脑上可用，不是公开分享链接。
+当前收录的 8 件作品均为真实作品：剧本 PDF、作品封面、两段音频与一部 720p 短片已接入。微信及大陆公网访问的稳定性取决于网络环境，未做实测。本地预览网址只在运行服务器的电脑上可用，不是公开分享链接。

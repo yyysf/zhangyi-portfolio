@@ -75,7 +75,7 @@ def cover() -> Image.Image:
         font=sub_font,
         fill=MUTED,
     )
-    draw.text((x, 394), "舞台实践 · 声音时间", font=sub_font, fill=MUTED)
+    draw.text((x, 394), "舞台实践 · 声音实践", font=sub_font, fill=MUTED)
     return card
 
 
