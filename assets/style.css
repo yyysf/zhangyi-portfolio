@@ -3390,9 +3390,9 @@ body[data-category="scripts"] .work-header{
   .about-copy > p:not(.about-lead):not(.about-sign){line-height:1.9;margin-top:14px}
   .about-meta{margin-top:24px}
   .about-sign{font-size:34px;margin-top:30px}
-  .about-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:34px}
-  .about-strip img{aspect-ratio:1/1}
-  .about-strip figcaption{display:none}
+  .about-strip{grid-template-columns:1fr;gap:14px;margin-top:34px}
+  .about-strip img{aspect-ratio:4/3}
+  .about-strip figcaption{display:block;padding:10px 12px 11px}
   .room-title{font-size:22px}
   .room{padding-block:15px}
   .room-preview{margin-top:18px}
