@@ -948,6 +948,41 @@ function workGallery(work) {
   return wrap;
 }
 
+function workBanner(work) {
+  const banner = element('header', 'work-banner');
+  banner.append(element('div', 'work-banner__wash'));
+  const inner = element('div', 'work-banner__inner');
+  const kicker = element('div', 'work-banner__kicker');
+  kicker.append(element('span', '', categoryNames[work.category] || work.categoryLabel || '作品'));
+  if (work.role) kicker.append(element('span', '', work.role));
+  if (work.award) kicker.append(element('span', 'work-banner__award', '获奖作品'));
+  inner.append(kicker);
+  inner.append(element('h1', 'work-banner__title', work.title));
+  if (work.summary) inner.append(element('p', 'work-banner__lead', work.summary));
+  const meta = element('div', 'work-banner__meta');
+  if (work.year) meta.append(element('span', '', work.year));
+  if (work.media?.caption) meta.append(element('span', '', work.media.caption.split('·').pop().trim()));
+  meta.append(element('span', '', wordCount(work)), element('span', '', `阅读约 ${readingTime(work)} 分钟`));
+  inner.append(meta);
+  if (work.demo) inner.append(element('p', 'work-banner__note', '本页为示例内容，用于演示作品排版与阅读体验，不代表张艺的真实创作成果。'));
+  banner.append(inner);
+
+  if (safeUrl(work.image)) {
+    const figure = element('figure', 'work-banner__cover');
+    const button = element('button', 'image-toggle');
+    button.type = 'button';
+    button.dataset.lightboxSrc = safeUrl(work.image);
+    button.dataset.lightboxCaption = work.imageCaption || `${work.title} · 配图`;
+    button.dataset.lightboxAlt = work.imageAlt || work.title;
+    button.setAttribute('aria-label', `放大查看${work.title}封面`);
+    button.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), 460px'));
+    figure.append(button);
+    figure.append(element('figcaption', 'work-banner__caption', `${work.imageCaption || '作品配图'} · 点击放大`));
+    banner.append(figure);
+  }
+  return banner;
+}
+
 function renderWork(work) {
   document.body.dataset.category = work.category;
   const main = $('#main');
@@ -965,45 +1000,12 @@ function renderWork(work) {
   top.append(back, element('span', '', `第 ${String(workIndex + 1).padStart(2, '0')} 篇 / 共 ${String(works.length).padStart(2, '0')} 篇`));
   container.append(top);
 
+  container.append(workBanner(work));
+
   const layout = element('div', 'work-layout');
   const toc = element('aside', 'work-toc');
   toc.append(element('p', '', '本文目录'));
   const article = element('article', 'work-article');
-  const header = element('header', 'work-header');
-  header.append(metadata(work));
-  header.append(element('h1', '', work.title));
-  if (work.summary) header.append(element('p', 'work-lead', work.summary));
-  const headMeta = element('div', 'work-head-meta');
-  headMeta.append(element('span', '', `${categoryNames[work.category] || work.categoryLabel}`));
-  if (work.role) headMeta.append(element('span', '', work.role));
-  if (work.year) headMeta.append(element('span', '', work.year));
-  if (work.media?.caption) {
-    headMeta.append(element('span', '', work.media.caption.split('·').pop().trim()));
-  }
-  headMeta.append(element('span', '', `${wordCount(work)} 字`), element('span', '', `阅读约 ${readingTime(work)} 分钟`));
-  header.append(headMeta);
-  if (work.award) {
-    const award = element('p', 'work-award');
-    award.append(element('span', '', '获奖'), document.createTextNode(work.award));
-    header.append(award);
-  }
-  if (work.demo) header.append(element('p', 'work-demo-note', '本页为示例内容，用于演示作品排版与阅读体验，不代表张艺的真实创作成果。'));
-  article.append(header);
-
-  if (safeUrl(work.image)) {
-    const figure = element('figure', `work-figure ${ratioClass(work)}`);
-    const button = element('button', 'image-toggle');
-    button.type = 'button';
-    button.dataset.lightboxSrc = safeUrl(work.image);
-    button.dataset.lightboxCaption = work.imageCaption || `${work.title} · 配图`;
-    button.dataset.lightboxAlt = work.imageAlt || work.title;
-    button.setAttribute('aria-label', `放大查看${work.title}完整配图`);
-    button.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), 900px'));
-    const figcaption = element('figcaption', 'illustration-caption');
-    figcaption.append(element('span', '', work.imageCaption || '作品配图'), element('span', 'image-hint', '点击图片放大'));
-    figure.append(button, figcaption);
-    article.append(figure);
-  }
 
   const reading = element('div', 'work-reading');
   const media = mediaBlock(work);
@@ -1013,7 +1015,11 @@ function renderWork(work) {
     block.id = slug(index);
     if (section.blocks?.length) block.classList.add('reading-section--script');
     if (section.title) {
-      block.append(element('h2', 'reveal', section.title));
+      const heading = element('h2', 'reveal', section.title);
+      if (!/^[一二三四五六七八九十0-9]/.test(section.title)) {
+        heading.prepend(element('span', 'reading-section__no', String(index + 1).padStart(2, '0')));
+      }
+      block.append(heading);
       const tocLink = element('a', '', section.title);
       tocLink.href = `#${slug(index)}`;
       toc.append(tocLink);
