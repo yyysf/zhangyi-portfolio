@@ -85,6 +85,13 @@ function image(work, eager = false, sizes = '(max-width: 767px) calc(100vw - 40p
   img.decoding = 'async';
   return img;
 }
+function hook(work) {
+  const text = work.summary || '';
+  const cut = text.search(/[。；！？]/);
+  let line = cut > 0 ? text.slice(0, cut + 1) : text;
+  if (line.length > 34) line = `${line.slice(0, 34)}…`;
+  return line;
+}
 function readingTime(work) {
   const text = (work.sections || []).map(section => [
     ...(section.paragraphs || []),
@@ -98,7 +105,7 @@ function wordCount(work) {
     ...(section.blocks || []).map(block => (block.speaker || '') + (block.text || ''))
   ].join('')).join('');
   const count = text.replace(/\s/g, '').length;
-  return count >= 10000 ? `全文约 ${(count / 10000).toFixed(1)} 万` : `全文 ${count}`;
+  return count >= 10000 ? `全文约 ${(count / 10000).toFixed(1)} 万字` : `全文 ${count} 字`;
 }
 function firstSentence(text) {
   if (!text) return '';
@@ -120,11 +127,24 @@ function updateScrollUI() {
     header.classList.toggle('is-scrolled', y > 24);
     const probe = header.offsetHeight * .55;
     let onDark = false;
-    $$('.films, .thanks, .work-banner').forEach(section => {
+    $$('.films, .thanks, .pause, .work-banner').forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= probe && rect.bottom >= probe) onDark = true;
     });
     header.classList.toggle('is-on-dark', onDark);
+  }
+  updateSceneNav();
+  if (!reduceMotion) {
+    const mid = viewport / 2;
+    $$('.chapter-plate__bg img').forEach(img => {
+      const plate = img.closest('.chapter-plate');
+      if (!plate) return;
+      const rect = plate.getBoundingClientRect();
+      if (rect.bottom < -160 || rect.top > viewport + 160) return;
+      const progress = (rect.top + rect.height / 2 - mid) / viewport;
+      const offset = Math.max(-26, Math.min(26, progress * -46));
+      img.style.setProperty('--pl-y', `${offset.toFixed(1)}px`);
+    });
   }
   const bar = $('#scroll-progress-bar');
   if (bar) bar.style.transform = `scaleX(${ratio})`;
@@ -560,43 +580,14 @@ function renderScripts(works, container) {
     const headingLink = workLink(work, work.title, '');
     headingLink.lastElementChild.remove();
     heading.append(headingLink);
-    body.append(heading, element('p', 'script-summary', work.summary), scriptExcerpt(work), workLink(work, '阅读完整剧本'));
-
-    const pages = Array.isArray(work.pagePreviews)
-      ? work.pagePreviews.filter(page => safeUrl(page.image)).slice(0, 2)
-      : [];
-    if (pages.length) {
-      const strip = element('figure', 'script-pages');
-      const frame = element('div', 'script-pages__strip');
-      pages.forEach((page, pageIndex) => {
-        const thumb = element('button', 'script-page');
-        thumb.type = 'button';
-        thumb.dataset.lightboxSrc = safeUrl(page.image);
-        thumb.dataset.lightboxCaption = `${work.title} · ${page.caption || `原页 ${pageIndex + 1}`}`;
-        thumb.dataset.lightboxAlt = page.imageAlt || `${work.title}剧本原页`;
-        thumb.setAttribute('aria-label', `放大查看${work.title}剧本原页 ${pageIndex + 1}`);
-        const thumbImage = element('img');
-        thumbImage.src = safeUrl(page.imageSmall) || thumb.dataset.lightboxSrc;
-        thumbImage.alt = page.imageAlt || `${work.title}剧本原页`;
-        thumbImage.width = 640;
-        thumbImage.height = 853;
-        thumbImage.loading = 'lazy';
-        thumbImage.decoding = 'async';
-        thumb.append(thumbImage);
-        frame.append(thumb);
-      });
-      strip.append(frame);
-      const caption = element('figcaption', 'script-pages__caption');
-      caption.append(element('span', '', `剧本原页 · 共 ${work.pageCount || pages.length} 页`));
-      if (safeUrl(work.pdf)) {
-        const download = element('a', 'script-pages__pdf', '下载 PDF ↗');
-        download.href = safeUrl(work.pdf);
-        download.setAttribute('download', '');
-        caption.append(download);
-      }
-      strip.append(caption);
-      body.append(strip);
+    body.append(heading, element('p', 'script-hook', work.hook || hook(work)));
+    if (work.pullQuote) {
+      const pull = element('blockquote', 'script-pull');
+      pull.append(element('p', '', work.pullQuote));
+      if (work.pullFrom) pull.append(element('cite', '', work.pullFrom));
+      body.append(pull);
     }
+    body.append(workLink(work, '读全文'));
 
     if (hasImage) {
       const figure = element('figure', `script-media reveal-figure ${ratioClass(work)}`);
@@ -929,6 +920,37 @@ function returnLink(category, className = 'line-link') {
   return link;
 }
 
+function pagePreviewBlock(work) {
+  const pages = Array.isArray(work.pagePreviews)
+    ? work.pagePreviews.filter(page => safeUrl(page.image)).slice(0, 2)
+    : [];
+  if (!pages.length) return null;
+  const strip = element('figure', 'script-pages script-pages--work');
+  const frame = element('div', 'script-pages__strip');
+  pages.forEach((page, pageIndex) => {
+    const thumb = element('button', 'script-page');
+    thumb.type = 'button';
+    thumb.dataset.lightboxSrc = safeUrl(page.image);
+    thumb.dataset.lightboxCaption = `${work.title} · ${page.caption || `原页 ${pageIndex + 1}`}`;
+    thumb.dataset.lightboxAlt = page.imageAlt || `${work.title}剧本原页`;
+    thumb.setAttribute('aria-label', `放大查看${work.title}剧本原页 ${pageIndex + 1}`);
+    const thumbImage = element('img');
+    thumbImage.src = safeUrl(page.imageSmall) || thumb.dataset.lightboxSrc;
+    thumbImage.alt = page.imageAlt || `${work.title}剧本原页`;
+    thumbImage.width = 640;
+    thumbImage.height = 853;
+    thumbImage.loading = 'lazy';
+    thumbImage.decoding = 'async';
+    thumb.append(thumbImage);
+    frame.append(thumb);
+  });
+  strip.append(frame);
+  const caption = element('figcaption', 'script-pages__caption');
+  caption.append(element('span', '', `剧本原页 · 共 ${work.pageCount || pages.length} 页 · 点击放大`));
+  strip.append(caption);
+  return strip;
+}
+
 function workGallery(work) {
   if (!Array.isArray(work.gallery) || !work.gallery.length) return null;
   const wrap = element('div', 'work-gallery');
@@ -941,11 +963,112 @@ function workGallery(work) {
     button.dataset.lightboxAlt = item.imageAlt || '';
     button.setAttribute('aria-label', `放大查看${item.caption || '图片'}`);
     button.append(image({ ...item, title: item.caption || work.title }, false, '(max-width: 767px) calc(100vw - 40px), 500px'));
-    const caption = element('figcaption', 'illustration-caption', item.caption || '');
+    const caption = element('figcaption', 'illustration-caption');
+    caption.append(element('span', 'caption-no', `图 ${String(wrap.children.length + 1).padStart(2, '0')}`));
+    if (item.caption) caption.append(document.createTextNode(item.caption));
     figure.append(button, caption);
     wrap.append(figure);
   });
   return wrap;
+}
+
+const FONT_SIZES = { sm: '15px', md: '17px', lg: '19px' };
+const FONT_LABELS = [['sm', '小'], ['md', '中'], ['lg', '大']];
+
+function fontSizeControl() {
+  const group = element('div', 'font-size');
+  group.setAttribute('role', 'group');
+  group.setAttribute('aria-label', '正文字号');
+  FONT_LABELS.forEach(([key, label]) => {
+    const button = element('button', '', label);
+    button.type = 'button';
+    button.dataset.size = key;
+    button.setAttribute('aria-pressed', 'false');
+    group.append(button);
+  });
+  return group;
+}
+
+function applyFontSize(key) {
+  const size = FONT_SIZES[key];
+  if (!size) return;
+  document.documentElement.style.setProperty('--fs-body', size);
+  $$('.font-size button').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.size === key));
+  });
+}
+
+function setupFontSize() {
+  const group = $('.font-size');
+  if (!group) return;
+  let saved = null;
+  try { saved = localStorage.getItem('zy-font-size'); } catch { /* storage optional */ }
+  if (saved && FONT_SIZES[saved]) applyFontSize(saved);
+  else $$('.font-size button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.size === 'md')));
+  group.addEventListener('click', event => {
+    const button = event.target.closest('button[data-size]');
+    if (!button) return;
+    applyFontSize(button.dataset.size);
+    try { localStorage.setItem('zy-font-size', button.dataset.size); } catch { /* ignore */ }
+  });
+}
+
+function buildSceneNav(scenes, toc) {
+  if (!scenes || scenes.length < 3) return;
+  const groups = new Map();
+  scenes.forEach(scene => {
+    if (!groups.has(scene.sectionIndex)) groups.set(scene.sectionIndex, []);
+    groups.get(scene.sectionIndex).push(scene);
+  });
+  groups.forEach((list, sectionIndex) => {
+    const sectionLink = $(`a[href="#${slug(sectionIndex)}"]`, toc);
+    if (!sectionLink) return;
+    const nav = element('ol', 'toc-scenes');
+    nav.dataset.count = String(list.length);
+    list.forEach(scene => {
+      const item = element('li');
+      const link = element('a', '', scene.text);
+      link.href = `#${scene.id}`;
+      link.dataset.scene = scene.id;
+      item.append(link);
+      nav.append(item);
+    });
+    sectionLink.after(nav);
+    const label = $('p', toc);
+    if (label && !$('.toc-scenes-readout', label)) {
+      label.append(element('span', 'toc-scenes-readout', `共 ${scenes.length} 场`));
+    }
+  });
+}
+
+function updateSceneNav() {
+  const links = $$('[data-scene]');
+  if (!links.length) return;
+  const probe = innerHeight * 0.34;
+  let active = null;
+  links.forEach(link => {
+    const target = document.getElementById(link.dataset.scene);
+    if (target && target.getBoundingClientRect().top <= probe) active = link;
+  });
+  if (active === updateSceneNav.last) return;
+  updateSceneNav.last = active;
+  links.forEach(link => link.classList.toggle('is-active', link === active));
+  const readout = $('.toc-scenes-readout');
+  if (readout && active) {
+    const total = links.length;
+    const index = links.indexOf(active) + 1;
+    readout.textContent = `${index} / ${total} 场`;
+  }
+  if (active) {
+    const list = active.closest('.toc-scenes');
+    if (list) {
+      const rect = active.getBoundingClientRect();
+      const listRect = list.getBoundingClientRect();
+      if (rect.top < listRect.top || rect.bottom > listRect.bottom) {
+        list.scrollTop += rect.top - listRect.top - listRect.height / 2;
+      }
+    }
+  }
 }
 
 function workBanner(work) {
@@ -963,6 +1086,7 @@ function workBanner(work) {
   if (work.year) meta.append(element('span', '', work.year));
   if (work.media?.caption) meta.append(element('span', '', work.media.caption.split('·').pop().trim()));
   meta.append(element('span', '', wordCount(work)), element('span', '', `阅读约 ${readingTime(work)} 分钟`));
+  meta.append(fontSizeControl());
   inner.append(meta);
   if (work.demo) inner.append(element('p', 'work-banner__note', '本页为示例内容，用于演示作品排版与阅读体验，不代表张艺的真实创作成果。'));
   banner.append(inner);
@@ -1027,6 +1151,7 @@ function renderWork(work) {
   const article = element('article', 'work-article');
 
   const reading = element('div', 'work-reading');
+  const sceneNav = [];
   const media = work.media?.type === 'video' && safeUrl(work.media.src) ? null : mediaBlock(work);
   if (media) reading.append(media);
   (work.sections || []).forEach((section, index) => {
@@ -1052,13 +1177,21 @@ function renderWork(work) {
       } else if (item.type === 'subhead') {
         block.append(element('h3', 'reading-subhead', item.text));
       } else {
-        block.append(element('p', item.type === 'scene' ? 'script-scene' : '', item.text));
+        const paragraph = element('p', item.type === 'scene' ? 'script-scene' : '', item.text);
+        if (item.type === 'scene') {
+          paragraph.id = `scene-${sceneNav.length + 1}`;
+          sceneNav.push({ id: paragraph.id, text: item.text, sectionIndex: index });
+        }
+        block.append(paragraph);
       }
     });
     reading.append(block);
   });
+  buildSceneNav(sceneNav, toc);
   const gallery = workGallery(work);
   if (gallery) reading.append(gallery);
+  const pages = pagePreviewBlock(work);
+  if (pages) reading.append(pages);
   if (safeUrl(work.pdf)) {
     const pdf = element('a', 'line-link download-link', '下载 PDF 文件');
     pdf.href = safeUrl(work.pdf);
@@ -1282,5 +1415,6 @@ setupRandomWork();
 setupSoundPreview();
 setupCopyLink();
 setupPageTransitions();
+setupFontSize();
 if (isHome) setupReturnTracking();
 loadContent();
