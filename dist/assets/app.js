@@ -120,7 +120,7 @@ function updateScrollUI() {
     header.classList.toggle('is-scrolled', y > 24);
     const probe = header.offsetHeight * .55;
     let onDark = false;
-    $$('.films, .thanks').forEach(section => {
+    $$('.films, .thanks, .work-banner').forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= probe && rect.bottom >= probe) onDark = true;
     });
@@ -971,13 +971,32 @@ function workBanner(work) {
     const figure = element('figure', 'work-banner__cover');
     const button = element('button', 'image-toggle');
     button.type = 'button';
-    button.dataset.lightboxSrc = safeUrl(work.image);
-    button.dataset.lightboxCaption = work.imageCaption || `${work.title} · 配图`;
-    button.dataset.lightboxAlt = work.imageAlt || work.title;
-    button.setAttribute('aria-label', `放大查看${work.title}封面`);
-    button.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), 460px'));
+    const video = work.media?.type === 'video' ? safeUrl(work.media.src) : null;
+    if (video) {
+      button.dataset.videoSrc = video;
+      button.dataset.videoPoster = safeUrl(work.image) || '';
+      button.classList.add('work-banner__play');
+      button.setAttribute('aria-label', `播放《${work.title}》`);
+      button.append(element('span', 'banner-play', '播放作品'));
+    } else {
+      button.dataset.lightboxSrc = safeUrl(work.image);
+      button.dataset.lightboxCaption = work.imageCaption || `${work.title} · 配图`;
+      button.dataset.lightboxAlt = work.imageAlt || work.title;
+      button.setAttribute('aria-label', `放大查看${work.title}封面`);
+    }
+    const bannerImage = element('img');
+    bannerImage.src = safeUrl(work.image);
+    bannerImage.alt = work.imageAlt || `${work.title}封面`;
+    bannerImage.width = Number(work.imageWidth) || 1200;
+    bannerImage.height = Number(work.imageHeight) || 1600;
+    bannerImage.loading = 'eager';
+    bannerImage.decoding = 'async';
+    button.append(bannerImage);
     figure.append(button);
-    figure.append(element('figcaption', 'work-banner__caption', `${work.imageCaption || '作品配图'} · 点击放大`));
+    const captionText = video
+      ? `${work.imageCaption || '作品静帧'} · 点击播放`
+      : `${work.imageCaption || '作品配图'} · 点击放大`;
+    figure.append(element('figcaption', 'work-banner__caption', captionText));
     banner.append(figure);
   }
   return banner;
@@ -1008,7 +1027,7 @@ function renderWork(work) {
   const article = element('article', 'work-article');
 
   const reading = element('div', 'work-reading');
-  const media = mediaBlock(work);
+  const media = work.media?.type === 'video' && safeUrl(work.media.src) ? null : mediaBlock(work);
   if (media) reading.append(media);
   (work.sections || []).forEach((section, index) => {
     const block = element('section', 'reading-section');
