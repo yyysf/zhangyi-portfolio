@@ -868,7 +868,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   inset:0;
   z-index:1;
   background:var(--room-accent,transparent);
-  opacity:.15;
+  opacity:.12;
   mix-blend-mode:multiply;
   pointer-events:none;
 }
@@ -914,14 +914,14 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   left:0;
   right:0;
   bottom:0;
-  height:3px;
+  height:2px;
   background:var(--room-accent,var(--accent));
-  opacity:.85;
+  opacity:.6;
   z-index:2;
 }
 .chapter-plate__copy{
   grid-column:2;
-  border-top:2px solid var(--room-accent,var(--accent));
+  border-top:1px solid var(--room-accent,var(--accent));
   padding-top:16px;
 }
 .chapter-plate__copy h2{
