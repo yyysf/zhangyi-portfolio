@@ -88,9 +88,17 @@ function image(work, eager = false, sizes = '(max-width: 767px) calc(100vw - 40p
 function readingTime(work) {
   const text = (work.sections || []).map(section => [
     ...(section.paragraphs || []),
-    ...(section.blocks || []).map(block => block.text || '')
+    ...(section.blocks || []).map(block => (block.speaker || '') + (block.text || ''))
   ].join('')).join('');
   return Math.max(1, Math.round(text.replace(/\s/g, '').length / 420));
+}
+function wordCount(work) {
+  const text = (work.sections || []).map(section => [
+    ...(section.paragraphs || []),
+    ...(section.blocks || []).map(block => (block.speaker || '') + (block.text || ''))
+  ].join('')).join('');
+  const count = text.replace(/\s/g, '').length;
+  return count >= 10000 ? `全文约 ${(count / 10000).toFixed(1)} 万` : `全文 ${count}`;
 }
 function firstSentence(text) {
   if (!text) return '';
@@ -498,6 +506,21 @@ function setupSoundPreview() {
 /* ---------- 首页渲染 ---------- */
 
 function scriptExcerpt(work) {
+  if (Array.isArray(work.homeExcerpt) && work.homeExcerpt.length) {
+    const curated = element('div', 'script-excerpt');
+    work.homeExcerpt.forEach(item => {
+      if (item.type === 'dialogue') {
+        const dialogue = element('dl', 'script-dialogue');
+        dialogue.append(element('dt', '', item.speaker || '人物'), element('dd', '', item.text));
+        curated.append(dialogue);
+      } else if (item.type === 'scene') {
+        curated.append(element('p', 'script-scene-line', item.text));
+      } else {
+        curated.append(element('p', 'script-action', item.text));
+      }
+    });
+    return curated;
+  }
   const blocks = (work.sections || []).flatMap(section => section.blocks || []);
   const start = blocks.findIndex(block => block.type === 'scene');
   const fromScene = start >= 0 ? blocks.slice(start) : blocks;
@@ -956,9 +979,8 @@ function renderWork(work) {
   if (work.year) headMeta.append(element('span', '', work.year));
   if (work.media?.caption) {
     headMeta.append(element('span', '', work.media.caption.split('·').pop().trim()));
-  } else {
-    headMeta.append(element('span', '', work.pdf ? '剧本全文' : `阅读约 ${readingTime(work)} 分钟`));
   }
+  headMeta.append(element('span', '', `${wordCount(work)} 字`), element('span', '', `阅读约 ${readingTime(work)} 分钟`));
   header.append(headMeta);
   if (work.award) {
     const award = element('p', 'work-award');
@@ -989,6 +1011,7 @@ function renderWork(work) {
   (work.sections || []).forEach((section, index) => {
     const block = element('section', 'reading-section');
     block.id = slug(index);
+    if (section.blocks?.length) block.classList.add('reading-section--script');
     if (section.title) {
       block.append(element('h2', 'reveal', section.title));
       const tocLink = element('a', '', section.title);
@@ -1001,6 +1024,8 @@ function renderWork(work) {
         const dialogue = element('dl', 'dialogue');
         dialogue.append(element('dt', '', item.speaker || '人物'), element('dd', '', item.text));
         block.append(dialogue);
+      } else if (item.type === 'subhead') {
+        block.append(element('h3', 'reading-subhead', item.text));
       } else {
         block.append(element('p', item.type === 'scene' ? 'script-scene' : '', item.text));
       }
@@ -1010,7 +1035,7 @@ function renderWork(work) {
   const gallery = workGallery(work);
   if (gallery) reading.append(gallery);
   if (safeUrl(work.pdf)) {
-    const pdf = element('a', 'line-link download-link', '下载剧本全文');
+    const pdf = element('a', 'line-link download-link', '下载 PDF 文件');
     pdf.href = safeUrl(work.pdf);
     pdf.setAttribute('download', '');
     reading.append(pdf);
