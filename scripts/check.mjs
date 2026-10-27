@@ -23,7 +23,7 @@ for (const work of data.works) {
   }
 }
 const home = await load('index.html');
-assert.equal((home.match(/<section\b/g) || []).length, 8, 'Homepage must have eight sections');
+assert.equal((home.match(/<section\b/g) || []).length, 9, 'Homepage must have nine sections');
 for (const id of ['home', 'about', 'scripts', 'essays', 'films', 'stage', 'sound', 'thanks']) assert.ok(home.includes(`id="${id}"`), `Missing section: ${id}`);
 for (const text of ['我叫张艺。', '一闪而过的东西——', '被听见、被看见。']) assert.ok(home.includes(text), `Missing exact copy: ${text}`);
 for (const path of ['index.html', 'work.html', 'assets/style.css']) {
