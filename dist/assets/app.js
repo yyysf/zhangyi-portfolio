@@ -126,8 +126,9 @@ function updateScrollUI() {
   if (header) {
     header.classList.toggle('is-scrolled', y > 24);
     const probe = header.offsetHeight * .55;
+    // 深色块统一挂 data-dark，页眉反色只认这一个标记
     let onDark = false;
-    $$('.showcase-group--films, .thanks, .pause, .work-banner').forEach(section => {
+    $$('[data-dark]').forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= probe && rect.bottom >= probe) onDark = true;
     });
@@ -1106,6 +1107,7 @@ function updateSceneNav() {
 
 function workBanner(work) {
   const banner = element('header', 'work-banner');
+  banner.dataset.dark = '';
   banner.append(element('div', 'work-banner__wash'));
   const inner = element('div', 'work-banner__inner');
   const kicker = element('div', 'work-banner__kicker');

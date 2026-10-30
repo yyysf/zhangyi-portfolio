@@ -134,11 +134,11 @@
       </div>
       <div class="hero-foot">
         <nav class="hero-index" aria-label="作品分类索引">
-          <a href="#scripts"><b>01</b><span>原创剧本</span></a>
-          <a href="#essays"><b>02</b><span>影评随笔</span></a>
-          <a href="#papers"><b>03</b><span>研读札记</span></a>
-          <a href="#sound"><b>04</b><span>声音时间</span></a>
-          <a href="#showcase"><b>05</b><span>展演影像</span></a>
+          <a href="#scripts" data-room="scripts"><i class="room-bar" aria-hidden="true"></i><span>原创剧本</span></a>
+          <a href="#essays" data-room="essays"><i class="room-bar" aria-hidden="true"></i><span>影评随笔</span></a>
+          <a href="#papers" data-room="papers"><i class="room-bar" aria-hidden="true"></i><span>研读札记</span></a>
+          <a href="#sound" data-room="sound"><i class="room-bar" aria-hidden="true"></i><span>声音时间</span></a>
+          <a href="#showcase" data-room="showcase"><i class="room-bar" aria-hidden="true"></i><span>展演影像</span></a>
         </nav>
         <p class="hero-location">浙江 · 绍兴</p>
         <a class="scroll-cue" href="#about" aria-label="向下浏览">
@@ -176,20 +176,20 @@
           <div class="room-index reveal" data-room-index>
             <p class="room-index__hint"><span aria-hidden="true">↳</span> 悬停或轻触，预览房间</p>
             <div class="room-list">
-              <a class="room is-active" href="#scripts" data-preview="assets/works/qiutian-small.webp" data-preview-caption="剧本 · 她的秋">
-                <span class="room-no">01</span><span class="room-title">原创剧本</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room is-active" href="#scripts" data-room="scripts" data-preview="assets/works/qiutian-small.webp" data-preview-caption="剧本 · 她的秋">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">原创剧本</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#essays" data-preview="assets/works/putao-small.webp" data-preview-caption="随笔 · 我观葡萄">
-                <span class="room-no">02</span><span class="room-title">影评随笔</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#essays" data-room="essays" data-preview="assets/works/putao-small.webp" data-preview-caption="随笔 · 我观葡萄">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">影评随笔</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#papers" data-preview="assets/works/caoyu-small.webp" data-preview-caption="研读札记 · 气味叙事">
-                <span class="room-no">03</span><span class="room-title">研读札记</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#papers" data-room="papers" data-preview="assets/works/caoyu-small.webp" data-preview-caption="研读札记 · 气味叙事">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">研读札记</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#sound" data-preview="assets/works/daotian-small.webp" data-preview-caption="声音 · 今晚，稻田没有睡">
-                <span class="room-no">04</span><span class="room-title">声音时间</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#sound" data-room="sound" data-preview="assets/works/daotian-small.webp" data-preview-caption="声音 · 今晚，稻田没有睡">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">声音时间</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#showcase" data-preview="assets/works/tree-poster-small.webp" data-preview-caption="展演 · 作为树的形象">
-                <span class="room-no">05</span><span class="room-title">展演影像</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#showcase" data-room="showcase" data-preview="assets/works/tree-poster-small.webp" data-preview-caption="展演 · 作为树的形象">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">展演影像</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
             </div>
             <figure class="room-preview reveal-figure" aria-hidden="true">
@@ -217,19 +217,20 @@
       </div>
     </section>
 
-    <section class="section section--plated scripts" id="scripts" aria-labelledby="scripts-title">
-      <div class="chapter-plate reveal">
-        <div class="chapter-plate__bg" aria-hidden="true">
+    <section class="section section--spined scripts" id="scripts" aria-labelledby="scripts-title">
+      <div class="spine">
+        <div class="spine__bg" aria-hidden="true">
           <img src="assets/images/platform.webp" srcset="assets/images/platform-small.webp 768w, assets/images/platform.webp 1536w" sizes="100vw" alt="" width="1536" height="1024" loading="lazy" decoding="async">
         </div>
-        <span class="chapter-plate__char" aria-hidden="true">文</span>
-        <div class="chapter-plate__inner shell">
-          <span class="chapter-plate__no">02</span>
-          <div class="chapter-plate__copy">
-            <p class="eyebrow">原创剧本</p>
+        <span class="spine__char" aria-hidden="true">文</span>
+        <div class="spine__inner shell">
+          <span class="spine__rule" aria-hidden="true"></span>
+          <span class="spine__no" aria-hidden="true">02</span>
+          <span class="spine__name" aria-hidden="true">原创剧本</span>
+          <div class="spine__copy">
             <h2 id="scripts-title">把故事写在纸上。</h2>
+            <p class="spine__side">两个剧本：一个关于一张钞票，一个关于一整个秋天。</p>
           </div>
-          <p class="chapter-side">两个剧本。一个关于一张钞票，<br>一个关于一整个秋天。</p>
         </div>
       </div>
       <div class="shell">
@@ -237,19 +238,20 @@
       </div>
     </section>
 
-    <section class="section section--plated essays" id="essays" aria-labelledby="essays-title">
-      <div class="chapter-plate reveal">
-        <div class="chapter-plate__bg" aria-hidden="true">
+    <section class="section section--spined essays" id="essays" aria-labelledby="essays-title">
+      <div class="spine">
+        <div class="spine__bg" aria-hidden="true">
           <img src="assets/images/river.webp" srcset="assets/images/river-small.webp 768w, assets/images/river.webp 1536w" sizes="100vw" alt="" width="1536" height="1024" loading="lazy" decoding="async">
         </div>
-        <span class="chapter-plate__char" aria-hidden="true">影</span>
-        <div class="chapter-plate__inner shell">
-          <span class="chapter-plate__no">03</span>
-          <div class="chapter-plate__copy">
-            <p class="eyebrow">影评随笔</p>
+        <span class="spine__char" aria-hidden="true">影</span>
+        <div class="spine__inner shell">
+          <span class="spine__rule" aria-hidden="true"></span>
+          <span class="spine__no" aria-hidden="true">03</span>
+          <span class="spine__name" aria-hidden="true">影评随笔</span>
+          <div class="spine__copy">
             <h2 id="essays-title">看过的光，留在身上。</h2>
+            <p class="spine__side">一篇电影评论，一篇获奖随笔。观看之后，文字留下来。</p>
           </div>
-          <p class="chapter-side">一篇电影评论，一篇获奖随笔。<br>观看之后，文字留下来。</p>
         </div>
       </div>
       <div class="shell">
@@ -257,19 +259,20 @@
       </div>
     </section>
 
-    <section class="section section--plated papers" id="papers" aria-labelledby="papers-title">
-      <div class="chapter-plate reveal">
-        <div class="chapter-plate__bg" aria-hidden="true">
+    <section class="section section--spined papers" id="papers" aria-labelledby="papers-title">
+      <div class="spine">
+        <div class="spine__bg" aria-hidden="true">
           <img src="assets/images/reading.webp" srcset="assets/images/reading-small.webp 768w, assets/images/reading.webp 1536w" sizes="100vw" alt="" width="1536" height="948" loading="lazy" decoding="async">
         </div>
-        <span class="chapter-plate__char" aria-hidden="true">研</span>
-        <div class="chapter-plate__inner shell">
-          <span class="chapter-plate__no">04</span>
-          <div class="chapter-plate__copy">
-            <p class="eyebrow">文学与戏剧研读札记</p>
+        <span class="spine__char" aria-hidden="true">研</span>
+        <div class="spine__inner shell">
+          <span class="spine__rule" aria-hidden="true"></span>
+          <span class="spine__no" aria-hidden="true">04</span>
+          <span class="spine__name" aria-hidden="true">研读札记</span>
+          <div class="spine__copy">
             <h2 id="papers-title">一扇门、一种气味、一座城。</h2>
+            <p class="spine__side">三篇论文，三次把文本读成可以走进去的空间。</p>
           </div>
-          <p class="chapter-side">三篇论文，三次把文本<br>读成可以走进去的空间。</p>
         </div>
       </div>
       <div class="shell">
@@ -277,19 +280,20 @@
       </div>
     </section>
 
-    <section class="section section--plated sound" id="sound" aria-labelledby="sound-title">
-      <div class="chapter-plate reveal">
-        <div class="chapter-plate__bg" aria-hidden="true">
+    <section class="section section--spined sound" id="sound" data-dark aria-labelledby="sound-title">
+      <div class="spine spine--dark" data-dark>
+        <div class="spine__bg" aria-hidden="true">
           <img src="assets/images/listening.webp" srcset="assets/images/listening-small.webp 768w, assets/images/listening.webp 1536w" sizes="100vw" alt="" width="1536" height="1024" loading="lazy" decoding="async">
         </div>
-        <span class="chapter-plate__char" aria-hidden="true">声</span>
-        <div class="chapter-plate__inner shell">
-          <span class="chapter-plate__no">05</span>
-          <div class="chapter-plate__copy">
-            <p class="eyebrow">声音实践</p>
+        <span class="spine__char" aria-hidden="true">声</span>
+        <div class="spine__inner shell">
+          <span class="spine__rule" aria-hidden="true"></span>
+          <span class="spine__no" aria-hidden="true">05</span>
+          <span class="spine__name" aria-hidden="true">声音时间</span>
+          <div class="spine__copy">
             <h2 id="sound-title">把耳朵借给日常。</h2>
+            <p class="spine__side">两段声音叙事练习。关于回家，也关于守岁。</p>
           </div>
-          <p class="chapter-side">两段声音叙事练习。<br>关于回家，也关于守岁。</p>
         </div>
       </div>
       <div class="shell sound-panel">
@@ -331,7 +335,7 @@
       </div>
     </section>
 
-    <section class="pause" aria-label="声音一章的余音">
+    <section class="pause" data-dark aria-label="声音一章的余音">
       <div class="shell pause__inner reveal">
         <p class="pause__eyebrow">余音 · 声</p>
         <p class="pause__line">你们平安到家，<br>在家里好好休息就很好啦。</p>
@@ -340,7 +344,7 @@
     </section>
 
     <section class="section section--plated showcase" id="showcase" aria-labelledby="showcase-title">
-      <div class="chapter-plate reveal">
+      <div class="chapter-plate reveal" data-dark>
         <div class="chapter-plate__bg" aria-hidden="true">
           <img src="assets/images/rehearsal.webp" srcset="assets/images/rehearsal-small.webp 768w, assets/images/rehearsal.webp 1536w" sizes="100vw" alt="" width="1536" height="1024" loading="lazy" decoding="async">
         </div>
@@ -354,7 +358,7 @@
           <p class="chapter-side">四部影像，一次舞台。<br>从镜头前到灯光下。</p>
         </div>
       </div>
-      <div class="showcase-group showcase-group--films">
+      <div class="showcase-group showcase-group--films" data-dark>
         <div class="shell">
           <h3 class="showcase-head reveal">影像</h3>
           <div id="films-list" class="films-layout" aria-busy="true"><p class="loading-message">正在整理影像…</p></div>
@@ -369,7 +373,7 @@
       </div>
     </section>
 
-    <section class="section thanks" id="thanks" aria-labelledby="thanks-title">
+    <section class="section thanks" id="thanks" data-dark aria-labelledby="thanks-title">
       <div class="shell thanks-inner">
         <p class="eyebrow reveal">07 · 致谢</p>
         <h2 id="thanks-title" class="reveal">谢谢你看完。</h2>
