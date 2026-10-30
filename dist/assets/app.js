@@ -3,8 +3,8 @@
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const categories = ['scripts', 'essays', 'films', 'sound', 'stage'];
-const categoryNames = { scripts: '原创剧本', essays: '影评随笔', films: '影像成片', stage: '舞台实践', sound: '声音实践' };
+const categories = ['scripts', 'essays', 'papers', 'films', 'sound', 'stage'];
+const categoryNames = { scripts: '原创剧本', essays: '影评随笔', papers: '文学与戏剧研读札记', films: '影像成片', stage: '舞台实践', sound: '声音时间' };
 const returnKey = 'zhangyi-portfolio:return';
 const restoreKey = 'zhangyi-portfolio:restore';
 const historyKey = 'zhangyi-portfolio:history';
@@ -127,7 +127,7 @@ function updateScrollUI() {
     header.classList.toggle('is-scrolled', y > 24);
     const probe = header.offsetHeight * .55;
     let onDark = false;
-    $$('.films, .thanks, .pause, .work-banner').forEach(section => {
+    $$('.showcase-group--films, .thanks, .pause, .work-banner').forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= probe && rect.bottom >= probe) onDark = true;
     });
@@ -167,7 +167,7 @@ function updateScrollUI() {
     });
     const counter = $('#header-chapter');
     if (counter) {
-      const chapterMap = { home: '00', about: '01', scripts: '02', essays: '03', films: '04', sound: '05', stage: '06', thanks: '07' };
+      const chapterMap = { home: '00', about: '01', scripts: '02', essays: '03', papers: '04', sound: '05', showcase: '06', thanks: '07' };
       const value = `${chapterMap[current] || '00'} / 07`;
       if (counter.textContent !== value) counter.textContent = value;
     }
@@ -648,6 +648,35 @@ function renderEssays(works, container) {
   });
 }
 
+function renderPapers(works, container) {
+  works.forEach((work, index) => {
+    const article = element('article', 'paper-item reveal');
+    article.style.setProperty('--delay', `${Math.min(index * .08, .24)}s`);
+
+    const thumb = coverLink(work, `paper-thumb ${ratioClass(work)}`);
+    thumb.setAttribute('aria-label', `阅读《${work.title}》`);
+    thumb.append(image(work, index === 0, '(max-width: 767px) 96px, 96px'));
+    article.append(thumb);
+
+    const body = element('div', 'paper-body');
+    const kicker = element('p', 'work-kicker');
+    kicker.append(element('b', '', String(index + 1).padStart(2, '0')), document.createTextNode(work.subtitle || work.categoryLabel));
+    body.append(kicker);
+
+    const heading = element('h3', 'paper-title');
+    const link = workLink(work, work.title, '');
+    link.lastElementChild.remove();
+    heading.append(link);
+    body.append(heading, element('p', 'paper-summary', work.summary));
+
+    const foot = element('div', 'paper-foot');
+    foot.append(element('span', '', `${wordCount(work)} 字`), element('span', '', `阅读约 ${readingTime(work)} 分钟`), workLink(work, '读全文'));
+    body.append(foot);
+    article.append(body);
+    container.append(article);
+  });
+}
+
 function renderFilms(works, container) {
   works.forEach((work, index) => {
     const article = element('article', 'film-card reveal');
@@ -657,6 +686,10 @@ function renderFilms(works, container) {
 
     if (safeUrl(work.image)) {
       const figure = element('figure', `film-frame reveal-figure ${ratioClass(work)}`);
+      const frameWidth = Number(work.imageWidth) || 16;
+      const frameHeight = Number(work.imageHeight) || 9;
+      figure.style.setProperty('--ar', `${frameWidth} / ${frameHeight}`);
+      if (frameHeight > frameWidth) figure.classList.add('is-portrait');
       const link = coverLink(work, 'film-frame__link');
       link.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), (max-width: 1180px) 90vw, 1160px'));
       const play = element('button', 'film-play');
@@ -1145,6 +1178,20 @@ function renderWork(work) {
 
   container.append(workBanner(work));
 
+  if (work.epigraph?.text) {
+    const band = element('section', 'work-epigraph');
+    const inner = element('div', 'work-epigraph__inner');
+    inner.append(element('p', 'work-epigraph__text', work.epigraph.text));
+    if (work.epigraph.from) inner.append(element('cite', 'work-epigraph__from', work.epigraph.from));
+    if (Array.isArray(work.epigraph.note) && work.epigraph.note.length) {
+      const note = element('div', 'work-epigraph__note');
+      work.epigraph.note.forEach(text => note.append(element('p', '', text)));
+      inner.append(note);
+    }
+    band.append(inner);
+    container.append(band);
+  }
+
   const layout = element('div', 'work-layout');
   const toc = element('aside', 'work-toc');
   toc.append(element('p', '', '本文目录'));
@@ -1157,8 +1204,8 @@ function renderWork(work) {
   (work.sections || []).forEach((section, index) => {
     const block = element('section', 'reading-section');
     block.id = slug(index);
-    if (section.blocks?.length) block.classList.add('reading-section--script');
-    if (section.title) {
+    const hasScriptBlocks = (section.blocks || []).some(item => item.type === 'scene' || item.type === 'dialogue');
+    if (hasScriptBlocks) block.classList.add('reading-section--script');    if (section.title) {
       const heading = element('h2', 'reveal', section.title);
       if (!/^[一二三四五六七八九十0-9]/.test(section.title)) {
         heading.prepend(element('span', 'reading-section__no', String(index + 1).padStart(2, '0')));
@@ -1364,7 +1411,7 @@ async function loadContent() {
           else node.textContent = intro;
         }
       }
-      const renderers = { scripts: renderScripts, essays: renderEssays, films: renderFilms, stage: renderStage, sound: renderSound };
+      const renderers = { scripts: renderScripts, essays: renderEssays, papers: renderPapers, films: renderFilms, stage: renderStage, sound: renderSound };
       categories.forEach(category => {
         const container = $(`#${category}-list`);
         const works = data.works.filter(work => work.category === category);

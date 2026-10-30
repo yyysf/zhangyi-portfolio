@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('../dist/', import.meta.url));
 const load = path => readFile(resolve(root, path), 'utf8');
 const data = JSON.parse(await load('data/portfolio.json'));
 const ids = new Set();
-const categories = new Set(['scripts', 'essays', 'films', 'stage', 'sound']);
+const categories = new Set(['scripts', 'essays', 'papers', 'films', 'stage', 'sound']);
 for (const work of data.works) {
   assert.ok(/^[a-z0-9-]+$/.test(work.id), `Invalid ID: ${work.id}`);
   assert.ok(!ids.has(work.id), `Duplicate ID: ${work.id}`); ids.add(work.id);
@@ -24,7 +24,7 @@ for (const work of data.works) {
 }
 const home = await load('index.html');
 assert.equal((home.match(/<section\b/g) || []).length, 9, 'Homepage must have nine sections');
-for (const id of ['home', 'about', 'scripts', 'essays', 'films', 'stage', 'sound', 'thanks']) assert.ok(home.includes(`id="${id}"`), `Missing section: ${id}`);
+for (const id of ['home', 'about', 'scripts', 'essays', 'papers', 'showcase', 'sound', 'thanks']) assert.ok(home.includes(`id="${id}"`), `Missing section: ${id}`);
 for (const text of ['我叫张艺。', '一闪而过的东西——', '被听见、被看见。']) assert.ok(home.includes(text), `Missing exact copy: ${text}`);
 for (const path of ['index.html', 'work.html', 'assets/style.css']) {
   const contents = await load(path);

@@ -1,5 +1,7 @@
 node_modules/
 qa/
+.taste-skill/
+.tmp/
 source-assets/*
 !source-assets/art-prompts.md
 *.zip

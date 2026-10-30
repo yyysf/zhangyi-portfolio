@@ -1,6 +1,8 @@
 # 插画来源与提示词
 
-四张插画均于本次制作中使用内置 imagegen 生成，未使用用户参考图片作为成品素材或进行逐图复制。原始 PNG 保存在本目录的 illustrations 中，网站使用压缩后的 WebP。以下为各次生成提示词，供后续保持风格一致。
+站内插画均使用内置 imagegen 生成，未使用用户参考图片作为成品素材或进行逐图复制。原始 PNG 保存在本目录的 illustrations 中，网站使用压缩后的 WebP。以下为各次生成提示词，供后续保持风格一致。
+
+首版四张（meadow / platform / rehearsal / river）→ 声音补充一张（listening）→ 影评补图一张（noon）→ v3 补图四张（reading / shanzhong / wanou / caoyu），共十张。`shijian.png`、`zhulin.png` 不是生成插画，是短片抽帧。
 
 ## meadow.png：封面草地
 
@@ -33,3 +35,41 @@ Use case: illustration-story. Asset type: original hand-painted watercolor and d
 Use case: illustration-story. Original hand-painted watercolor and dry-brush gouache wide cityscape illustration, 16:10 aspect ratio, for a Chinese film-review card about a scorching southern Chinese summer. Subject: a narrow old-town alley in Guangzhou at blazing noon, whitewashed walls overexposed into near-white, one deep green shuttered window, damp stone pavement reflecting harsh light, a thin strip of deep shade under an eave, faint heat haze, a single green electric fan silhouette in a doorway, no people. Extremely bright, bleached, humid atmosphere; the sun is felt but never shown as a disc. Muted seafoam, sage, deep teal and pale grey-white watercolor paper palette, visible dry brush and pigment grain, softly bleeding watercolor edges, restrained editorial postcard style consistent with a quiet literary portfolio. Complete framed composition, strong diagonal of light and shade. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no neon, no digital gradients.
 
 用途：首页「影评随笔」中《日掛中天》卡片左侧配图，图注写「氛围配图 · 正午的巷子（非影片剧照）」。这部影评没有官方海报，故不使用影片剧照以外的真实剧照素材。
+
+
+## v3 补图：04 章页与三张论文封面（2026-10-30）
+
+四张均为同一轮生成，画风与前面的水彩系列保持一致：传统颜料、可见笔触与干刷边缘、低饱和青绿 / 灰蓝调、近白纸面。本轮逐字提示词未留档，以下按成品画面回溯整理，供下次沿用同一风格。
+
+生成源图与站内产物：
+
+| 源图 | 尺寸 | 站内文件 | 用途 |
+| --- | --- | --- | --- |
+| `illustrations/reading.png` | 1536 × 948 | `images/reading.webp` + `reading-small.webp` | 04 研读札记章页 |
+| `illustrations/shanzhong.png` | 1024 × 1460 | `works/shanzhong.webp` + `-small` | 《山重水复》论文封面 |
+| `illustrations/wanou.png` | 1024 × 1460 | `works/wanou.webp` + `-small` | 《玩偶之家》论文封面 |
+| `illustrations/caoyu.png` | 1024 × 1460 | `works/caoyu.webp` + `-small` | 《气味叙事·曹禺》论文封面 |
+
+### reading.png：研读札记章页
+
+Use case: illustration-story. Original hand-painted watercolor and gouache wide landscape interior, 16:10. An empty quiet room: a half-open pale wooden door at center letting a shaft of daylight fall across bare floorboards, a small wooden desk with a few stacked books at the left wall, bare plaster walls washed in muted green-grey, a faint soft shadow under the door. Poetic, expectant, nobody present — the room just before someone walks in. Seafoam, sage, slate blue and warm pale wood, near-white watercolor paper margin, visible dry brush and pigment grain, softly bleeding edges. Restrained editorial postcard, calm literary mood, complete framed composition usable as a full-width chapter header. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no neon, no digital gradients.
+
+用途：04 章页底图，章页大字「研」叠在右侧。标题句「一扇门、一种气味、一座城。」正好对应下面三篇论文的核心意象。
+
+### shanzhong.png：陆游与绍兴
+
+Use case: illustration-story. Original hand-painted watercolor and gouache vertical illustration, 2:3 portrait, book-cover composition. A Jiangnan water town on a still green canal: a mossy stone arch bridge at center reflecting a full circle in the water, whitewashed houses with dark tiled roofs along both banks, willow branches hanging into the top of the frame, a dark glazed jar and a shallow bowl resting on a stone ledge in the lower left foreground. Overcast soft light, quiet and damp, no people. Seafoam, sage, deep teal water, pale grey-white walls, near-white paper margin, dry-brush texture and watercolor blooms. Restrained editorial postcard, vertical composition with the bridge as the visual anchor. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no digital gradients.
+
+用途：《山重水复里的「柳暗花明」到春波绿畔的「惊鸿照影」》封面。桥与春波直接呼应论文标题里的两处诗句。
+
+### wanou.png：玩偶之家
+
+Use case: illustration-story. Original hand-painted watercolor and gouache vertical illustration, 2:3 portrait, book-cover composition. A single closed panelled door set in a bare plaster wall, painted pale green-grey, brass handle at the right, a thin warm line of light escaping from under the door onto the floorboards, faint water stains and cracks in the wall. Claustrophobic and expectant, the whole frame given to one door, nobody present. Muted sage and slate, warm amber only in the sliver of light under the door, near-white paper margin, visible pigment grain and dry-brush edges. Restrained editorial postcard, flat frontal composition. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no digital gradients.
+
+用途：《易卜生〈玩偶之家〉中空间意象与个体意识的动态关联》封面。整幅只画一扇门，对应论文里「门」的三重空间功能。
+
+### caoyu.png：曹禺的气味
+
+Use case: illustration-story. Original hand-painted watercolor and gouache vertical illustration, 2:3 portrait, book-cover composition. An old Chinese interior: a lattice-paned window with a white curtain blown inward, a dark wooden table below it holding a small pale teacup and an open book, a wooden stool in front, an open dark doorway on the right leading into shadow. Dust in the air, afternoon light, nobody present. Muted grey-green and brown, deep shadow in the doorway, near-white paper margin, soft dry-brush washes and pigment granulation. Restrained editorial postcard, quiet domestic atmosphere with a hint of decay. NO text, numbers, lettering, logos, watermark, border or UI. Not photorealistic, not vector, not anime, no digital gradients.
+
+用途：《气味叙事：为曹禺剧作提供生命元素与情感支撑》封面。开着的窗与门让空气流动，对应论文「气味如何穿过空间」的论证。
