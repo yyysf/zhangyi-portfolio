@@ -716,7 +716,9 @@ function renderFilms(works, container) {
       figure.style.setProperty('--ar', `${frameWidth} / ${frameHeight}`);
       if (frameHeight > frameWidth) figure.classList.add('is-portrait');
       const link = coverLink(work, 'film-frame__link');
-      link.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), (max-width: 1180px) 90vw, 1160px'));
+      // 06 展演距首屏 5 屏以上，封面不该在首屏就抢带宽——与首屏 hero 同一批请求
+      // 会拖慢 LCP。四张全部 lazy，滚动到附近再取。
+      link.append(image(work, false, '(max-width: 767px) calc(100vw - 40px), (max-width: 1180px) 90vw, 1160px'));
       const play = element('button', 'film-play');
       play.type = 'button';
       if (safeUrl(work.media?.src)) {
@@ -765,7 +767,7 @@ function renderStage(works, container) {
     if (safeUrl(work.image)) {
       const figure = element('figure', `stage-visual reveal-figure ${ratioClass(work)}`);
       const link = coverLink(work, 'stage-visual__link');
-      link.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 620px'));
+      link.append(image(work, false, '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 620px'));
       figure.append(link, cue('阅读'));
       figure.append(element('span', 'stage-beat', '舞台 01'));
       figure.append(element('figcaption', 'stage-caption', work.imageCaption || '舞台作品'));
