@@ -541,6 +541,13 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .index-list a:hover{padding-left:14px;color:var(--green-ink)}
 .index-list a:hover .index-list__arrow{opacity:1;transform:none}
 .index-list a:hover .index-list__title{color:var(--accent-ink)}
+/* 卡随图走，不写死框比例。
+   七张预览图的真实比例从 0.686（竖版海报）到 1.862（横幅剧照）分成两簇，
+   中间没有公约数：写死 4/3 时竖图左右各空掉近一半，改成 3/4 就轮到两张横图
+   上下空掉一半，换哪个比例都只是把留空从一组条目搬到另一组。
+   所以让卡片裹住图本身——没有留白，也不用裁掉封面上的字；
+   代价是卡片高度会随条目变（实测 1440 下 227–360px），
+   用 max-height 把它压在弹层里，用 margin-inline:auto 让它始终居中。 */
 .index-preview{
   padding:10px 10px 0;
   background:var(--paper-soft);
@@ -549,12 +556,16 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   transform:rotate(1.2deg);
   position:sticky;
   top:0;
+  width:fit-content;
+  max-width:100%;
+  margin-inline:auto;
 }
 .index-preview img{
-  width:100%;
-  aspect-ratio:var(--ar-photo);
-  object-fit:contain;
-  background:var(--paper-soft);
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:min(40vh,360px);
   transition:opacity .28s ease,transform .7s var(--ease);
 }
 .index-preview.is-changing img{opacity:.15;transform:scale(1.02)}

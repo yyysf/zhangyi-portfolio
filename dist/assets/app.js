@@ -251,6 +251,13 @@ function setupMenu() {
       clearTimeout(previewTimer);
       previewBox?.classList.add('is-changing');
       previewTimer = setTimeout(() => {
+        // 换图必须连 width/height 属性一起换：卡现在按图的真实比例排版，
+        // 属性还留着上一张的（初始是首屏那张 768×512），新图解码完成前卡片
+        // 会先按旧比例撑出一个错的尺寸，解码后再跳一下。
+        if (link.dataset.previewW) {
+          preview.width = Number(link.dataset.previewW);
+          preview.height = Number(link.dataset.previewH);
+        }
         preview.src = source;
         preview.alt = '';
         caption.textContent = link.dataset.previewCaption || '';
