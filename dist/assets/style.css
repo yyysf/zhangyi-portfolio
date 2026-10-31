@@ -3946,6 +3946,27 @@ body[data-category="scripts"] .work-header{
    不用 transform：很多元素身上已经有 translate，叠加会把位置挪错。 */
 :where(a,button,summary,[role="button"]):active{opacity:.86}
 
+/* ---------- 触控目标补到 44px ---------- */
+
+/* 全站扫下来最短边 < 27px 的可点元素就这六类：页眉导航条目（「关于」只有
+   26.6px 宽）、站名（27px 高）、详情页面包屑（18px 高）、文末「回到顶部」
+   与「回到场次索引」（21px 高）、首屏「向下浏览」（11px 高）。
+   一律用绝对定位的伪元素向外扩，不动内边距：加 padding 会把 .header-inner /
+   .work-top / .work-end 这些容器一起撑高，版面要跟着挪；伪元素不参与布局。
+   横向只扩到刚好不侵占相邻间隔的一半——页眉导航项间距 clamp(16px,2.2vw,30px)，
+   ≥980px 时最小 21.6px，扩 9px 不会撞上邻居。 */
+.header-nav a::before{content:'';position:absolute;inset:-6px -9px}
+.wordmark{position:relative}
+.wordmark::before{content:'';position:absolute;inset:-11px 0}
+.work-top a{position:relative}
+.work-top a::before{content:'';position:absolute;inset:-13px 0}
+.scene-index__back{position:relative}
+.scene-index__back::before{content:'';position:absolute;inset:-12px 0}
+.work-end__top{position:relative}
+.work-end__top::before{content:'';position:absolute;inset:-12px 0}
+.scroll-cue{position:relative}
+.scroll-cue::before{content:'';position:absolute;inset:-17px 0}
+
 /* ---------- 断点 ---------- */
 
 @media(min-width:1600px){
