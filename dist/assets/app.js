@@ -1241,7 +1241,12 @@ function updateSceneNav(probe, done, chapter) {
       const rect = active.getBoundingClientRect();
       const listRect = list.getBoundingClientRect();
       if (rect.top < listRect.top || rect.bottom > listRect.bottom) {
-        list.scrollTop += rect.top - listRect.top - listRect.height / 2;
+        // 目录跟随也要平滑：直接改 scrollTop 是硬跳，连着翻几场时列表一格一格闪。
+        // scroll-behavior 不继承，html 上的 smooth 管不到这个内部滚动容器。
+        list.scrollTo({
+          top: list.scrollTop + rect.top - listRect.top - listRect.height / 2,
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
       }
     }
   }

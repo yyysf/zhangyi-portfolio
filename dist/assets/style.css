@@ -3403,8 +3403,12 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   margin:0 0 12px;
   padding:0;
   /* 34vh/280px 只放得下 10 条，一个剧本 49 场，要滚五次才到底。
-     58vh/520px 约 18 条，仍然是一屏内可扫的长度。 */
-  max-height:min(58vh,520px);
+     放宽到 70vh/640px，但还要减掉侧栏自己的开销：sticky 顶 112
+     （--header + 28）+ 标签与章链实测 210px。矮屏不减会把列表底部
+     顶出视口——900 高时侧栏底边只剩 58px 余量，1280×800 只剩 14px。
+     三档取最小，1080 以上拿到满 640，900/800/768 自动让到 554/454/422。
+     238 → 262 是给侧栏底部留 24px 呼吸，否则最后一条正好贴视口边缘。 */
+  max-height:min(70vh,640px,calc(100vh - var(--header) - 262px));
   overflow-y:auto;
   overscroll-behavior:contain;
   scrollbar-width:thin;
