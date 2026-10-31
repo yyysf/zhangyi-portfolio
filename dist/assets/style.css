@@ -3937,11 +3937,11 @@ body[data-category="scripts"] .work-header{
   .hero h1{font-size:clamp(58px,7.3vw,100px)}
   .about-grid{gap:48px}
   .chapter-head{grid-template-columns:70px minmax(0,1fr) minmax(180px,.4fr)}
-  .work-banner{grid-template-columns:1fr;min-height:0}
-  .work-banner__cover{min-height:0;padding:0 24px 24px}
-  .work-banner__cover .image-toggle img{max-height:min(56vh,400px)}
-  .work-banner__caption{position:static;padding:12px 2px 0;text-align:left}
-  .work-banner__inner{padding:26px 24px 32px}
+  /* 横幅不在这里塌成单列：1240 这一档只是正文两侧栏站不住，
+     横幅双列（1.16fr/.84fr）在 1024 下仍有 470/340 可用。
+     塌成单列后封面区变成整幅 1124px 宽、里面只放一张 400px 的图，
+     方形封面填充率掉到 35.6%，横幅高度却从 417px 涨到 778px。
+     堆叠推到 ≤980，那时容器窄了，空洞比例自然小一半。 */
   .work-layout{grid-template-columns:clamp(132px,13vw,168px) minmax(0,var(--measure))}
   .work-side{display:none}
   .sound-item__meta{display:none}
@@ -4026,6 +4026,13 @@ body[data-category="scripts"] .work-header{
 }
 
 @media(max-width:767px){
+  /* 横幅到这里才堆叠。双列（1.16fr/.84fr）撑到 768 都还成立：
+     768 下文字栏 377px、封面栏 320px，图片 261px 填充 82%，横幅 362px 高；
+     一旦堆叠，封面区变成整幅宽、里面只放一张居中的图，填充率掉到 57%，
+     横幅高度翻到 739px。手机上没有横向余量，堆叠才是唯一选择。 */
+  .work-banner{grid-template-columns:1fr;min-height:0}
+  .work-banner__inner{padding:26px 24px 32px}
+  .work-banner__caption{position:static;padding:12px 2px 0;text-align:left}
   :root{
     --gutter:20px;
     --fs-body-base:16px;
