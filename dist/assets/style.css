@@ -1722,7 +1722,16 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   padding:var(--gap-chapter) clamp(32px,5vw,76px) var(--gap-chapter) 0;
 }
 @media(max-width:980px){
-  .script-card{grid-template-columns:1fr;min-height:0}
+  /* 窄屏没有左右两页，「双开」要换个轴成立：图在上、字在下，
+     中缝转 90° 变成横缝，偶数卡的镜像也从「左右对调」改成「贴边方向对调」。
+     --seam-gap 是图与字之间的距离，横缝落在它正中间。 */
+  .script-card{
+    grid-template-columns:1fr;
+    min-height:0;
+    --seam-gap:clamp(34px,4.6vw,52px);
+    row-gap:var(--seam-gap);
+  }
+  /* 竖着的中缝在单列里没有意义（left:50% 会压在图的正中），必须关掉 */
   .script-card::after{display:none}
   .script-card .script-media,
   .script-card:nth-child(even) .script-media{order:1;min-height:clamp(300px,44vh,420px)}
@@ -1730,8 +1739,32 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   .script-card:nth-child(even) .script-body{
     order:2;
     justify-self:start;
-    padding:clamp(26px,5vw,40px) 0 0;
+    padding:0;
   }
+  /* 横缝不写在 .script-card::after 上：卡是单列网格，媒体高度由内容决定，
+     ::after 没有一个可靠的 top 可写。挂在 .script-body 上、往上提半个 gap，
+     缝就正好落在图与字中间。
+     两端各缩 clamp(22px,6vw,48px)：顶到边的 1px 跟卡片自己的 border-top
+     长得一模一样，会被读成卡片分隔线，而这是书页的订口。 */
+  .script-card .script-body::before{
+    content:'';
+    position:absolute;
+    left:clamp(22px,6vw,48px);
+    right:clamp(22px,6vw,48px);
+    top:calc(var(--seam-gap) / -2);
+    height:1px;
+    background:var(--line);
+    pointer-events:none;
+  }
+  /* 反向偏移留下来：奇数卡图贴左（右侧留空），偶数卡图贴右（左侧留空）。
+     原来是 clamp(12px,2vw,28px)，390 下只有 12px —— 在 350px 的栏里占 3.4%，
+     读不出是故意的；放到 6vw（390 下 23.4px）两页的反相才看得出来。
+     没有把图挪到文字后面（那才是严格意义上的「对调」）：两件作品的正文会
+     连成一片，而且视觉顺序会和 DOM 顺序不一致——键盘和读屏仍然是图在前。 */
+  .script-card .script-media{margin-inline-end:clamp(16px,6vw,34px);margin-inline-start:0}
+  .script-card:nth-child(even) .script-media{margin-inline-start:clamp(16px,6vw,34px);margin-inline-end:0}
+  /* 角标跟着挪到留空那一侧：两件作品的角标都压在订口上，方向才不飘 */
+  .script-card:nth-child(even) .script-media__tag{right:auto;left:16px;transform:rotate(-1.5deg)}
 }
 
 /* ---------- 影评 ---------- */
@@ -2010,7 +2043,12 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
    留给正文的只剩不到 600px，标题会挤成一条。 */
 @media(max-width:900px){
   .essay-card.essay-card--portrait{grid-template-columns:minmax(0,1fr);gap:clamp(22px,3.4vw,30px)}
-  .essay-card.essay-card--portrait .essay-visual{width:min(100%,62vw);max-width:352px}
+  /* 居中：62vw 在 390 下是 241.8px，栏宽 350px，左边 0、右边空 108px——
+     既不居中也不满宽，是「退让了一半」的布局。宽度不动，改用 margin 居中，
+     两边各 54px，读起来才像一张被单独拎出来的图版。
+     没有改成 78vw：图版是带 1px 内描边的「插页」，撑满栏宽就变成了通栏题图，
+     和 02/06 的整幅图重复。 */
+  .essay-card.essay-card--portrait .essay-visual{width:min(100%,62vw);max-width:352px;margin-inline:auto}
 }
 @media(max-width:767px){
   .essay-card .essay-visual__link{height:clamp(200px,52vw,300px)}
@@ -2543,8 +2581,12 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   position:absolute;
   inset:0;
   z-index:-1;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 260 180%27 preserveAspectRatio=%27none%27%3E%3Cg fill=%27%23a9c2b6%27%3E%3Crect x=%272%27 y=%2762.5%27 width=%272%27 height=%2755.0%27/%3E%3Crect x=%277%27 y=%2762.0%27 width=%272%27 height=%2755.9%27/%3E%3Crect x=%2712%27 y=%2745.8%27 width=%272%27 height=%2788.3%27/%3E%3Crect x=%2717%27 y=%2755.0%27 width=%272%27 height=%2770.1%27/%3E%3Crect x=%2722%27 y=%2736.6%27 width=%272%27 height=%27106.7%27/%3E%3Crect x=%2727%27 y=%2737.6%27 width=%272%27 height=%27104.8%27/%3E%3Crect x=%2732%27 y=%2745.7%27 width=%272%27 height=%2788.6%27/%3E%3Crect x=%2737%27 y=%2729.6%27 width=%272%27 height=%27120.9%27/%3E%3Crect x=%2742%27 y=%2747.2%27 width=%272%27 height=%2785.7%27/%3E%3Crect x=%2747%27 y=%2737.1%27 width=%272%27 height=%27105.8%27/%3E%3Crect x=%2752%27 y=%2752.3%27 width=%272%27 height=%2775.4%27/%3E%3Crect x=%2757%27 y=%2755.7%27 width=%272%27 height=%2768.5%27/%3E%3Crect x=%2762%27 y=%2751.8%27 width=%272%27 height=%2776.5%27/%3E%3Crect x=%2767%27 y=%2747.1%27 width=%272%27 height=%2785.8%27/%3E%3Crect x=%2772%27 y=%2763.7%27 width=%272%27 height=%2752.5%27/%3E%3Crect x=%2777%27 y=%2762.5%27 width=%272%27 height=%2754.9%27/%3E%3Crect x=%2782%27 y=%2754.4%27 width=%272%27 height=%2771.2%27/%3E%3Crect x=%2787%27 y=%2746.6%27 width=%272%27 height=%2786.7%27/%3E%3Crect x=%2792%27 y=%2752.6%27 width=%272%27 height=%2774.8%27/%3E%3Crect x=%2797%27 y=%2755.7%27 width=%272%27 height=%2768.7%27/%3E%3Crect x=%27102%27 y=%2744.0%27 width=%272%27 height=%2792.0%27/%3E%3Crect x=%27107%27 y=%2765.0%27 width=%272%27 height=%2750.0%27/%3E%3Crect x=%27112%27 y=%2753.5%27 width=%272%27 height=%2773.1%27/%3E%3Crect x=%27117%27 y=%2760.7%27 width=%272%27 height=%2758.5%27/%3E%3Crect x=%27122%27 y=%2759.0%27 width=%272%27 height=%2761.9%27/%3E%3Crect x=%27127%27 y=%2755.3%27 width=%272%27 height=%2769.4%27/%3E%3Crect x=%27132%27 y=%2746.2%27 width=%272%27 height=%2787.6%27/%3E%3Crect x=%27137%27 y=%2728.0%27 width=%272%27 height=%27124.0%27/%3E%3Crect x=%27142%27 y=%2746.4%27 width=%272%27 height=%2787.2%27/%3E%3Crect x=%27147%27 y=%2734.9%27 width=%272%27 height=%27110.2%27/%3E%3Crect x=%27152%27 y=%2736.1%27 width=%272%27 height=%27107.8%27/%3E%3Crect x=%27157%27 y=%2747.4%27 width=%272%27 height=%2785.1%27/%3E%3Crect x=%27162%27 y=%2747.2%27 width=%272%27 height=%2785.6%27/%3E%3Crect x=%27167%27 y=%2761.9%27 width=%272%27 height=%2756.2%27/%3E%3Crect x=%27172%27 y=%2764.1%27 width=%272%27 height=%2751.7%27/%3E%3Crect x=%27177%27 y=%2762.4%27 width=%272%27 height=%2755.3%27/%3E%3Crect x=%27182%27 y=%2753.0%27 width=%272%27 height=%2774.0%27/%3E%3Crect x=%27187%27 y=%2756.4%27 width=%272%27 height=%2767.2%27/%3E%3Crect x=%27192%27 y=%2756.6%27 width=%272%27 height=%2766.8%27/%3E%3Crect x=%27197%27 y=%2748.1%27 width=%272%27 height=%2783.8%27/%3E%3Crect x=%27202%27 y=%2749.4%27 width=%272%27 height=%2781.3%27/%3E%3Crect x=%27207%27 y=%2752.6%27 width=%272%27 height=%2774.7%27/%3E%3Crect x=%27212%27 y=%2741.9%27 width=%272%27 height=%2796.3%27/%3E%3Crect x=%27217%27 y=%2747.5%27 width=%272%27 height=%2785.1%27/%3E%3Crect x=%27222%27 y=%2761.3%27 width=%272%27 height=%2757.3%27/%3E%3Crect x=%27227%27 y=%2758.4%27 width=%272%27 height=%2763.3%27/%3E%3Crect x=%27232%27 y=%2753.6%27 width=%272%27 height=%2772.8%27/%3E%3Crect x=%27237%27 y=%2740.3%27 width=%272%27 height=%2799.4%27/%3E%3Crect x=%27242%27 y=%2739.7%27 width=%272%27 height=%27100.6%27/%3E%3Crect x=%27247%27 y=%2749.5%27 width=%272%27 height=%2781.0%27/%3E%3Crect x=%27252%27 y=%2731.0%27 width=%272%27 height=%27117.9%27/%3E%3Crect x=%27257%27 y=%2755.5%27 width=%272%27 height=%2769.1%27/%3E%3C/g%3E%3C/svg%3E");
-  background-size:min(52vw,420px) min(46vh,300px);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 260 180%27 preserveAspectRatio=%27xMidYMid%20meet%27%3E%3Cg fill=%27%23a9c2b6%27%3E%3Crect x=%272%27 y=%2762.5%27 width=%272%27 height=%2755.0%27/%3E%3Crect x=%277%27 y=%2762.0%27 width=%272%27 height=%2755.9%27/%3E%3Crect x=%2712%27 y=%2745.8%27 width=%272%27 height=%2788.3%27/%3E%3Crect x=%2717%27 y=%2755.0%27 width=%272%27 height=%2770.1%27/%3E%3Crect x=%2722%27 y=%2736.6%27 width=%272%27 height=%27106.7%27/%3E%3Crect x=%2727%27 y=%2737.6%27 width=%272%27 height=%27104.8%27/%3E%3Crect x=%2732%27 y=%2745.7%27 width=%272%27 height=%2788.6%27/%3E%3Crect x=%2737%27 y=%2729.6%27 width=%272%27 height=%27120.9%27/%3E%3Crect x=%2742%27 y=%2747.2%27 width=%272%27 height=%2785.7%27/%3E%3Crect x=%2747%27 y=%2737.1%27 width=%272%27 height=%27105.8%27/%3E%3Crect x=%2752%27 y=%2752.3%27 width=%272%27 height=%2775.4%27/%3E%3Crect x=%2757%27 y=%2755.7%27 width=%272%27 height=%2768.5%27/%3E%3Crect x=%2762%27 y=%2751.8%27 width=%272%27 height=%2776.5%27/%3E%3Crect x=%2767%27 y=%2747.1%27 width=%272%27 height=%2785.8%27/%3E%3Crect x=%2772%27 y=%2763.7%27 width=%272%27 height=%2752.5%27/%3E%3Crect x=%2777%27 y=%2762.5%27 width=%272%27 height=%2754.9%27/%3E%3Crect x=%2782%27 y=%2754.4%27 width=%272%27 height=%2771.2%27/%3E%3Crect x=%2787%27 y=%2746.6%27 width=%272%27 height=%2786.7%27/%3E%3Crect x=%2792%27 y=%2752.6%27 width=%272%27 height=%2774.8%27/%3E%3Crect x=%2797%27 y=%2755.7%27 width=%272%27 height=%2768.7%27/%3E%3Crect x=%27102%27 y=%2744.0%27 width=%272%27 height=%2792.0%27/%3E%3Crect x=%27107%27 y=%2765.0%27 width=%272%27 height=%2750.0%27/%3E%3Crect x=%27112%27 y=%2753.5%27 width=%272%27 height=%2773.1%27/%3E%3Crect x=%27117%27 y=%2760.7%27 width=%272%27 height=%2758.5%27/%3E%3Crect x=%27122%27 y=%2759.0%27 width=%272%27 height=%2761.9%27/%3E%3Crect x=%27127%27 y=%2755.3%27 width=%272%27 height=%2769.4%27/%3E%3Crect x=%27132%27 y=%2746.2%27 width=%272%27 height=%2787.6%27/%3E%3Crect x=%27137%27 y=%2728.0%27 width=%272%27 height=%27124.0%27/%3E%3Crect x=%27142%27 y=%2746.4%27 width=%272%27 height=%2787.2%27/%3E%3Crect x=%27147%27 y=%2734.9%27 width=%272%27 height=%27110.2%27/%3E%3Crect x=%27152%27 y=%2736.1%27 width=%272%27 height=%27107.8%27/%3E%3Crect x=%27157%27 y=%2747.4%27 width=%272%27 height=%2785.1%27/%3E%3Crect x=%27162%27 y=%2747.2%27 width=%272%27 height=%2785.6%27/%3E%3Crect x=%27167%27 y=%2761.9%27 width=%272%27 height=%2756.2%27/%3E%3Crect x=%27172%27 y=%2764.1%27 width=%272%27 height=%2751.7%27/%3E%3Crect x=%27177%27 y=%2762.4%27 width=%272%27 height=%2755.3%27/%3E%3Crect x=%27182%27 y=%2753.0%27 width=%272%27 height=%2774.0%27/%3E%3Crect x=%27187%27 y=%2756.4%27 width=%272%27 height=%2767.2%27/%3E%3Crect x=%27192%27 y=%2756.6%27 width=%272%27 height=%2766.8%27/%3E%3Crect x=%27197%27 y=%2748.1%27 width=%272%27 height=%2783.8%27/%3E%3Crect x=%27202%27 y=%2749.4%27 width=%272%27 height=%2781.3%27/%3E%3Crect x=%27207%27 y=%2752.6%27 width=%272%27 height=%2774.7%27/%3E%3Crect x=%27212%27 y=%2741.9%27 width=%272%27 height=%2796.3%27/%3E%3Crect x=%27217%27 y=%2747.5%27 width=%272%27 height=%2785.1%27/%3E%3Crect x=%27222%27 y=%2761.3%27 width=%272%27 height=%2757.3%27/%3E%3Crect x=%27227%27 y=%2758.4%27 width=%272%27 height=%2763.3%27/%3E%3Crect x=%27232%27 y=%2753.6%27 width=%272%27 height=%2772.8%27/%3E%3Crect x=%27237%27 y=%2740.3%27 width=%272%27 height=%2799.4%27/%3E%3Crect x=%27242%27 y=%2739.7%27 width=%272%27 height=%27100.6%27/%3E%3Crect x=%27247%27 y=%2749.5%27 width=%272%27 height=%2781.0%27/%3E%3Crect x=%27252%27 y=%2731.0%27 width=%272%27 height=%27117.9%27/%3E%3Crect x=%27257%27 y=%2755.5%27 width=%272%27 height=%2769.1%27/%3E%3C/g%3E%3C/svg%3E");
+  /* 高度定死、宽度按原图比例算（260:180）：写两个 min() 会把比例拉坏，
+     390 下是 202.8×300，竖向被拉 2.14×，波形退化成一片竖条纹。
+     桌面原来就是 420×300（比例 1.40 vs 原图 1.444，差 3%），几乎没动；
+     只有窄屏会变——tile 变成 433×300，一屏放不满一条，反而是想要的效果。 */
+  background-size:auto min(46vh,300px);
   background-repeat:repeat-x;
   background-position:center 62%;
   opacity:.16;
@@ -4026,14 +4068,20 @@ body[data-category="scripts"] .work-header{
     margin-top:-8px;
     max-width:22em;
   }
-  .chapter-no{font-size:var(--fs-work)}
+  /* 原来取 var(--fs-work) = 56px，比标题还大（h2 在这段是 43–50px），
+     而且 56px 的「01」字形宽 72px，58px 的轨道装不下，会挤进标题栏。
+     --fs-work 是 .script-title 那种整行大标题的档位，不该用在编号上。 */
+  .chapter-no{font-size:clamp(28px,4.4vw,38px)}
   .chapter-heading h2{font-size:clamp(34px,5.6vw,50px)}
   .about-grid{grid-template-columns:1fr;gap:56px}
   .about-copy > p:not(.about-lead):not(.about-sign){max-width:34em}
   .about-sign{margin-top:32px}
   .room-preview{max-width:560px}
-  .script-card--feature{grid-template-columns:1fr;gap:32px}
-  .script-card--note{grid-template-columns:1fr;gap:32px}
+  /* gap 换成 row-gap 并绑到 --seam-gap：原来写死的 32px 会按同权重、靠顺序
+     盖掉前面 .script-card 里那条 row-gap，横缝就不落在图与字正中间了。
+     两件剧本卡必然带 --feature 或 --note 之一，这条才是真正生效的那条。 */
+  .script-card--feature{grid-template-columns:1fr;row-gap:var(--seam-gap)}
+  .script-card--note{grid-template-columns:1fr;row-gap:var(--seam-gap)}
   .script-quote-panel{min-height:0}
   .essays-layout{grid-template-columns:1fr;border-top:0}
   .essay-card{
@@ -4114,7 +4162,13 @@ body[data-category="scripts"] .work-header{
   .section--plated{padding-top:0}
   .sound-fade{height:88px}
   .chapter-head{grid-template-columns:42px minmax(0,1fr);gap:14px;margin-bottom:34px;padding-top:15px}
-  .chapter-no{font-size:42px}
+  /* 42px 比标题还大（h2 在 390 下是 32.76px）——编号是装饰，标题是内容，
+     层级倒了。28px 比 h2 小一档，仍然是版面图形而不是文字标签。 */
+  /* 42px 比标题还大（h2 在 390 下是 32.76px）——编号是装饰，标题是内容，
+     层级倒了。改成随视口收，上限 28px、与 h2 的比值稳定在 0.71 左右，
+     仍然是版面图形而不是文字标签。写死 28px 的话 320 下是 28 vs h2 30，
+     两个数几乎一样大，层级又糊了。 */
+  .chapter-no{font-size:clamp(22px,6vw,28px)}
   .chapter-heading h2{font-size:clamp(30px,8.4vw,40px);line-height:var(--lh-heading)}
   .chapter-side{grid-column:1/-1;margin-top:4px;font-size:var(--fs-xs)}
   .eyebrow{font-size:var(--fs-xs);letter-spacing:var(--ls-caps)}
@@ -4131,7 +4185,9 @@ body[data-category="scripts"] .work-header{
   .room-preview{margin-top:18px}
   .room-preview img{aspect-ratio:var(--ar-wide)}
   .demo-notice{margin-top:40px}
-  .script-card{gap:26px}
+  /* 只改 --seam-gap 不改 gap：row-gap 在 980 断点里已经绑在它上面，
+     这里再写 gap 会把 row-gap 顶掉，横缝就不再落在图与字中间。 */
+  .script-card{--seam-gap:30px}
   .script-title{font-size:clamp(30px,8.8vw,42px);margin-top:10px}
   .script-summary{line-height:var(--lh-body);margin-top:13px}
   .script-media{padding:9px 9px 0}
