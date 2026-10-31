@@ -3668,7 +3668,11 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
    19px 下变成 14.5 / 14.5 / 12.3，而不再被拉成 19 / 13 / 11。
    列宽 5.6em 而不是写死 88px：88÷13=6.8 字，四字名刚好、六字名要换行，
    但换成 em 后每一档都是 6.8 字，不会在大字号下突然放不下。 */
-.reading-section--script{
+/* 写成 .reading-section.reading-section--script 而不是单类名：
+   上面的 .reading-section + .reading-section 是 0-2-0，单类名只有 0-1-0，
+   剧本分节会拿回散文的 54px，自己声明的 68px 永远不生效。
+   同权重靠顺序赢——这条在后面，安全。 */
+.reading-section.reading-section--script{
   margin-top:clamp(44px,6vw,68px);
   /* 列宽、列间距、缩进都用 --fs-body 的倍数算，不用 em。
      舞台提示自己只有 .765 倍字号，用 em 会按 13px 解析，缩进就比台词短一截
