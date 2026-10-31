@@ -3223,9 +3223,9 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:24px;
+  gap:var(--space-5);
   border-bottom:1px solid var(--line);
-  padding-bottom:16px;
+  padding-bottom:var(--space-4);
   margin-bottom:clamp(30px,4.4vw,54px);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-wide);
@@ -3263,7 +3263,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   align-items:center;
   flex-wrap:wrap;
-  gap:10px 16px;
+  gap:var(--space-2) var(--space-4);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-caps);
   text-transform:uppercase;
@@ -3271,11 +3271,11 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .work-banner__kicker span + span::before{
   content:'·';
-  margin-right:16px;
+  margin-right:var(--space-4);
   color:rgba(247,243,233,.4);
 }
 .work-banner__award{
-  padding:3px 10px;
+  padding:var(--space-1) var(--space-2);
   border:1px solid rgba(232,179,140,.5);
   border-radius:999px;
   color:#f0c9a8;
@@ -3285,12 +3285,12 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-banner__title{
   font:400 clamp(34px,4.6vw,64px)/var(--lh-heading) var(--hand);
   letter-spacing:var(--ls-title);
-  margin-top:14px;
+  margin-top:var(--space-3);
   color:var(--paper);
   overflow-wrap:break-word;
 }
 .work-banner__lead{
-  margin-top:16px;
+  margin-top:var(--space-4);
   max-width:26em;
   font:400 clamp(15px,1.4vw,17px)/var(--lh-body) var(--hand);
   color:rgba(247,243,233,.82);
@@ -3298,9 +3298,9 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-banner__meta{
   display:flex;
   flex-wrap:wrap;
-  gap:8px 20px;
-  margin-top:22px;
-  padding-top:16px;
+  gap:var(--space-2) 20px;
+  margin-top:var(--space-5);
+  padding-top:var(--space-4);
   border-top:1px solid rgba(247,243,233,.18);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-caps);
@@ -3335,7 +3335,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .font-size button:hover{color:var(--paper)}
 .font-size button[aria-pressed="true"]{background:rgba(247,243,233,.16);color:var(--paper)}
 .work-banner__note{
-  margin-top:14px;
+  margin-top:var(--space-3);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   color:rgba(247,243,233,.55);
 }
@@ -3383,8 +3383,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   z-index:2;
   display:inline-flex;
   align-items:center;
-  gap:10px;
-  padding:11px 20px 11px 16px;
+  gap:var(--space-2);
+  padding:var(--space-3) 20px var(--space-3) var(--space-4);
   border:1px solid rgba(247,243,233,.55);
   border-radius:999px;
   background:rgba(12,38,33,.62);
@@ -3412,7 +3412,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   left:0;
   right:0;
   bottom:0;
-  padding:22px 20px 12px;
+  padding:var(--space-5) 20px var(--space-3);
   text-align:center;
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-wide);
@@ -3434,7 +3434,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .work-epigraph__from{
   display:block;
-  margin-top:12px;
+  margin-top:var(--space-3);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   font-style:normal;
   letter-spacing:var(--ls-caps);
@@ -3470,29 +3470,29 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-toc{
   position:sticky;
   top:calc(var(--header-total) + 28px);
-  padding-top:6px;
+  padding-top:var(--space-1);
 }
 .work-toc p{
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-caps);
   color:var(--muted);
   text-transform:uppercase;
-  margin-bottom:12px;
+  margin-bottom:var(--space-3);
 }
 .work-toc a{
   display:block;
-  padding:7px 0;
+  padding:var(--space-2) 0;
   font-size:var(--fs-sm);
   line-height:var(--lh-label);
   color:var(--muted);
   border-left:1px solid transparent;
-  padding-left:11px;
+  padding-left:var(--space-3);
   transition:color .25s ease,border-color .25s ease;
 }
 .work-toc a:hover,.work-toc a.is-active{color:var(--green-ink);border-left-color:var(--accent-ink)}
 .toc-scenes-readout{
   display:block;
-  margin-top:6px;
+  margin-top:var(--space-1);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-label);
   color:var(--accent-ink);
@@ -3500,7 +3500,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .toc-scenes{
   list-style:none;
-  margin:0 0 12px;
+  margin:0 0 var(--space-3);
   padding:0;
   /* 34vh/280px 只放得下 10 条，一个剧本 49 场，要滚五次才到底。
      放宽到 70vh/640px，但还要减掉侧栏自己的开销：sticky 顶 112
@@ -3519,7 +3519,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .toc-scenes::-webkit-scrollbar-thumb{background:rgba(30,47,42,.38);border-radius:3px}
 .toc-scenes a{
   display:block;
-  padding:5px 4px 5px 10px;
+  padding:var(--space-1) var(--space-1) var(--space-1) var(--space-2);
   /* 场次名不再截断：`1.2 付家张淑真卧室-日-内（回忆）` 17 字，
      180px 栏宽也放不下，截断后每条都长得一样，认不出是哪一场。 */
   overflow-wrap:break-word;
@@ -3544,7 +3544,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   background:var(--paper-soft);
 }
 .scene-index summary{
-  padding:14px 16px;
+  padding:var(--space-3) var(--space-4);
   font:500 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-label);
   color:var(--green-ink);
@@ -3557,7 +3557,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .scene-index[open] summary{border-bottom:1px solid var(--line-soft)}
 .scene-index__list{
   margin:0;
-  padding:8px 16px 14px;
+  padding:var(--space-2) var(--space-4) var(--space-3);
   list-style:none;
   max-height:min(62vh,560px);
   overflow-y:auto;
@@ -3568,7 +3568,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 /* 场次名自带「1.」「2.1」编号，这里不再加一层计数器，否则会变成「1. 1.田埂-日-外」 */
 .scene-index__list a{
   display:block;
-  padding:7px 0;
+  padding:var(--space-2) 0;
   font:400 var(--fs-sm)/var(--lh-label) var(--sans);
   color:var(--ink-soft);
   border-bottom:1px solid var(--line-soft);
@@ -3579,7 +3579,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   .scene-index{display:block}
   .scene-index__back{
     display:inline-block;
-    margin-top:22px;
+    margin-top:var(--space-5);
     padding-bottom:2px;
     font:400 var(--fs-xs)/var(--lh-label) var(--sans);
     letter-spacing:var(--ls-label);
@@ -3592,7 +3592,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   font-size:clamp(40px,5.6vw,72px);
   line-height:var(--lh-heading);
   letter-spacing:var(--ls-title);
-  margin-top:14px;
+  margin-top:var(--space-3);
   overflow-wrap:break-word;
 }
 .work-lead{
@@ -3604,10 +3604,10 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-head-meta{
   display:flex;
   flex-wrap:wrap;
-  gap:10px 22px;
+  gap:var(--space-2) var(--space-5);
   border-top:1px solid var(--line);
   margin-top:28px;
-  padding-top:14px;
+  padding-top:var(--space-3);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-wide);
   color:var(--muted);
@@ -3617,13 +3617,13 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   font-size:var(--fs-sm);
   line-height:var(--lh-script);
   color:var(--muted);
-  padding-left:14px;
+  padding-left:var(--space-3);
   border-left:1px solid var(--accent);
-  margin-top:22px;
+  margin-top:var(--space-5);
 }
 .work-award{
-  margin-top:18px;
-  padding:12px 16px;
+  margin-top:var(--space-4);
+  padding:var(--space-3) var(--space-4);
   border-left:2px solid var(--accent);
   background:rgba(124,153,144,.07);
   font:400 var(--fs-xs)/var(--lh-lead) var(--sans);
@@ -3632,7 +3632,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .work-award span{
   display:block;
-  margin-bottom:3px;
+  margin-bottom:var(--space-1);
   font-size:var(--fs-xs);
   letter-spacing:var(--ls-caps);
   color:var(--accent-ink);
@@ -3643,9 +3643,9 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-figure .illustration-caption{
   display:flex;
   justify-content:space-between;
-  gap:18px;
+  gap:var(--space-4);
   flex-wrap:wrap;
-  margin-top:10px;
+  margin-top:var(--space-2);
 }
 .image-toggle{
   display:block;
@@ -3697,13 +3697,13 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .reading-section + .reading-section{margin-top:clamp(38px,5vw,54px)}
 .reading-section h2{
   font-size:clamp(22px,2.3vw,28px);
-  margin-bottom:15px;
+  margin-bottom:var(--space-4);
   position:relative;
-  padding-left:17px;
+  padding-left:var(--space-4);
 }
 .reading-section__no{
   display:inline-block;
-  margin-right:12px;
+  margin-right:var(--space-3);
   font:400 var(--fs-xs)/1 var(--sans);
   letter-spacing:var(--ls-wide);
   color:var(--accent-ink);
@@ -3744,7 +3744,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .reading-subhead{
   display:flex;
   align-items:baseline;
-  gap:10px;
+  gap:var(--space-2);
   margin-top:clamp(26px,3vw,34px);
   font:400 clamp(16px,1.5vw,19px)/var(--lh-label) var(--hand);
   letter-spacing:var(--ls-title);
@@ -3764,13 +3764,13 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--green-ink);
   font:500 var(--fs-xs)/var(--lh-lead) var(--sans);
   letter-spacing:var(--ls-wide);
-  margin-top:34px;
-  margin-bottom:18px;
+  margin-top:var(--space-6);
+  margin-bottom:var(--space-4);
   padding-left:0;
 }
 .dialogue{
   margin:20px 0;
-  padding-left:22px;
+  padding-left:var(--space-5);
   border-left:1px solid var(--line);
 }
 .dialogue dt{
@@ -3779,7 +3779,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   letter-spacing:var(--ls-label);
 }
 .dialogue dd{
-  margin:3px 0 0;
+  margin:var(--space-1) 0 0;
   font:400 var(--fs-body)/var(--lh-body) var(--hand);
   overflow-wrap:break-word;
 }
@@ -3808,7 +3808,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:grid;
   grid-template-columns:var(--script-col) minmax(0,1fr);
   gap:0 var(--script-gap);
-  margin:13px 0;
+  margin:var(--space-3) 0;
   padding-left:0;
   border-left:0;
 }
@@ -3835,7 +3835,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   font-size:var(--script-small);
   line-height:var(--lh-script);
   color:var(--muted);
-  margin-top:12px;
+  margin-top:var(--space-3);
 }
 .reading-section--script > p:first-of-type{color:var(--muted)}
 .reading-section--script > .script-scene{
@@ -3852,7 +3852,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-end{
   margin-top:clamp(50px,7vw,76px);
   border-top:1px solid var(--line);
-  padding-top:24px;
+  padding-top:var(--space-5);
   display:flex;
   justify-content:space-between;
   gap:20px;
@@ -3905,7 +3905,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .work-gallery__button:hover img{transform:scale(1.025);filter:brightness(.98)}
 .work-gallery__item figcaption{
-  margin-top:8px;
+  margin-top:var(--space-2);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-label);
   color:var(--muted);
@@ -3923,7 +3923,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .works-nav__link{
   display:flex;
   flex-direction:column;
-  gap:9px;
+  gap:var(--space-2);
   min-width:0;
 }
 .works-nav__prev{align-items:flex-start;text-align:left}
@@ -3938,7 +3938,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .works-nav__row{
   display:flex;
   align-items:baseline;
-  gap:13px;
+  gap:var(--space-3);
   min-width:0;
 }
 .works-nav__title{
@@ -3961,8 +3961,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:16px;
-  padding-top:6px;
+  gap:var(--space-4);
+  padding-top:var(--space-1);
 }
 .work-side button{
   border:1px solid var(--line);
@@ -3983,29 +3983,29 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   font:400 var(--fs-xs)/1 var(--sans);
   letter-spacing:var(--ls-caps);
   color:var(--muted);
-  margin-top:6px;
+  margin-top:var(--space-1);
 }
 .detail-sound-art{
   width:min(560px,100%);
   margin:0 auto clamp(34px,4vw,48px);
-  padding:9px 9px 0;
+  padding:var(--space-2) var(--space-2) 0;
   background:var(--paper-soft);
   border:1px solid var(--line-soft);
 }
 .detail-sound-art img{width:100%}
 .detail-sound-art figcaption{
-  padding:9px 2px 10px;
+  padding:var(--space-2) 2px var(--space-2);
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-label);
   color:var(--muted);
 }
 body[data-category="essays"] .work-header{
   border-top:1px solid var(--line);
-  padding-top:24px;
+  padding-top:var(--space-5);
 }
 body[data-category="essays"] .work-lead{font-family:var(--serif);font-style:normal}
 body[data-category="films"] .work-figure{
-  padding:14px;
+  padding:var(--space-3);
   background:var(--film);
 }
 body[data-category="films"] .work-figure .illustration-caption,
@@ -4016,7 +4016,7 @@ body[data-category="scripts"] .work-header{
 }
 .download-link{margin-top:38px}
 .not-found{
-  padding-block:70px;
+  padding-block:var(--space-8);
   max-width:var(--measure);
   margin:auto;
 }
@@ -4146,8 +4146,8 @@ body[data-category="scripts"] .work-header{
     /* 这里原有一行 grid-template-columns:1fr，是旧两栏影评卡留下的；
        .essay-card 现在已经是 flex，这行不生效，却会按同权重
        把 .essay-card--portrait 的网格压成单栏。删掉。 */
-    gap:22px;
-    padding-block:32px;
+    gap:var(--space-5);
+    padding-block:var(--space-6);
     border-top:1px solid var(--line);
     border-bottom:0;
   }
