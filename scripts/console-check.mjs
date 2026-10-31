@@ -34,6 +34,9 @@ for (const url of pages) {
   await s('Log.enable');
   await s('Network.enable');
   await s('Page.enable');
+// 本地预览是 Python SimpleHTTP，只发 Last-Modified，没有 Cache-Control，
+// 无头浏览器会按启发式缓存旧资源，导致改完样式截出来还是上一版。
+await s('Network.enable'); await s('Network.setCacheDisabled', { cacheDisabled: true });
   await s('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
 
   // 这些事件通过全局 ws 分发，按 sessionId 过滤

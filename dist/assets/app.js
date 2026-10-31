@@ -1011,6 +1011,9 @@ function workGallery(work) {
 // 所以内联值不会像以前那样把媒体查询整个压掉。
 const FONT_SCALES = { sm: 0.882, md: 1, lg: 1.118 };
 const FONT_LABELS = [['sm', '小'], ['md', '中'], ['lg', '大']];
+// 当前档位记在模块里：开关是详情页渲染时才建出来的，
+// 初始状态不能靠读 DOM 的 aria-pressed 反推。
+let fontSizeKey = 'md';
 
 function fontSizeControl() {
   const group = element('div', 'font-size');
@@ -1020,7 +1023,7 @@ function fontSizeControl() {
     const button = element('button', '', label);
     button.type = 'button';
     button.dataset.size = key;
-    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-pressed', String(key === fontSizeKey));
     group.append(button);
   });
   return group;
@@ -1036,9 +1039,16 @@ function readingAnchor() {
   return null;
 }
 
+function syncFontSizeButtons() {
+  $$('.font-size button').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.size === fontSizeKey));
+  });
+}
+
 function applyFontSize(key) {
   const scale = FONT_SCALES[key];
   if (!scale) return;
+  fontSizeKey = key;
   const anchor = readingAnchor();
   const before = anchor ? anchor.getBoundingClientRect().top : 0;
   document.documentElement.style.setProperty('--fs-scale', String(scale));
@@ -1058,20 +1068,20 @@ function applyFontSize(key) {
   }
   updateSceneNav.last = null;
   updateScrollUI();
-  $$('.font-size button').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.size === key));
-  });
+  syncFontSizeButtons();
 }
 
+// 开关在详情页渲染时才出现，而这里在 loadContent 之前就跑了，
+// 所以监听挂在 document 上做委托——挂 .font-size 会拿到 null 静默退出。
 function setupFontSize() {
-  const group = $('.font-size');
-  if (!group) return;
   let saved = null;
   try { saved = localStorage.getItem('zy-font-size'); } catch { /* storage optional */ }
   if (saved && FONT_SCALES[saved]) applyFontSize(saved);
-  else $$('.font-size button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.size === 'md')));
-  group.addEventListener('click', event => {
-    const button = event.target.closest('button[data-size]');
+  syncFontSizeButtons();
+  if (setupFontSize.bound) return;
+  setupFontSize.bound = true;
+  document.addEventListener('click', event => {
+    const button = event.target.closest('.font-size button[data-size]');
     if (!button) return;
     applyFontSize(button.dataset.size);
     try { localStorage.setItem('zy-font-size', button.dataset.size); } catch { /* ignore */ }

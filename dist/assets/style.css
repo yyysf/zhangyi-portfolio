@@ -56,7 +56,11 @@
   --display:'Bodoni 72','Didot','Bodoni MT','Times New Roman',serif;
   /* 字号九档。
      --fs-body 拆成「基数 × 倍率」：倍率由详情页的字号开关写在 html 内联样式上，
-     窄屏只改基数。这样内联值只覆盖一个输入，不会像直接写 --fs-body 那样压过媒体查询。 */
+     窄屏只改基数。这样内联值只覆盖一个输入，不会像直接写 --fs-body 那样压过媒体查询。
+     窄屏块里还留着几处一次性字号（14/16/19/23/29/32/36/38/42/52），
+     那是移动端的角色切换，不是遗漏：编号从文字标签变成版面图形（.chapter-no 42、
+     .essay-no 52），首屏与致谢跟着视口缩，卡标题降一档让一屏能放下两张卡。
+     这些值不进令牌——进了就变成「四档大字」，反而丢掉移动端的独立尺度。 */
   --fs-xs:11px;
   --fs-sm:13px;
   --fs-base:15px;
@@ -3730,7 +3734,7 @@ body[data-category="scripts"] .work-header{
   .work-banner__cover .image-toggle img{max-height:min(56vh,400px)}
   .work-banner__caption{position:static;padding:12px 2px 0;text-align:left}
   .work-banner__inner{padding:26px 24px 32px}
-  .work-layout{grid-template-columns:120px minmax(0,var(--measure))}
+  .work-layout{grid-template-columns:clamp(132px,13vw,168px) minmax(0,var(--measure))}
   .work-side{display:none}
   .sound-item__meta{display:none}
 }
