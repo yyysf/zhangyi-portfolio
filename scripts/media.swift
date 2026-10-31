@@ -36,10 +36,13 @@ func transcode(_ args: [String]) {
     let outH = even(max(2, Int(Double(picH) * scale)))
 
     let reader = try! AVAssetReader(asset: asset)
+    // 用 VideoComposition 让系统应用 preferredTransform：手机竖拍源片输出即为正立的显示方向
+    let composition = AVMutableVideoComposition(propertiesOf: asset)
     // 用 420v 原生平面格式，H.264 编码器可直接吃，避免每帧做 BGRA 转换
-    let videoOut = AVAssetReaderTrackOutput(track: track, outputSettings: [
+    let videoOut = AVAssetReaderVideoCompositionOutput(videoTracks: [track], videoSettings: [
         kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
     ])
+    videoOut.videoComposition = composition
     videoOut.alwaysCopiesSampleData = false
     reader.add(videoOut)
 
