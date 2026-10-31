@@ -3611,6 +3611,14 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   overflow-wrap:break-word;
   color:var(--ink-soft);
 }
+/* 散文与研读正文：中文惯例首行缩进 2em。缩进本身已经把段切开，
+   段距就可以从 .94em 收到 .85em——17px 下 16px → 14.45px。
+   不再往下压：1.9 的行高下再收到 .75em（12.75px）整块字会糊成一片。
+   剧本不缩进：舞台提示靠 padding-left 对齐台词列，再缩 2em 会脱离那一列。 */
+.reading-section:not(.reading-section--script) > p{
+  text-indent:2em;
+  margin-top:.85em;
+}
 .reading-subhead{
   display:flex;
   align-items:baseline;
