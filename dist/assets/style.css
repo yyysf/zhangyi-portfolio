@@ -7,9 +7,10 @@
 /* 两个文楷包，按需加载。
    A 标题包：页眉、章页大字、标题、题记、引语、图注，865 字 / 179KB。
    B 台词包：A 的全部 + 剧本正文，2482 字 / 550KB。
-   浏览器只在页面上真有元素解析到某个 family 时才发请求，
-   所以影评页永远不下载 B——纯 CSS，没有 JS 判断。
-   不要 preload B：preload 是无条件下载，会让每篇影评也多付 550KB。 */
+   浏览器只在页面上真有元素解析到某个 family 时才发请求。
+   2026-10-31 起阅读页（work.html）正文也用 B：work.html 内联把 --serif
+   提到 WenKaiText 并 preload——13 篇共享一个文件、跨篇缓存，
+   Windows 访客正文不再掉进中易宋体。首页不声明该覆盖，正文仍系统宋体、零下载。 */
 @font-face{
   font-family:WenKai;
   src:url('./fonts/wenkai-title.woff2') format('woff2');
@@ -39,8 +40,12 @@
   --green-deep:#12302b;
   --accent:#b4553a;
   --green-ink:#1f5348;
-  --accent-ink:#9c4a31;
+  /* 舞台「开灯」灯光专属：发光点 + 暖沙晕。全站仅此一处用金，
+     176,154,120 系 alpha 是它的晕家族，别拿去做通用强调色。 */
   --gold:#c08a4b;
+  /* 与 --room-scripts 同值：赭红强调与剧本房间色是同一支色，
+     RGB 各差 1 的两支定义已合并，改色时一起改。 */
+  --accent-ink:#9b4932;
   --line:rgba(30,47,42,.16);
   --line-soft:rgba(30,47,42,.09);
   --film:#0e2723;
@@ -50,7 +55,7 @@
      所以这里用带 alpha 的暖白，一支到底，不再逐处手写。 */
   --on-dark-1:#f7f3e9;
   --on-dark-2:rgba(247,243,233,.78);
-  --on-dark-3:rgba(247,243,233,.56);
+  --on-dark-3:rgba(247,243,233,.6);
   --on-dark-line:rgba(247,243,233,.18);
   --on-dark-line-soft:rgba(247,243,233,.1);
   --on-dark-focus:#f7f3e9;
@@ -3789,7 +3794,9 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   align-items:baseline;
   gap:var(--space-2);
   margin-top:clamp(26px,3vw,34px);
-  font:400 clamp(16px,1.5vw,19px)/var(--lh-label) var(--hand);
+  /* 上限 21px：19px 对 17px 正文只有 1.12 倍，层级全靠字体族硬撑；
+     21px 后有 1.24 倍的尺寸差可依。 */
+  font:400 clamp(17px,1.6vw,21px)/var(--lh-label) var(--hand);
   letter-spacing:var(--ls-title);
   color:var(--green-ink);
 }
