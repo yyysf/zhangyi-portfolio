@@ -2169,7 +2169,24 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .showcase .chapter-plate::after{background:var(--on-dark-accent);opacity:.45}
 .showcase-group--films .showcase-head{color:var(--on-dark-2);border-bottom-color:var(--on-dark-line)}
 .showcase-group--films .loading-message{color:var(--on-dark-2)}
-.film-card{position:relative}
+/* P2-14 编辑式对页：画框不再通栏，改成 ~58% 宽图版 + 右侧文字栏，
+   左右交替像画册跨页。topline 仍横贯两栏当分隔线。
+   竖片（时间"贷"价）单独走窄图版列——画框窄、文字栏宽，
+   原来那片黑底空场正好被文字填掉。 */
+.film-card{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+  gap:clamp(26px,4vw,58px);
+  align-items:center;
+}
+.film-card + .film-card{margin-top:clamp(40px,6vw,72px)}
+.film-topline{grid-column:1/-1}
+.film-card:nth-of-type(even) .film-frame{order:2}
+/* 只有三部片：even 换边被竖片的 order:0 抵消，三张会全落左边。
+   让最后一部镜像到右，节奏是 标准→竖片特写→镜像。 */
+.film-card:last-of-type .film-frame{order:2}
+.film-card .film-copy{grid-template-columns:minmax(0,1fr);gap:var(--space-5);margin-top:0}
 .film-topline{
   display:flex;
   justify-content:space-between;
@@ -2203,6 +2220,10 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .film-frame.is-portrait{max-width:min(430px,64vw);margin-inline:auto}
 .film-frame.is-portrait img{object-fit:contain;background:#08130f}
+/* 竖片对页：窄图版列在左、宽文字栏在右。nth-of-type(even) 带伪类是 (0,3,0)，
+   这里也提到 (0,3,0) 且写在其后，才能把换边压回去。 */
+.film-card.film-card--portrait{grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr)}
+.film-card.film-card--portrait .film-frame{order:0;max-width:none;margin-inline:0}
 .film-frame::after{
   content:'';
   position:absolute;
@@ -2273,7 +2294,8 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .film-copy .work-meta{color:var(--on-dark-2)}
 .film-copy .award-label{color:var(--on-dark-accent)}
 .film-copy h3{
-  font-size:clamp(34px,4.3vw,58px);
+  /* 对页右栏 ~440px，58px 的大标题一行只放 7 个字会叠四行，收一档 */
+  font-size:clamp(28px,3vw,42px);
   line-height:var(--lh-heading);
   margin-top:var(--space-3);
 }
@@ -2341,7 +2363,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 
 .showcase-group--stage{
   background:linear-gradient(to bottom,var(--paper),var(--tint) 75%,var(--paper));
-  padding-block:var(--band-y);
+  /* 一件作品撑一节，band 收紧一点，别让留白替内容撑场面 */
+  padding-block:clamp(40px,5.4vw,72px);
 }
 .stage-card{
   display:grid;
@@ -2436,7 +2459,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   align-items:center;
   gap:var(--space-4);
-  margin-top:var(--space-5);
+  margin-top:var(--space-4);
 }
 .light-switch{
   display:flex;
@@ -2478,14 +2501,14 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
 }
 .stage-notes{
-  margin-top:clamp(28px,3.4vw,40px);
+  margin-top:clamp(18px,2.4vw,26px);
   border-top:1px solid var(--line);
 }
 .stage-note{
   display:grid;
   grid-template-columns:34px minmax(0,1fr);
   gap:var(--space-3);
-  padding:var(--space-4) 0;
+  padding:var(--space-3) 0;
   border-bottom:1px solid var(--line);
 }
 .stage-note-no{
@@ -2506,12 +2529,12 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
   max-width:26em;
 }
-.stage-body .line-link{margin-top:26px}
+.stage-body .line-link{margin-top:18px}
 .stage-strip{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:var(--space-2);
-  margin-top:clamp(22px,2.6vw,30px);
+  margin-top:clamp(14px,1.8vw,20px);
 }
 .stage-strip__item{
   padding:var(--space-1);
@@ -2530,8 +2553,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .stage-strip__item:hover{transform:translateY(-3px);box-shadow:var(--shadow-1)}
 .stage-strip__item:hover img{transform:scale(1.03)}
 .stage-quote{
-  margin-top:clamp(48px,7vw,86px);
-  padding-top:clamp(26px,4vw,40px);
+  margin-top:clamp(24px,3.4vw,44px);
+  padding-top:clamp(20px,3vw,32px);
   border-top:1px solid var(--line);
   font:400 clamp(24px,2.9vw,38px)/var(--lh-lead) var(--hand);
   color:var(--ink);
@@ -2555,7 +2578,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   /* 上一段是 --film，这一段是 --green-deep，下一段又是 --film；两头都化开 */
   background:linear-gradient(to bottom,var(--film) 0%,var(--green-deep) 22%,var(--green-deep) 78%,var(--film) 100%);
   color:var(--on-dark-1);
-  padding-block:clamp(76px,11vw,142px);
+  /* 一句话的过场：原来是 11vw 的呼吸，太大，压到 6.4vw 仍够隔开亮—暗—亮 */
+  padding-block:clamp(44px,6.4vw,84px);
 }
 .pause::before{
   content:'声';
@@ -4150,6 +4174,15 @@ body[data-category="scripts"] .work-header{
   }
   .essay-visual--portrait{max-width:280px}
   .film-copy{grid-template-columns:1fr;gap:var(--space-6)}
+  /* 对页在窄屏回退单栏：图版在上、文字在下，换边与竖片窄列全部还原。
+     竖片要带上桌面的 .film-card 前缀——桌面那条是 (0,2,0)，
+     裸写 .film-card--portrait 会被压掉，390 下会退回双栏窄图。 */
+  .film-card,
+  .film-card.film-card--portrait{grid-template-columns:1fr;gap:var(--space-5);align-items:start}
+  .film-card:nth-of-type(even) .film-frame,
+  .film-card:last-of-type .film-frame,
+  .film-card.film-card--portrait .film-frame{order:0}
+  .film-card.film-card--portrait .film-frame{max-width:min(430px,64vw);margin-inline:auto}
   .stage-card{grid-template-columns:1fr;gap:var(--space-6)}
   .stage-quote{text-align:left}
   .sound-grid{grid-template-columns:1fr;gap:48px}
