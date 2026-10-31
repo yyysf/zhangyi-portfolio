@@ -25,7 +25,47 @@
     /* 阅读页正文统一文楷 Text。首页不声明这条覆盖，--serif 仍走系统宋体栈、零下载；
        本文件 13 篇共享一个字体文件（源字体本就是按全站文字裁的 2.5k 字子集，
        再子集只差 16KB，不值得加管线），跨篇缓存，Windows 访客不再掉进中易宋体。 */
-    :root{--serif:WenKaiText,'Songti SC','Noto Serif SC','Source Han Serif SC','SimSun',serif}
+    /* 阅读纸面「纸中纸」：body 是桌面（#ece4cf），.work-article 是书页——
+       #f2ecdc 打底 + 26px 周期帘纹 + 1px 发丝线，正文亮度不变、周边更暗，
+       glare 比整页同色更小。右上角篇名大字水印（app.js 从数据取字）。
+       首页不加载本块，纸色不变。 */
+    :root{
+      --serif:WenKaiText,'Songti SC','Noto Serif SC','Source Han Serif SC','SimSun',serif;
+      --paper:#f2ecdc;
+      --paper-soft:#faf5e6;
+      --desk:#ece4cf;
+    }
+    body{background:var(--desk)}
+    /* 横幅/题记与书页之间留一段桌面——书是摊在桌上的，不是贴在横幅下面 */
+    .work-layout{margin-top:clamp(24px,3vw,38px)}
+    .work-article{
+      /* 书页比 40em 栏各侧外扩 --book-x（吃进栏间沟，桌面仍留 24px），
+         内边距恰好抵消外扩：正文行宽 680px 一字不变。 */
+      --book-x:clamp(14px,1.4vw,20px);
+      position:relative;
+      background:
+        repeating-linear-gradient(0deg,rgba(30,47,42,.032) 0 1px,transparent 1px 26px),
+        var(--paper);
+      border:1px solid rgba(30,47,42,.13);
+      border-radius:2px;
+      padding:clamp(20px,2.8vw,40px) var(--book-x);
+      margin-inline:calc(-1 * var(--book-x));
+    }
+    .work-reading,.work-end,.works-nav{position:relative;z-index:1}
+    .work-mark{
+      position:absolute;
+      top:clamp(4px,1vw,12px);
+      right:clamp(4px,1.2vw,14px);
+      font:400 clamp(150px,19vw,290px)/1 var(--hand);
+      color:rgba(30,47,42,.05);
+      pointer-events:none;
+      user-select:none;
+      z-index:0;
+    }
+    @media (max-width:767px){
+      .work-article{--book-x:12px;padding-block:16px}
+      .work-mark{font-size:118px}
+    }
   </style>
 </head>
 <body data-page="work">

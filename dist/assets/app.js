@@ -1359,6 +1359,13 @@ function renderWork(work) {
   toc.append(element('p', '', '本文目录'));
   const article = element('article', 'work-article');
 
+  // 书页大字水印：章页「展」的正文页后代。取字规则：数据给 mark 优先，
+  // 否则书名号内取首字（易卜生《玩偶之家》→玩），再否则篇名首字。
+  const markIn = work.title.match(/《([^《》]+)》/);
+  const mark = element('span', 'work-mark', (work.mark || (markIn ? markIn[1] : work.title)).trim().charAt(0));
+  mark.setAttribute('aria-hidden', 'true');
+  article.append(mark);
+
   const reading = element('div', 'work-reading');
   const sceneNav = [];
   const media = work.media?.type === 'video' && safeUrl(work.media.src) ? null : mediaBlock(work);
