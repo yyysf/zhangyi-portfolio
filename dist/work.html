@@ -25,15 +25,22 @@
     /* 阅读页正文统一文楷 Text。首页不声明这条覆盖，--serif 仍走系统宋体栈、零下载；
        本文件 13 篇共享一个字体文件（源字体本就是按全站文字裁的 2.5k 字子集，
        再子集只差 16KB，不值得加管线），跨篇缓存，Windows 访客不再掉进中易宋体。 */
-    /* 阅读纸面「纸中纸」：body 是桌面（#ece4cf），.work-article 是书页——
-       #f2ecdc 打底 + 26px 周期帘纹 + 1px 发丝线，正文亮度不变、周边更暗，
-       glare 比整页同色更小。右上角篇名大字水印（app.js 从数据取字）。
+    /* 阅读纸面「纸中纸」：body 是桌面（#ece4cf），.work-article 是书页。
+       两处修正：
+       ① 帘纹方向错了。宣纸的帘纹是抄纸帘留下的**竖**纹，上一版写成
+          0deg、26px 一条 3.2% 的墨线，空白处读成稿纸的横向格线，而且
+          横线正好和字行同向打架。改成 90deg、34px 一档、压到 2%——
+          纸的纹理应该只在侧光下看得出来。
+       ② 纸边不该用 1px 描边。描边是表格的语法；书页压在桌上是靠光影
+          分出的边界，所以改成内发丝（5%）+ 桌面投影。
        首页不加载本块，纸色不变。 */
     :root{
       --serif:WenKaiText,'Songti SC','Noto Serif SC','Source Han Serif SC','SimSun',serif;
       --paper:#f2ecdc;
       --paper-soft:#faf5e6;
       --desk:#ece4cf;
+      /* 书页上边距：目录要对齐正文第一行，两处都得引用它 */
+      --book-pad-top:clamp(20px,2.8vw,40px);
     }
     body{background:var(--desk)}
     /* 横幅/题记与书页之间留一段桌面——书是摊在桌上的，不是贴在横幅下面 */
@@ -44,27 +51,34 @@
       --book-x:clamp(14px,1.4vw,20px);
       position:relative;
       background:
-        repeating-linear-gradient(0deg,rgba(30,47,42,.032) 0 1px,transparent 1px 26px),
+        repeating-linear-gradient(90deg,rgba(30,47,42,.02) 0 1px,transparent 1px 34px),
         var(--paper);
-      border:1px solid rgba(30,47,42,.13);
-      border-radius:2px;
-      padding:clamp(20px,2.8vw,40px) var(--book-x);
+      border:0;
+      border-radius:1px;
+      box-shadow:
+        inset 0 0 0 1px rgba(30,47,42,.05),
+        0 1px 2px rgba(30,47,42,.05),
+        0 22px 46px -30px rgba(30,47,42,.42);
+      padding:var(--book-pad-top) var(--book-x);
       margin-inline:calc(-1 * var(--book-x));
     }
+    /* 目录在桌面上，但它第一行该和书页里第一行同高（+13px 是 H2 自己的上边距） */
+    .work-toc{padding-top:calc(var(--book-pad-top) + 13px)}
     .work-reading,.work-end,.works-nav{position:relative;z-index:1}
+    /* 篇名首字：原来是压在正文底下的一枚 274px / 5% 灰字，正好盖住第一节
+       标题和前两段，读起来像印糊了，也把标题的对比度拉薄。现在挪到书页
+       外侧的右栏，竖排（书耳的位置）、放大到 128px、提到 11%——
+       不占正文一个像素，右栏也不再只剩两个圆按钮。 */
     .work-mark{
-      position:absolute;
-      top:clamp(4px,1vw,12px);
-      right:clamp(4px,1.2vw,14px);
-      font:400 clamp(150px,19vw,290px)/1 var(--hand);
-      color:rgba(30,47,42,.05);
+      writing-mode:vertical-rl;
+      font:400 clamp(104px,8.6vw,128px)/1 var(--hand);
+      color:rgba(30,47,42,.11);
       pointer-events:none;
       user-select:none;
-      z-index:0;
+      margin-block-end:var(--space-1);
     }
     @media (max-width:767px){
       .work-article{--book-x:12px;padding-block:16px}
-      .work-mark{font-size:118px}
     }
   </style>
 </head>
