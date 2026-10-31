@@ -1441,6 +1441,17 @@ function renderWork(work) {
   end.append(element('span', '', '感谢阅读'), toTop, returnLink(work.category));
   article.append(end);
 
+  // 信末压花：从她的信笺上裁下的水彩玫瑰+薰衣草（连纸胶带）。
+  // 随文流排在「感谢阅读」之后，不压任何字；multiply 混合让灰白信纸
+  // 溶进奶油色书页，只留花和胶带浮在纸上。
+  const scrap = element('img', 'work-scrap');
+  scrap.src = 'assets/img/flower-scrap.jpg';
+  scrap.alt = '';
+  scrap.setAttribute('aria-hidden', 'true');
+  scrap.setAttribute('loading', 'lazy');
+  scrap.setAttribute('draggable', 'false');
+  article.append(scrap);
+
   const worksNav = element('nav', 'works-nav');
   worksNav.setAttribute('aria-label', '相邻作品');
   const prevLink = element('a', 'works-nav__link works-nav__prev');

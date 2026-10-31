@@ -77,8 +77,20 @@
       user-select:none;
       margin-block-end:var(--space-1);
     }
+    /* 信末压花：信笺裁片，multiply 溶底、微倾角，占一行文流不压字 */
+    .work-scrap{
+      display:block;
+      width:clamp(96px,10vw,132px);
+      margin:calc(var(--space-4) * .4) auto calc(var(--space-4) * -.6);
+      transform:rotate(-2.4deg);
+      mix-blend-mode:multiply;
+      opacity:.92;
+      pointer-events:none;
+      user-select:none;
+    }
     @media (max-width:767px){
       .work-article{--book-x:12px;padding-block:16px}
+      .work-scrap{width:86px;margin-block:6px -14px}
     }
   </style>
 </head>
