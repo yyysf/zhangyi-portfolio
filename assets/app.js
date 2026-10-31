@@ -3,8 +3,8 @@
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const categories = ['scripts', 'essays', 'films', 'sound', 'stage'];
-const categoryNames = { scripts: '原创剧本', essays: '影评随笔', films: '影像成片', stage: '舞台实践', sound: '声音实践' };
+const categories = ['scripts', 'essays', 'papers', 'films', 'sound', 'stage'];
+const categoryNames = { scripts: '原创剧本', essays: '影评随笔', papers: '文学与戏剧研读札记', films: '影像成片', stage: '舞台实践', sound: '声音时间' };
 const returnKey = 'zhangyi-portfolio:return';
 const restoreKey = 'zhangyi-portfolio:restore';
 const historyKey = 'zhangyi-portfolio:history';
@@ -116,7 +116,29 @@ function slug(index) { return `section-${index + 1}`; }
 
 /* ---------- 页面级交互 ---------- */
 
+// 章节目录与场次导航共用同一条判定线：视口 34%。
+// 原来章节走 IntersectionObserver 的 18%–35% 观察带、场次走 34% 探针，
+// 两套阈值在文末给出不同答案——实测滚到 10800px 时章节还停在上一节，
+// 同一位置的场次却已经翻到下一节去了。改成同一个探针、同一次扫描，
+// 两级高亮就永远指向同一节。
+const READ_PROBE = .34;
+
 let scrollTick = false;
+// 阅读进度的分母用正文高度，不用整页高度：
+// 整页口径下，文末的「感谢阅读」、上一篇/下一篇和页脚会把满格稀释掉，
+// 读到最后一个字时进度条才走到八成。
+// 不缓存 offsetHeight：图片解码后正文会继续长高，缓存下来的旧值
+// 会让文末停在六成多。这里读之前 updateScrollUI 已经量过 scrollHeight，
+// 布局是干净的，再读一次 offsetHeight 不会额外重排。
+function readingProgress(y, viewport) {
+  const article = document.querySelector('.work-article');
+  if (!article) return null;
+  const headerH = $('#site-header')?.offsetHeight || 0;
+  const start = article.offsetTop - headerH;
+  const span = article.offsetTop + article.offsetHeight - viewport - start;
+  if (span <= 0) return 1;
+  return Math.min(1, Math.max(0, (y - start) / span));
+}
 function updateScrollUI() {
   const y = window.scrollY || document.documentElement.scrollTop;
   const viewport = innerHeight;
@@ -126,14 +148,15 @@ function updateScrollUI() {
   if (header) {
     header.classList.toggle('is-scrolled', y > 24);
     const probe = header.offsetHeight * .55;
+    // 深色块统一挂 data-dark，页眉反色只认这一个标记
     let onDark = false;
-    $$('.films, .thanks, .pause, .work-banner').forEach(section => {
+    $$('[data-dark]').forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= probe && rect.bottom >= probe) onDark = true;
     });
     header.classList.toggle('is-on-dark', onDark);
   }
-  updateSceneNav();
+  updateReadingNav();
   if (!reduceMotion) {
     const mid = viewport / 2;
     $$('.chapter-plate__bg img').forEach(img => {
@@ -149,7 +172,7 @@ function updateScrollUI() {
   const bar = $('#scroll-progress-bar');
   if (bar) bar.style.transform = `scaleX(${ratio})`;
   const reading = $('#reading-progress-bar');
-  if (reading) reading.style.transform = `scaleX(${ratio})`;
+  if (reading) reading.style.transform = `scaleX(${readingProgress(y, viewport) ?? ratio})`;
 
   if (isHome) {
     const sections = $$('main section[id]');
@@ -167,7 +190,7 @@ function updateScrollUI() {
     });
     const counter = $('#header-chapter');
     if (counter) {
-      const chapterMap = { home: '00', about: '01', scripts: '02', essays: '03', films: '04', sound: '05', stage: '06', thanks: '07' };
+      const chapterMap = { home: '00', about: '01', scripts: '02', essays: '03', papers: '04', sound: '05', showcase: '06', thanks: '07' };
       const value = `${chapterMap[current] || '00'} / 07`;
       if (counter.textContent !== value) counter.textContent = value;
     }
@@ -228,6 +251,13 @@ function setupMenu() {
       clearTimeout(previewTimer);
       previewBox?.classList.add('is-changing');
       previewTimer = setTimeout(() => {
+        // 换图必须连 width/height 属性一起换：卡现在按图的真实比例排版，
+        // 属性还留着上一张的（初始是首屏那张 768×512），新图解码完成前卡片
+        // 会先按旧比例撑出一个错的尺寸，解码后再跳一下。
+        if (link.dataset.previewW) {
+          preview.width = Number(link.dataset.previewW);
+          preview.height = Number(link.dataset.previewH);
+        }
         preview.src = source;
         preview.alt = '';
         caption.textContent = link.dataset.previewCaption || '';
@@ -631,11 +661,21 @@ function renderEssays(works, container) {
     if (safeUrl(work.image)) {
       const portrait = work.imageRatio === 'portrait';
       const figure = element('figure', `essay-visual essay-visual--${portrait ? 'portrait' : 'landscape'} reveal-figure`);
+      // 两件作品的版式必须一致：以前横图走通栏「图在上、字在下」、
+      // 竖图走「图左、字右」，同一房间里一件占满整幅、另一件只占四分之一，
+      // 读起来像两套版式。现在统一成图左字右，只有图版列宽按比例不同。
+      // 列宽不同是为了让两张图版的面积接近（560×306 ≈ 352×507），
+      // 不是随手给的数——详见 style.css 的 .essay-card 注释。
+      article.classList.add(portrait ? 'essay-card--portrait' : 'essay-card--landscape');
+      const w = Number(work.imageWidth);
+      const h = Number(work.imageHeight);
+      // --ar 两种都要写：图版框按原图比例排版，cover 才不会裁掉画面边缘的构图。
+      if (w && h) figure.style.setProperty('--ar', `${w} / ${h}`);
       const coverAnchor = coverLink(work, 'essay-visual__link');
       coverAnchor.append(
         image(work, index === 0, portrait
           ? '(max-width: 767px) 62vw, (max-width: 980px) 44vw, 340px'
-          : '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 520px'),
+          : '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 62vw, 560px'),
         cue('阅读')
       );
       figure.append(coverAnchor);
@@ -644,6 +684,35 @@ function renderEssays(works, container) {
     } else {
       article.append(content);
     }
+    container.append(article);
+  });
+}
+
+function renderPapers(works, container) {
+  works.forEach((work, index) => {
+    const article = element('article', 'paper-item reveal');
+    article.style.setProperty('--delay', `${Math.min(index * .08, .24)}s`);
+
+    const thumb = coverLink(work, `paper-thumb ${ratioClass(work)}`);
+    thumb.setAttribute('aria-label', `阅读《${work.title}》`);
+    thumb.append(image(work, index === 0, '(max-width: 767px) 96px, 96px'));
+    article.append(thumb);
+
+    const body = element('div', 'paper-body');
+    const kicker = element('p', 'work-kicker');
+    kicker.append(element('b', '', String(index + 1).padStart(2, '0')), document.createTextNode(work.subtitle || work.categoryLabel));
+    body.append(kicker);
+
+    const heading = element('h3', 'paper-title');
+    const link = workLink(work, work.title, '');
+    link.lastElementChild.remove();
+    heading.append(link);
+    body.append(heading, element('p', 'paper-summary', work.summary));
+
+    const foot = element('div', 'paper-foot');
+    foot.append(element('span', '', `${wordCount(work)} 字`), element('span', '', `阅读约 ${readingTime(work)} 分钟`), workLink(work, '读全文'));
+    body.append(foot);
+    article.append(body);
     container.append(article);
   });
 }
@@ -657,8 +726,14 @@ function renderFilms(works, container) {
 
     if (safeUrl(work.image)) {
       const figure = element('figure', `film-frame reveal-figure ${ratioClass(work)}`);
+      const frameWidth = Number(work.imageWidth) || 16;
+      const frameHeight = Number(work.imageHeight) || 9;
+      figure.style.setProperty('--ar', `${frameWidth} / ${frameHeight}`);
+      if (frameHeight > frameWidth) figure.classList.add('is-portrait');
       const link = coverLink(work, 'film-frame__link');
-      link.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), (max-width: 1180px) 90vw, 1160px'));
+      // 06 展演距首屏 5 屏以上，封面不该在首屏就抢带宽——与首屏 hero 同一批请求
+      // 会拖慢 LCP。四张全部 lazy，滚动到附近再取。
+      link.append(image(work, false, '(max-width: 767px) calc(100vw - 40px), (max-width: 1180px) 90vw, 1160px'));
       const play = element('button', 'film-play');
       play.type = 'button';
       if (safeUrl(work.media?.src)) {
@@ -707,7 +782,7 @@ function renderStage(works, container) {
     if (safeUrl(work.image)) {
       const figure = element('figure', `stage-visual reveal-figure ${ratioClass(work)}`);
       const link = coverLink(work, 'stage-visual__link');
-      link.append(image(work, true, '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 620px'));
+      link.append(image(work, false, '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 620px'));
       figure.append(link, cue('阅读'));
       figure.append(element('span', 'stage-beat', '舞台 01'));
       figure.append(element('figcaption', 'stage-caption', work.imageCaption || '舞台作品'));
@@ -972,8 +1047,14 @@ function workGallery(work) {
   return wrap;
 }
 
-const FONT_SIZES = { sm: '15px', md: '17px', lg: '19px' };
+// 字号档位只写倍率，绝对字号归 :root 的 --fs-body-base 管。
+// 窄屏媒体查询改的是基数，内联样式改的是倍率，两个不同的输入，
+// 所以内联值不会像以前那样把媒体查询整个压掉。
+const FONT_SCALES = { sm: 0.882, md: 1, lg: 1.118 };
 const FONT_LABELS = [['sm', '小'], ['md', '中'], ['lg', '大']];
+// 当前档位记在模块里：开关是详情页渲染时才建出来的，
+// 初始状态不能靠读 DOM 的 aria-pressed 反推。
+let fontSizeKey = 'md';
 
 function fontSizeControl() {
   const group = element('div', 'font-size');
@@ -983,34 +1064,88 @@ function fontSizeControl() {
     const button = element('button', '', label);
     button.type = 'button';
     button.dataset.size = key;
-    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-pressed', String(key === fontSizeKey));
     group.append(button);
   });
   return group;
 }
 
-function applyFontSize(key) {
-  const size = FONT_SIZES[key];
-  if (!size) return;
-  document.documentElement.style.setProperty('--fs-body', size);
+// 切档后正文会重排，视口里正在读的那一段必须留在原处。
+// 用元素锚定，不按比例补 scrollY——banner 与页眉不缩放，按比例补会漂。
+function readingAnchor() {
+  const limit = innerHeight * 0.25;
+  for (const node of $$('.reading-section > *')) {
+    if (node.getBoundingClientRect().bottom > limit) return node;
+  }
+  return null;
+}
+
+function syncFontSizeButtons() {
   $$('.font-size button').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.size === key));
+    button.setAttribute('aria-pressed', String(button.dataset.size === fontSizeKey));
   });
 }
 
+function applyFontSize(key) {
+  const scale = FONT_SCALES[key];
+  if (!scale) return;
+  fontSizeKey = key;
+  const anchor = readingAnchor();
+  const before = anchor ? anchor.getBoundingClientRect().top : 0;
+  document.documentElement.style.setProperty('--fs-scale', String(scale));
+  if (anchor) {
+    // 先读后写，读之前已经完成一次同步布局，这里拿到的是新位置。
+    // behavior 必须 instant：html 上有 scroll-behavior:smooth，
+    // 'auto' 会继承成异步动画，下一帧测量就落在动画中途。
+    const delta = anchor.getBoundingClientRect().top - before;
+    if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: 'instant' });
+    // 换行位置会晚一帧定型，等字体就绪再补一次
+    document.fonts?.ready.then(() => {
+      const drift = anchor.getBoundingClientRect().top - before;
+      if (Math.abs(drift) > 2) window.scrollBy({ top: drift, behavior: 'instant' });
+      resetReadingNav();
+      updateScrollUI();
+    });
+  }
+  resetReadingNav();
+  updateScrollUI();
+  syncFontSizeButtons();
+}
+
+// 开关在详情页渲染时才出现，而这里在 loadContent 之前就跑了，
+// 所以监听挂在 document 上做委托——挂 .font-size 会拿到 null 静默退出。
 function setupFontSize() {
-  const group = $('.font-size');
-  if (!group) return;
   let saved = null;
   try { saved = localStorage.getItem('zy-font-size'); } catch { /* storage optional */ }
-  if (saved && FONT_SIZES[saved]) applyFontSize(saved);
-  else $$('.font-size button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.size === 'md')));
-  group.addEventListener('click', event => {
-    const button = event.target.closest('button[data-size]');
+  if (saved && FONT_SCALES[saved]) applyFontSize(saved);
+  syncFontSizeButtons();
+  if (setupFontSize.bound) return;
+  setupFontSize.bound = true;
+  document.addEventListener('click', event => {
+    const button = event.target.closest('.font-size button[data-size]');
     if (!button) return;
     applyFontSize(button.dataset.size);
     try { localStorage.setItem('zy-font-size', button.dataset.size); } catch { /* ignore */ }
   });
+}
+
+// ≤980px 侧栏整列消失，场次导航也就没了。这里补一个在文档流里的折叠索引：
+// 可展开、可跳转、不跟随滚动——不用被否掉的「抽屉式吸顶」。
+function sceneIndexBlock(scenes) {
+  if (!scenes || scenes.length < 3) return null;
+  const box = element('details', 'scene-index');
+  box.id = 'scene-index';
+  box.append(element('summary', '', `场次索引 · 共 ${scenes.length} 场`));
+  const list = element('ol', 'scene-index__list');
+  scenes.forEach(scene => {
+    const item = element('li');
+    const link = element('a', '', scene.text);
+    link.href = `#${scene.id}`;
+    item.append(link);
+    list.append(item);
+  });
+  box.append(list);
+  return box;
 }
 
 function buildSceneNav(scenes, toc) {
@@ -1041,15 +1176,57 @@ function buildSceneNav(scenes, toc) {
   });
 }
 
-function updateSceneNav() {
+function updateReadingNav() {
+  const probe = innerHeight * READ_PROBE;
+  // 兜底：正文底部越过判定线说明人已经读完了，章与场都不该再高亮。
+  // 现有内容下这条不会触发——实测三种作品 × 1440/390 两档，最大滚动位置
+  // 正文底边都在 666–755px，远高于探针 287px，页面不存在「已滚过正文」
+  // 的状态，最后一节始终还在阅读线上。留着是为了将来放进来的短作品。
+  const article = $('.work-article');
+  const done = !!article && article.getBoundingClientRect().bottom < probe;
+  updateSceneNav(probe, done, updateChapterNav(probe, done));
+}
+
+// 只观察章节链接：场次链接也在同一份目录里，混进来会把场次高亮抹掉，
+// 两级高亮本该并存（章 → 场）。
+function updateChapterNav(probe, done) {
+  const toc = $('.work-toc');
+  if (!toc) return;
+  const links = $$('a:not([data-scene])', toc);
+  if (!links.length) return;
+  let active = null;
+  if (!done) {
+    links.forEach(link => {
+      const target = document.getElementById(link.hash.slice(1));
+      if (target && target.getBoundingClientRect().top <= probe) active = link;
+    });
+  }
+  // 章节没变也要把 section 交回去：场次靠它判断自己属不属于当前这一节。
+  const section = active ? document.getElementById(active.hash.slice(1)) : null;
+  if (active === updateChapterNav.last) return section;
+  updateChapterNav.last = active;
+  links.forEach(link => {
+    const on = link === active;
+    link.classList.toggle('is-active', on);
+    if (on) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  return section;
+}
+
+function updateSceneNav(probe, done, chapter) {
   const links = $$('[data-scene]');
   if (!links.length) return;
-  const probe = innerHeight * 0.34;
   let active = null;
-  links.forEach(link => {
-    const target = document.getElementById(link.dataset.scene);
-    if (target && target.getBoundingClientRect().top <= probe) active = link;
-  });
+  // 场次只认当前章节里的：翻到没有场次的一节时，场次高亮不该还停在
+  // 上一节的最后一场，两级目录要指向同一节。
+  if (!done && chapter) {
+    links.forEach(link => {
+      const target = document.getElementById(link.dataset.scene);
+      if (target && target.closest('.reading-section') === chapter
+        && target.getBoundingClientRect().top <= probe) active = link;
+    });
+  }
   if (active === updateSceneNav.last) return;
   updateSceneNav.last = active;
   links.forEach(link => link.classList.toggle('is-active', link === active));
@@ -1065,14 +1242,26 @@ function updateSceneNav() {
       const rect = active.getBoundingClientRect();
       const listRect = list.getBoundingClientRect();
       if (rect.top < listRect.top || rect.bottom > listRect.bottom) {
-        list.scrollTop += rect.top - listRect.top - listRect.height / 2;
+        // 目录跟随也要平滑：直接改 scrollTop 是硬跳，连着翻几场时列表一格一格闪。
+        // scroll-behavior 不继承，html 上的 smooth 管不到这个内部滚动容器。
+        list.scrollTo({
+          top: list.scrollTop + rect.top - listRect.top - listRect.height / 2,
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
       }
     }
   }
 }
 
+// 改字号会重排正文，缓存下来的 active 指向的可能是另一节了，强制重算。
+function resetReadingNav() {
+  updateChapterNav.last = null;
+  updateSceneNav.last = null;
+}
+
 function workBanner(work) {
   const banner = element('header', 'work-banner');
+  banner.dataset.dark = '';
   banner.append(element('div', 'work-banner__wash'));
   const inner = element('div', 'work-banner__inner');
   const kicker = element('div', 'work-banner__kicker');
@@ -1145,6 +1334,25 @@ function renderWork(work) {
 
   container.append(workBanner(work));
 
+  if (work.epigraph?.text) {
+    const band = element('section', 'work-epigraph');
+    const inner = element('div', 'work-epigraph__inner');
+    inner.append(element('p', 'work-epigraph__text', work.epigraph.text));
+    if (work.epigraph.from) inner.append(element('cite', 'work-epigraph__from', work.epigraph.from));
+    band.append(inner);
+    // 创作手记是题记网格的第二列，不是引言内的一段：
+    // 挂在 inner 里会让两列只剩一列有内容，右栏整片留白。
+    const notes = Array.isArray(work.epigraph.note) ? work.epigraph.note.filter(Boolean) : [];
+    if (notes.length) {
+      const note = element('div', 'work-epigraph__note');
+      notes.forEach(text => note.append(element('p', '', text)));
+      band.append(note);
+    } else {
+      band.classList.add('work-epigraph--solo');
+    }
+    container.append(band);
+  }
+
   const layout = element('div', 'work-layout');
   const toc = element('aside', 'work-toc');
   toc.append(element('p', '', '本文目录'));
@@ -1157,7 +1365,9 @@ function renderWork(work) {
   (work.sections || []).forEach((section, index) => {
     const block = element('section', 'reading-section');
     block.id = slug(index);
-    if (section.blocks?.length) block.classList.add('reading-section--script');
+    const sceneCountBefore = sceneNav.length;
+    const hasScriptBlocks = (section.blocks || []).some(item => item.type === 'scene' || item.type === 'dialogue');
+    if (hasScriptBlocks) block.classList.add('reading-section--script');
     if (section.title) {
       const heading = element('h2', 'reveal', section.title);
       if (!/^[一二三四五六七八九十0-9]/.test(section.title)) {
@@ -1185,9 +1395,22 @@ function renderWork(work) {
         block.append(paragraph);
       }
     });
+    // 一个剧本可能跨四五个 section，每段末尾给一个回索引的入口。
+    // 4 个而不是 98 个：按 section 给，不按场次给。
+    if (sceneNav.length > sceneCountBefore) {
+      const back = element('a', 'scene-index__back', '↑ 回到场次索引');
+      back.href = '#scene-index';
+      block.append(back);
+    }
     reading.append(block);
   });
   buildSceneNav(sceneNav, toc);
+  const sceneIndex = sceneIndexBlock(sceneNav);
+  if (sceneIndex) {
+    const firstSection = $('.reading-section', reading);
+    if (firstSection) reading.insertBefore(sceneIndex, firstSection);
+    else reading.append(sceneIndex);
+  }
   const gallery = workGallery(work);
   if (gallery) reading.append(gallery);
   const pages = pagePreviewBlock(work);
@@ -1201,7 +1424,12 @@ function renderWork(work) {
   article.append(reading);
 
   const end = element('div', 'work-end');
-  end.append(element('span', '', '感谢阅读'), returnLink(work.category));
+  // ≤1240px 右栏消失后，全站就没有「回到顶部」了。在文末给一个，
+  // 不做浮动按钮——浮层会一直压在文字上。
+  const toTop = element('button', 'work-end__top', '↑ 回到顶部');
+  toTop.type = 'button';
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+  end.append(element('span', '', '感谢阅读'), toTop, returnLink(work.category));
   article.append(end);
 
   const worksNav = element('nav', 'works-nav');
@@ -1248,17 +1476,11 @@ function renderWork(work) {
   $('#header-back')?.replaceWith(returnLink(work.category, 'back-link'));
   document.title = `${work.title} · ${siteTitle}`;
 
-  // 目录进度
-  const tocLinks = $$('a', toc);
-  if (tocLinks.length && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        tocLinks.forEach(link => link.classList.toggle('is-active', link.hash === `#${entry.target.id}`));
-      });
-    }, { rootMargin: '-18% 0px -65% 0px', threshold: 0 });
-    $$('.reading-section', article).forEach(section => observer.observe(section));
-  }
+  // 目录进度交给 updateReadingNav()：章节与场次共用同一条 34% 判定线，
+  // 这里不再单独开 IntersectionObserver——18%–35% 的观察带和场次的 34% 探针
+  // 是两套阈值，文末会给出互相矛盾的答案。
+  resetReadingNav();
+  updateScrollUI();
   if (window.markLightboxTriggers) window.markLightboxTriggers();
 }
 
@@ -1296,9 +1518,16 @@ function showLoadError() {
 
 function setupReturnTracking() {
   window.addEventListener('pagehide', () => {
-    store(historyKey, { y: window.scrollY, hash: location.hash, time: Date.now() });
+    store(historyKey, {
+      y: window.scrollY,
+      hash: location.hash,
+      path: location.pathname + location.search,
+      time: Date.now(),
+    });
   });
   document.addEventListener('click', event => {
+    // 详情页的「上一篇 / 下一篇」不该覆盖首页的返回位置
+    if (!isHome) return;
     const link = event.target.closest('a.work-link-target');
     if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     store(returnKey, { y: window.scrollY, hash: location.hash, category: link.dataset.category, time: Date.now() });
@@ -1310,11 +1539,60 @@ function restorePosition() {
   if (!request) return;
   removeStored(restoreKey);
   if (!Number.isFinite(request.y) || Date.now() - request.time > 1000 * 60 * 120) return;
+  // historyKey 全站共用，从详情页退回来时带着的是详情页的路径，不能拿来定位首页
+  if (request.path && request.path !== location.pathname + location.search) return;
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
   ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
-    if (request.hash && /^#[a-z-]+$/.test(request.hash)) history.replaceState(null, '', request.hash);
+    if (request.hash && /^#[a-z0-9-]+$/.test(request.hash)) history.replaceState(null, '', request.hash);
     window.scrollTo({ top: request.y, behavior: 'instant' });
   })));
+}
+
+/* ---------- 详情页：位置恢复与深链 ---------- */
+
+// 正文里的图解码完高度才定型，字体同理。两样都就位再定位。
+// 懒加载的图在进入视口前 decode() 可能永远不落地，所以先改成 eager，
+// 再兜一个 700ms 上限——否则深链会一直等在那里不滚。
+function readingSettled() {
+  const imgs = [...document.querySelectorAll('.work-reading img')];
+  imgs.forEach(img => { if (!img.complete) img.loading = 'eager'; });
+  const settle = Promise.all([
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    ...imgs.map(img => img.decode().catch(() => {})),
+  ]);
+  return Promise.race([settle, new Promise(resolve => setTimeout(resolve, 700))]);
+}
+
+// 详情页没有 returnKey（那是首页的位置），只有 historyKey。
+// 只有从别的页面退回来、且路径对得上时才还位置。
+function restoreWorkPosition() {
+  const isHistoryReturn = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+  if (!isHistoryReturn) return;
+  const request = getStored(historyKey);
+  if (!request || !Number.isFinite(request.y)) return;
+  if (request.path !== location.pathname + location.search) return;
+  if (Date.now() - request.time > 1000 * 60 * 120) return;
+  readingSettled().then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.scrollTo({ top: request.y, behavior: 'instant' });
+  })));
+}
+
+// #scene-30 / #section-3 直达。图片解码会把位置顶走，所以解码后再滚，
+// 600ms 后再校正一次——只补超过 4px 的漂移。
+function scrollToDeepLink() {
+  if (!/^#(scene|section)-\d+$/.test(location.hash)) return false;
+  const target = document.getElementById(location.hash.slice(1));
+  if (!target) return false;
+  readingSettled().then(() => {
+    target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    setTimeout(() => {
+      const offset = ($('#site-header')?.offsetHeight || 0) + 18;
+      const drift = target.getBoundingClientRect().top - offset;
+      if (Math.abs(drift) > 4) window.scrollBy({ top: drift, behavior: 'instant' });
+      updateScrollUI();
+    }, 600);
+  });
+  return true;
 }
 
 /* ---------- 页面转场 ---------- */
@@ -1364,7 +1642,7 @@ async function loadContent() {
           else node.textContent = intro;
         }
       }
-      const renderers = { scripts: renderScripts, essays: renderEssays, films: renderFilms, stage: renderStage, sound: renderSound };
+      const renderers = { scripts: renderScripts, essays: renderEssays, papers: renderPapers, films: renderFilms, stage: renderStage, sound: renderSound };
       categories.forEach(category => {
         const container = $(`#${category}-list`);
         const works = data.works.filter(work => work.category === category);
@@ -1384,6 +1662,8 @@ async function loadContent() {
       if (work) {
         renderWork(work);
         observeReveals();
+        // 深链优先：有 #scene-N 就不还旧位置
+        if (!scrollToDeepLink()) restoreWorkPosition();
       } else renderNotFound();
     }
   } catch {
@@ -1416,5 +1696,6 @@ setupSoundPreview();
 setupCopyLink();
 setupPageTransitions();
 setupFontSize();
-if (isHome) setupReturnTracking();
+// 详情页也要挂：pagehide 里存的位置是「从详情页退回首页」时用的
+setupReturnTracking();
 loadContent();

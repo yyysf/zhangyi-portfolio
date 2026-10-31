@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f2f6f3">
-  <meta name="description" content="张艺的个人作品集：剧本《百元大钞》《她的秋》，影评《日掛中天》，随笔《我观葡萄》，声音作品《今晚，稻田没有睡》《守岁的电波》，影像《绍兴暖契》与舞台作品《作为树的形象》。">
+  <meta name="description" content="张艺的个人作品集：剧本《百元大钞》《她的秋》，影评《日掛中天》，随笔《我观葡萄》，研读札记三篇，声音作品《今晚，稻田没有睡》《守岁的电波》，影像《绍兴暖契》《时间“贷”价》《竹林深处》与舞台作品《作为树的形象》。">
   <title>张艺的作品集</title>
   <link rel="canonical" href="https://yyysf.github.io/zhangyi-portfolio/">
   <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="张艺的作品集">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:title" content="张艺的作品集｜剧本 · 影评 · 影像 · 声音 · 舞台">
+  <meta property="og:title" content="张艺的作品集｜剧本 · 影评 · 研读札记 · 声音 · 展演影像">
   <meta property="og:description" content="浙江越秀外国语学院戏剧影视文学 2301 张艺的个人作品集。">
   <meta property="og:url" content="https://yyysf.github.io/zhangyi-portfolio/">
   <meta property="og:image" content="https://yyysf.github.io/zhangyi-portfolio/assets/brand/og-cover.jpg">
@@ -20,8 +20,15 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="张艺的作品集分享封面：随笔《我观葡萄》与剧本《她的秋》">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preload" href="assets/fonts/wenkai-subset.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/images/meadow.webp">
+  <link rel="preload" href="assets/fonts/wenkai-title.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- imagesrcset/imagesizes 必须与首屏 hero 的 img 逐字一致：
+       只写 href 的话浏览器无条件下 1536w 的 350KB，而 img 自己按 sizes="100vw"
+       在 1x 窄屏上挑的是 768w 的 57KB——大图白下一趟。
+       实测 390@1x / 768@1x：407KB → 57KB。2x 手机（780 设备像素 > 768w）
+       本来就取大图，这里不影响。 -->
+  <link rel="preload" as="image" href="assets/images/meadow.webp"
+        imagesrcset="assets/images/meadow-small.webp 768w, assets/images/meadow.webp 1536w"
+        imagesizes="100vw">
   <link rel="stylesheet" href="assets/style.css">
   <script type="module" src="assets/app.js"></script>
 </head>
@@ -37,9 +44,9 @@
         <a href="#about" data-nav="about">关于</a>
         <a href="#scripts" data-nav="scripts">剧本</a>
         <a href="#essays" data-nav="essays">影评</a>
-        <a href="#films" data-nav="films">影像</a>
+        <a href="#papers" data-nav="papers">研读札记</a>
         <a href="#sound" data-nav="sound">声音</a>
-        <a href="#stage" data-nav="stage">舞台</a>
+        <a href="#showcase" data-nav="showcase">展演影像</a>
       </nav>
       <div class="header-tools">
         <span class="header-edition" id="header-chapter" aria-hidden="true">00 / 07</span>
@@ -60,29 +67,29 @@
       </div>
       <div class="index-dialog__layout">
         <div class="index-dialog__head">
-          <h2 id="index-title">四间房间，<br>慢慢看。</h2>
+          <h2 id="index-title">五间房间，<br>慢慢看。</h2>
           <p>从文字出发，经过影像、声音与舞台。点击任意一页，直接进入。</p>
         </div>
         <nav class="index-list" aria-label="作品目录">
-          <a href="#about" data-menu-link data-preview="assets/images/meadow-small.webp" data-preview-caption="关于 · 写作与生活">
+          <a href="#about" data-menu-link data-preview="assets/images/meadow-small.webp" data-preview-w="768" data-preview-h="512" data-preview-caption="关于 · 写作与生活">
             <span class="index-list__no">01</span><span class="index-list__title">关于</span><span class="index-list__note">个人简介与作品分类</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#scripts" data-menu-link data-preview="assets/works/qiutian-small.webp" data-preview-caption="剧本 · 她的秋">
+          <a href="#scripts" data-menu-link data-preview="assets/works/qiutian-small.webp" data-preview-w="537" data-preview-h="700" data-preview-caption="剧本 · 她的秋">
             <span class="index-list__no">02</span><span class="index-list__title">原创剧本</span><span class="index-list__note">《百元大钞》与《她的秋》</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#essays" data-menu-link data-preview="assets/works/putao-small.webp" data-preview-caption="随笔 · 我观葡萄">
+          <a href="#essays" data-menu-link data-preview="assets/works/putao-small.webp" data-preview-w="486" data-preview-h="700" data-preview-caption="随笔 · 我观葡萄">
             <span class="index-list__no">03</span><span class="index-list__title">影评随笔</span><span class="index-list__note">一篇电影评论，一篇获奖随笔</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#films" data-menu-link data-preview="assets/works/shaoxing-small.webp" data-preview-caption="影像 · 绍兴暖契">
-            <span class="index-list__no">04</span><span class="index-list__title">影像成片</span><span class="index-list__note">文本与影像 · 绍兴暖契</span><span class="index-list__arrow" aria-hidden="true">↗</span>
+          <a href="#papers" data-menu-link data-preview="assets/works/wanou-small.webp" data-preview-w="700" data-preview-h="998" data-preview-caption="研读札记 · 玩偶之家">
+            <span class="index-list__no">04</span><span class="index-list__title">文学与戏剧研读札记</span><span class="index-list__note">三篇论文 · 门、气味与一座城</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#sound" data-menu-link data-preview="assets/works/daotian-small.webp" data-preview-caption="声音 · 今晚，稻田没有睡">
-            <span class="index-list__no">05</span><span class="index-list__title">声音实践</span><span class="index-list__note">两段声音叙事练习</span><span class="index-list__arrow" aria-hidden="true">↗</span>
+          <a href="#sound" data-menu-link data-preview="assets/works/daotian-small.webp" data-preview-w="504" data-preview-h="700" data-preview-caption="声音 · 今晚，稻田没有睡">
+            <span class="index-list__no">05</span><span class="index-list__title">声音时间</span><span class="index-list__note">两段声音叙事练习</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#stage" data-menu-link data-preview="assets/works/tree-poster-small.webp" data-preview-caption="舞台 · 作为树的形象">
-            <span class="index-list__no">06</span><span class="index-list__title">舞台实践</span><span class="index-list__note">原创舞台作品 · 作为树的形象</span><span class="index-list__arrow" aria-hidden="true">↗</span>
+          <a href="#showcase" data-menu-link data-preview="assets/works/shaoxing-small.webp" data-preview-w="700" data-preview-h="376" data-preview-caption="展演 · 绍兴暖契与作为树的形象">
+            <span class="index-list__no">06</span><span class="index-list__title">展演与影像创作</span><span class="index-list__note">四部影像 · 一次舞台</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#thanks" data-menu-link data-preview="assets/images/meadow-small.webp" data-preview-caption="谢谢你看完">
+          <a href="#thanks" data-menu-link data-preview="assets/images/meadow-small.webp" data-preview-w="768" data-preview-h="512" data-preview-caption="谢谢你看完">
             <span class="index-list__no">07</span><span class="index-list__title">致谢</span><span class="index-list__note">谢谢你看完</span><span class="index-list__arrow" aria-hidden="true">↗</span>
           </a>
         </nav>
@@ -134,11 +141,11 @@
       </div>
       <div class="hero-foot">
         <nav class="hero-index" aria-label="作品分类索引">
-          <a href="#scripts"><b>01</b><span>原创剧本</span></a>
-          <a href="#essays"><b>02</b><span>影评随笔</span></a>
-          <a href="#films"><b>03</b><span>影像成片</span></a>
-          <a href="#sound"><b>04</b><span>声音实践</span></a>
-          <a href="#stage"><b>05</b><span>舞台实践</span></a>
+          <a href="#scripts" data-room="scripts"><i class="room-bar" aria-hidden="true"></i><span>原创剧本</span></a>
+          <a href="#essays" data-room="essays"><i class="room-bar" aria-hidden="true"></i><span>影评随笔</span></a>
+          <a href="#papers" data-room="papers"><i class="room-bar" aria-hidden="true"></i><span>研读札记</span></a>
+          <a href="#sound" data-room="sound"><i class="room-bar" aria-hidden="true"></i><span>声音时间</span></a>
+          <a href="#showcase" data-room="showcase"><i class="room-bar" aria-hidden="true"></i><span>展演影像</span></a>
         </nav>
         <p class="hero-location">浙江 · 绍兴</p>
         <a class="scroll-cue" href="#about" aria-label="向下浏览">
@@ -162,7 +169,7 @@
           <div class="about-copy reveal">
             <p class="about-lead">我叫张艺，浙江越秀外国语学院戏剧影视文学专业。</p>
             <p>我喜欢从很小的东西开始：一段没说完的话、下午四点的光、水烧开前的声音。它们通常不会成为故事，但会留在故事里。</p>
-            <p>这个作品集分成四个房间：剧本、影评与影像、声音、舞台。它们记录我如何写、如何看、如何听见，也如何站在光里。</p>
+            <p>这个作品集分成五个房间：剧本、影评、研读札记、声音与展演影像。它们记录我如何写、如何看、如何听见，也如何站在光里。</p>
             <div class="about-meta">
               <span>写作</span><span>影像</span><span>声音</span><span>舞台</span>
             </div>
@@ -176,27 +183,27 @@
           <div class="room-index reveal" data-room-index>
             <p class="room-index__hint"><span aria-hidden="true">↳</span> 悬停或轻触，预览房间</p>
             <div class="room-list">
-              <a class="room is-active" href="#scripts" data-preview="assets/works/qiutian-small.webp" data-preview-caption="剧本 · 她的秋">
-                <span class="room-no">01</span><span class="room-title">原创剧本</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room is-active" href="#scripts" data-room="scripts" data-preview="assets/works/qiutian-small.webp" data-preview-caption="剧本 · 她的秋">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">原创剧本</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#essays" data-preview="assets/works/putao-small.webp" data-preview-caption="随笔 · 我观葡萄">
-                <span class="room-no">02</span><span class="room-title">影评随笔</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#essays" data-room="essays" data-preview="assets/works/putao-small.webp" data-preview-caption="随笔 · 我观葡萄">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">影评随笔</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#films" data-preview="assets/works/shaoxing-small.webp" data-preview-caption="影像 · 绍兴暖契">
-                <span class="room-no">03</span><span class="room-title">影像成片</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#papers" data-room="papers" data-preview="assets/works/caoyu-small.webp" data-preview-caption="研读札记 · 气味叙事">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">研读札记</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#sound" data-preview="assets/works/daotian-small.webp" data-preview-caption="声音 · 今晚，稻田没有睡">
-                <span class="room-no">04</span><span class="room-title">声音实践</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#sound" data-room="sound" data-preview="assets/works/daotian-small.webp" data-preview-caption="声音 · 今晚，稻田没有睡">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">声音时间</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
-              <a class="room" href="#stage" data-preview="assets/works/tree-poster-small.webp" data-preview-caption="舞台 · 作为树的形象">
-                <span class="room-no">05</span><span class="room-title">舞台实践</span><span class="room-arrow" aria-hidden="true">→</span>
+              <a class="room" href="#showcase" data-room="showcase" data-preview="assets/works/tree-poster-small.webp" data-preview-caption="展演 · 作为树的形象">
+                <i class="room-bar" aria-hidden="true"></i><span class="room-title">展演影像</span><span class="room-arrow" aria-hidden="true">→</span>
               </a>
             </div>
             <figure class="room-preview reveal-figure" aria-hidden="true">
               <img id="room-preview-image" src="assets/works/qiutian-small.webp" alt="" width="700" height="912" loading="lazy" decoding="async">
               <figcaption id="room-preview-caption">剧本 · 她的秋</figcaption>
             </figure>
-            <p class="room-foot">四间房间，慢慢看。</p>
+            <p class="room-foot">五间房间，慢慢看。</p>
           </div>
         </div>
 
@@ -257,17 +264,23 @@
       </div>
     </section>
 
-    <section class="section films" id="films" aria-labelledby="films-title">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-no" aria-hidden="true">04</span>
-          <div class="chapter-heading">
-            <p class="eyebrow">影像成片</p>
-            <h2 id="films-title">把一瞬间，留在时间里。</h2>
-          </div>
-          <p class="chapter-side">一次关于绍兴冬天的<br>文本与影像记录。</p>
+    <section class="section section--plated papers" id="papers" aria-labelledby="papers-title">
+      <div class="chapter-plate reveal">
+        <div class="chapter-plate__bg" aria-hidden="true">
+          <img src="assets/images/reading.webp" srcset="assets/images/reading-small.webp 768w, assets/images/reading.webp 1536w" sizes="100vw" alt="" width="1536" height="948" loading="lazy" decoding="async">
         </div>
-        <div id="films-list" class="films-layout" aria-busy="true"><p class="loading-message">正在整理影像…</p></div>
+        <span class="chapter-plate__char" aria-hidden="true">研</span>
+        <div class="chapter-plate__inner shell">
+          <span class="chapter-plate__no">04</span>
+          <div class="chapter-plate__copy">
+            <p class="eyebrow">文学与戏剧研读札记</p>
+            <h2 id="papers-title">一扇门、一种气味、一座城。</h2>
+          </div>
+          <p class="chapter-side">三篇论文，<br>三次把文本读成可以走进去的空间。</p>
+        </div>
+      </div>
+      <div class="shell">
+        <div id="papers-list" class="papers-layout" aria-busy="true"><p class="loading-message">正在整理札记…</p></div>
       </div>
     </section>
 
@@ -280,13 +293,14 @@
         <div class="chapter-plate__inner shell">
           <span class="chapter-plate__no">05</span>
           <div class="chapter-plate__copy">
-            <p class="eyebrow">声音实践</p>
+            <p class="eyebrow">声音时间</p>
             <h2 id="sound-title">把耳朵借给日常。</h2>
           </div>
           <p class="chapter-side">两段声音叙事练习。<br>关于回家，也关于守岁。</p>
         </div>
       </div>
-      <div class="shell sound-panel">
+      <div class="sound-fade" aria-hidden="true"></div>
+      <div class="shell sound-panel" data-dark>
         <div class="sound-grid">
           <div class="sound-intro reveal">
             <p class="sound-lead">有些东西只留在声音里：稻田里的风、除夕夜的值班室、电话那头热闹又遥远的饭桌。它们不构成事件，却构成一个下午，或者一年里最难忘记的一晚。</p>
@@ -325,7 +339,7 @@
       </div>
     </section>
 
-    <section class="pause" aria-label="声音一章的余音">
+    <section class="pause" data-dark aria-label="声音一章的余音">
       <div class="shell pause__inner reveal">
         <p class="pause__eyebrow">余音 · 声</p>
         <p class="pause__line">你们平安到家，<br>在家里好好休息就很好啦。</p>
@@ -333,27 +347,37 @@
       </div>
     </section>
 
-    <section class="section section--plated stage" id="stage" aria-labelledby="stage-title">
-      <div class="chapter-plate reveal">
+    <section class="section section--plated showcase" id="showcase" aria-labelledby="showcase-title">
+      <div class="chapter-plate reveal" data-dark>
         <div class="chapter-plate__bg" aria-hidden="true">
           <img src="assets/images/rehearsal.webp" srcset="assets/images/rehearsal-small.webp 768w, assets/images/rehearsal.webp 1536w" sizes="100vw" alt="" width="1536" height="1024" loading="lazy" decoding="async">
         </div>
-        <span class="chapter-plate__char" aria-hidden="true">台</span>
+        <span class="chapter-plate__char" aria-hidden="true">展</span>
         <div class="chapter-plate__inner shell">
           <span class="chapter-plate__no">06</span>
           <div class="chapter-plate__copy">
-            <p class="eyebrow">舞台实践</p>
-            <h2 id="stage-title">在灯亮起来之前。</h2>
+            <p class="eyebrow">展演与影像创作</p>
+            <h2 id="showcase-title">在灯亮起来之前。</h2>
           </div>
-          <p class="chapter-side">一次从剧本到舞台的<br>完整实践。</p>
+          <p class="chapter-side">四部影像，一次舞台。<br>从镜头前到灯光下。</p>
         </div>
       </div>
-      <div class="shell">
-        <div id="stage-list" class="stage-layout" aria-busy="true"><p class="loading-message">正在整理舞台记录…</p></div>
+      <div class="showcase-group showcase-group--films" data-dark>
+        <div class="shell">
+          <h3 class="showcase-head reveal">影像</h3>
+          <div id="films-list" class="films-layout" aria-busy="true"><p class="loading-message">正在整理影像…</p></div>
+        </div>
+      </div>
+
+      <div class="showcase-group showcase-group--stage">
+        <div class="shell">
+          <h3 class="showcase-head reveal">舞台</h3>
+          <div id="stage-list" class="stage-layout" aria-busy="true"><p class="loading-message">正在整理舞台记录…</p></div>
+        </div>
       </div>
     </section>
 
-    <section class="section thanks" id="thanks" aria-labelledby="thanks-title">
+    <section class="section thanks" id="thanks" data-dark aria-labelledby="thanks-title">
       <div class="shell thanks-inner">
         <p class="eyebrow reveal">07 · 致谢</p>
         <h2 id="thanks-title" class="reveal">谢谢你看完。</h2>
