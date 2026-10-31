@@ -2010,48 +2010,62 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
    封面通栏，标题压在图片下面，正文一栏到底。
    竖的封面不裁——整幅放在一块纸色版面上，像杂志里插的一页图版。 */
 .essays-layout{display:grid;gap:0;border-top:1px solid var(--line)}
+/* 03 影评：图左、字右，两件作品**同一套版式、同一个图版比例**。
+
+   以前按封面横竖分流——横图走通栏「图在上、字在下」（占卡宽 100%），
+   竖图走「图左、字右」（只占 26.9%）。同一房间里一件占满整幅、
+   另一件缩成一条，读起来像两套版式在打架。
+
+   改过两轮都不成立：
+     ① 按面积对齐（横 560×306、竖 352×507）：面积接近，但 1.83 和 0.694
+        并排放着，一个又扁又长一个又窄又高，卡片高度还差一倍。
+     ② 按高度对齐（都是 330 高，宽 603 / 229）：顶底齐了，但竖版只剩 229px 宽，
+        两件面积差 2.6 倍，看上去还是一大一小。
+   1.83 ÷ 0.694 = 2.6，只要不裁切，怎么排都会留下这个落差。
+
+   所以统一裁成 4:3，两件图版尺寸完全相同（560 × 420）。
+   为什么是 4:3：它是横竖两个比例的中间值偏横一档，竖图损失 48%（上下各裁 24%）、
+   横图损失 27%（左右各裁 13.5%）——两边都留着主体，也没有哪一边被砍掉一半。
+   如果统一成 3:2，竖图要裁 54%；统一成 1:1，横图要裁 45%。
+
+   代价：竖版封面上下各裁约四分之一。这是「两件看起来一样」必须付的钱，
+   不裁就没有一致的版式——比例差 2.6 倍，不存在两边都不裁又一样大的排法。 */
 .essay-card{
-  display:flex;
-  flex-direction:column;
-  gap:clamp(24px,3.2vw,42px);
+  display:grid;
+  grid-template-columns:clamp(300px,43vw,560px) minmax(0,1fr);
+  gap:clamp(26px,3.6vw,56px);
+  align-items:start;
   padding:clamp(38px,4.8vw,68px) 0;
   border-bottom:1px solid var(--line);
 }
 .essay-card .essay-visual{
-  order:-1;
   width:100%;
   max-width:none;
-  align-self:stretch;
+  align-self:start;
   padding:0;
   border:0;
   background:none;
   box-shadow:none;
   transform:none;
 }
+/* 图版一律 4:3，横竖两件完全对称。img 用 cover 填满，
+   比例由框决定，--ar 不再参与——两个原始比例差 2.6 倍，
+   让框跟着图走就等于没有统一。 */
 .essay-card .essay-visual__link{
   position:relative;
   display:block;
-  height:clamp(240px,34vw,440px);
+  width:100%;
+  height:auto;
   min-height:0;
+  aspect-ratio:var(--ar-essay,4/3);
+  background:var(--paper-deep);
   box-shadow:inset 0 0 0 1px var(--line-soft);
 }
-.essay-card .essay-visual--portrait .essay-visual__link{
-  height:clamp(300px,42vw,368px);
-  background:var(--paper-deep);
-}
-/* 窄屏的旧规则会把横图改回 static + 16:10（那时是两栏并排）。
-   现在封面是通栏图版，必须整块撑满，所以用更高的权重顶回去。 */
 .essay-card .essay-visual--landscape .essay-visual__link{
-  height:clamp(240px,34vw,440px);
-  min-height:0;
-}
-.essay-card .essay-visual--landscape img{
-  position:absolute;
-  inset:0;
   width:100%;
-  height:100%;
-  aspect-ratio:auto;
-  object-fit:cover;
+  height:auto;
+  min-height:0;
+  aspect-ratio:var(--ar-essay,4/3);
 }
 .essay-card .essay-visual img{
   position:absolute;
@@ -2061,57 +2075,30 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   aspect-ratio:auto;
   object-fit:cover;
 }
-.essay-card .essay-visual--portrait img{object-fit:contain;background:none}
+.essay-card .essay-visual--portrait img{object-fit:cover;background:none}
 .essay-card .essay-visual figcaption{padding-top:12px}
 
-/* 竖版封面：图版 + 说明栏并排。
-   之前竖版封面也是通栏图版：1308×368 的框里 object-fit:contain，
-   1111×1600 的画只占 255px，剩下 1050px 是一片空纸——看起来像版式坏了，
-   而不是「一张被单拎出来的照片」。这里把框的比例直接设成原图比例
-   （--ar 由 app.js 从 imageWidth/imageHeight 写进 figure），
-   框和画一样高，两边不会再留空；右边那一栏交给卡片文字，
-   空出来的位置有人用，图版就不再是孤零零的一页。 */
-.essay-card.essay-card--portrait{
-  display:grid;
-  grid-template-columns:clamp(220px,25vw,352px) minmax(0,1fr);
-  gap:clamp(26px,3.6vw,56px);
-  align-items:start;
-}
-/* 选择器要写到三级类，否则会被后面断点块里
-   `.essay-card .essay-visual--portrait .essay-visual__link`（同为 0,3,0）
-   按顺序盖掉。这里不靠顺序，靠权重。 */
-.essay-card.essay-card--portrait .essay-visual__link{
-  height:auto;
-  aspect-ratio:var(--ar,3/4);
-  background:var(--paper-deep);
-}
-.essay-card.essay-card--portrait .essay-visual img{
-  object-fit:cover;
-  background:none;
-}
-/* 图版比文字高，右栏拉满后把「阅读全文」那一行推到图版底部，
-   两栏收在同一条基线上；不然文字结束在图版一半的位置，下面空一大块。 */
-.essay-card--portrait .essay-content{align-self:stretch}
-.essay-card--portrait .essay-foot{margin-top:auto}
-.essay-card .essay-content{max-width:46em}
+/* 图版比文字高时，右栏拉满、把「阅读全文」推到图版底部，
+   两栏收在同一条基线上。横版竖版都要，否则一件齐底、一件齐顶。 */
+.essay-card .essay-content{align-self:stretch;max-width:46em}
+.essay-card .essay-foot{margin-top:auto}
 .essay-card h3{font-size:clamp(30px,3.9vw,50px);line-height:var(--lh-heading);max-width:17em}
 .essay-summary{max-width:34em}
 .essay-foot{margin-top:clamp(22px,3vw,32px)}
-/* 并排撑不住的时候回到单栏：220px 的图版 + 26px 间距，在 900px 以下
-   留给正文的只剩不到 600px，标题会挤成一条。 */
+/* 并排撑不住就回到单栏：560px 的图版 + 56px 间距，在 900 以下
+   留给正文不到 300px，标题会挤成一条。 */
 @media(max-width:900px){
-  .essay-card.essay-card--portrait{grid-template-columns:minmax(0,1fr);gap:clamp(22px,3.4vw,30px)}
-  /* 居中：62vw 在 390 下是 241.8px，栏宽 350px，左边 0、右边空 108px——
-     既不居中也不满宽，是「退让了一半」的布局。宽度不动，改用 margin 居中，
-     两边各 54px，读起来才像一张被单独拎出来的图版。
-     没有改成 78vw：图版是带 1px 内描边的「插页」，撑满栏宽就变成了通栏题图，
-     和 02/06 的整幅图重复。 */
-  .essay-card.essay-card--portrait .essay-visual{width:min(100%,62vw);max-width:352px;margin-inline:auto}
+  .essay-card{grid-template-columns:minmax(0,1fr);gap:clamp(22px,3.4vw,30px)}
+  /* 单栏后图版撑满栏宽。比例仍是 4:3，所以两件在手机上也还是同一个形状，
+     只是尺寸从「并排的一半」变成「整栏」，不另设比例。 */
+  .essay-card .essay-visual{width:100%;max-width:none;margin-inline:0}
+  .essay-card .essay-visual__link,
+  .essay-card .essay-visual--landscape .essay-visual__link{width:100%;height:auto}
 }
 @media(max-width:767px){
-  .essay-card .essay-visual__link{height:clamp(200px,52vw,300px)}
-  .essay-card .essay-visual--landscape .essay-visual__link{height:clamp(200px,52vw,300px)}
-  /* 竖版不再写死高度：高度由 --ar 算，写死会在画两边留出空纸 */
+  /* 4:3 在窄屏上偏高（350 宽 → 262 高），但仍比原比例的通栏横图更规矩，
+     而且和另一件一致。这里不再单独改比例。 */
+  .essay-card .essay-visual--landscape .essay-visual__link{height:auto}
 }
 
 /* ---------- 影像 ---------- */

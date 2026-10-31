@@ -661,20 +661,21 @@ function renderEssays(works, container) {
     if (safeUrl(work.image)) {
       const portrait = work.imageRatio === 'portrait';
       const figure = element('figure', `essay-visual essay-visual--${portrait ? 'portrait' : 'landscape'} reveal-figure`);
-      if (portrait) {
-        // 竖版封面不能通栏。1111×1600 的画放进 1308×368 的框里，
-        // 只有 255px 有内容，剩下 1050px 是空纸——所以竖版改成
-        // 「图版 + 说明栏」并排，图版框直接用原图比例，画两边不留空。
-        article.classList.add('essay-card--portrait');
-        const w = Number(work.imageWidth);
-        const h = Number(work.imageHeight);
-        if (w && h) figure.style.setProperty('--ar', `${w} / ${h}`);
-      }
+      // 两件作品的版式必须一致：以前横图走通栏「图在上、字在下」、
+      // 竖图走「图左、字右」，同一房间里一件占满整幅、另一件只占四分之一，
+      // 读起来像两套版式。现在统一成图左字右，只有图版列宽按比例不同。
+      // 列宽不同是为了让两张图版的面积接近（560×306 ≈ 352×507），
+      // 不是随手给的数——详见 style.css 的 .essay-card 注释。
+      article.classList.add(portrait ? 'essay-card--portrait' : 'essay-card--landscape');
+      const w = Number(work.imageWidth);
+      const h = Number(work.imageHeight);
+      // --ar 两种都要写：图版框按原图比例排版，cover 才不会裁掉画面边缘的构图。
+      if (w && h) figure.style.setProperty('--ar', `${w} / ${h}`);
       const coverAnchor = coverLink(work, 'essay-visual__link');
       coverAnchor.append(
         image(work, index === 0, portrait
           ? '(max-width: 767px) 62vw, (max-width: 980px) 44vw, 340px'
-          : '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 520px'),
+          : '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 62vw, 560px'),
         cue('阅读')
       );
       figure.append(coverAnchor);
