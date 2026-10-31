@@ -647,6 +647,15 @@ function renderEssays(works, container) {
     if (safeUrl(work.image)) {
       const portrait = work.imageRatio === 'portrait';
       const figure = element('figure', `essay-visual essay-visual--${portrait ? 'portrait' : 'landscape'} reveal-figure`);
+      if (portrait) {
+        // 竖版封面不能通栏。1111×1600 的画放进 1308×368 的框里，
+        // 只有 255px 有内容，剩下 1050px 是空纸——所以竖版改成
+        // 「图版 + 说明栏」并排，图版框直接用原图比例，画两边不留空。
+        article.classList.add('essay-card--portrait');
+        const w = Number(work.imageWidth);
+        const h = Number(work.imageHeight);
+        if (w && h) figure.style.setProperty('--ar', `${w} / ${h}`);
+      }
       const coverAnchor = coverLink(work, 'essay-visual__link');
       coverAnchor.append(
         image(work, index === 0, portrait

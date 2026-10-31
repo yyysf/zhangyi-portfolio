@@ -1959,14 +1959,50 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .essay-card .essay-visual--portrait img{object-fit:contain;background:none}
 .essay-card .essay-visual figcaption{padding-top:12px}
+
+/* 竖版封面：图版 + 说明栏并排。
+   之前竖版封面也是通栏图版：1308×368 的框里 object-fit:contain，
+   1111×1600 的画只占 255px，剩下 1050px 是一片空纸——看起来像版式坏了，
+   而不是「一张被单拎出来的照片」。这里把框的比例直接设成原图比例
+   （--ar 由 app.js 从 imageWidth/imageHeight 写进 figure），
+   框和画一样高，两边不会再留空；右边那一栏交给卡片文字，
+   空出来的位置有人用，图版就不再是孤零零的一页。 */
+.essay-card.essay-card--portrait{
+  display:grid;
+  grid-template-columns:clamp(220px,25vw,352px) minmax(0,1fr);
+  gap:clamp(26px,3.6vw,56px);
+  align-items:start;
+}
+/* 选择器要写到三级类，否则会被后面断点块里
+   `.essay-card .essay-visual--portrait .essay-visual__link`（同为 0,3,0）
+   按顺序盖掉。这里不靠顺序，靠权重。 */
+.essay-card.essay-card--portrait .essay-visual__link{
+  height:auto;
+  aspect-ratio:var(--ar,3/4);
+  background:var(--paper-deep);
+}
+.essay-card.essay-card--portrait .essay-visual img{
+  object-fit:cover;
+  background:none;
+}
+/* 图版比文字高，右栏拉满后把「阅读全文」那一行推到图版底部，
+   两栏收在同一条基线上；不然文字结束在图版一半的位置，下面空一大块。 */
+.essay-card--portrait .essay-content{align-self:stretch}
+.essay-card--portrait .essay-foot{margin-top:auto}
 .essay-card .essay-content{max-width:46em}
 .essay-card h3{font-size:clamp(30px,3.9vw,50px);line-height:var(--lh-heading);max-width:17em}
 .essay-summary{max-width:34em}
 .essay-foot{margin-top:clamp(22px,3vw,32px)}
+/* 并排撑不住的时候回到单栏：220px 的图版 + 26px 间距，在 900px 以下
+   留给正文的只剩不到 600px，标题会挤成一条。 */
+@media(max-width:900px){
+  .essay-card.essay-card--portrait{grid-template-columns:minmax(0,1fr);gap:clamp(22px,3.4vw,30px)}
+  .essay-card.essay-card--portrait .essay-visual{width:min(100%,62vw);max-width:352px}
+}
 @media(max-width:767px){
   .essay-card .essay-visual__link{height:clamp(200px,52vw,300px)}
   .essay-card .essay-visual--landscape .essay-visual__link{height:clamp(200px,52vw,300px)}
-  .essay-card .essay-visual--portrait .essay-visual__link{height:clamp(240px,58vw,300px)}
+  /* 竖版不再写死高度：高度由 --ar 算，写死会在画两边留出空纸 */
 }
 
 /* ---------- 影像 ---------- */
@@ -3941,7 +3977,9 @@ body[data-category="scripts"] .work-header{
   .script-quote-panel{min-height:0}
   .essays-layout{grid-template-columns:1fr;border-top:0}
   .essay-card{
-    grid-template-columns:1fr;
+    /* 这里原有一行 grid-template-columns:1fr，是旧两栏影评卡留下的；
+       .essay-card 现在已经是 flex，这行不生效，却会按同权重
+       把 .essay-card--portrait 的网格压成单栏。删掉。 */
     gap:22px;
     padding-block:32px;
     border-top:1px solid var(--line);
