@@ -116,6 +116,13 @@ function slug(index) { return `section-${index + 1}`; }
 
 /* ---------- 页面级交互 ---------- */
 
+// 章节目录与场次导航共用同一条判定线：视口 34%。
+// 原来章节走 IntersectionObserver 的 18%–35% 观察带、场次走 34% 探针，
+// 两套阈值在文末给出不同答案——实测滚到 10800px 时章节还停在上一节，
+// 同一位置的场次却已经翻到下一节去了。改成同一个探针、同一次扫描，
+// 两级高亮就永远指向同一节。
+const READ_PROBE = .34;
+
 let scrollTick = false;
 // 阅读进度的分母用正文高度，不用整页高度：
 // 整页口径下，文末的「感谢阅读」、上一篇/下一篇和页脚会把满格稀释掉，
@@ -149,7 +156,7 @@ function updateScrollUI() {
     });
     header.classList.toggle('is-on-dark', onDark);
   }
-  updateSceneNav();
+  updateReadingNav();
   if (!reduceMotion) {
     const mid = viewport / 2;
     $$('.chapter-plate__bg img').forEach(img => {
@@ -1088,11 +1095,11 @@ function applyFontSize(key) {
     document.fonts?.ready.then(() => {
       const drift = anchor.getBoundingClientRect().top - before;
       if (Math.abs(drift) > 2) window.scrollBy({ top: drift, behavior: 'instant' });
-      updateSceneNav.last = null;
+      resetReadingNav();
       updateScrollUI();
     });
   }
-  updateSceneNav.last = null;
+  resetReadingNav();
   updateScrollUI();
   syncFontSizeButtons();
 }
@@ -1161,15 +1168,57 @@ function buildSceneNav(scenes, toc) {
   });
 }
 
-function updateSceneNav() {
+function updateReadingNav() {
+  const probe = innerHeight * READ_PROBE;
+  // 兜底：正文底部越过判定线说明人已经读完了，章与场都不该再高亮。
+  // 现有内容下这条不会触发——实测三种作品 × 1440/390 两档，最大滚动位置
+  // 正文底边都在 666–755px，远高于探针 287px，页面不存在「已滚过正文」
+  // 的状态，最后一节始终还在阅读线上。留着是为了将来放进来的短作品。
+  const article = $('.work-article');
+  const done = !!article && article.getBoundingClientRect().bottom < probe;
+  updateSceneNav(probe, done, updateChapterNav(probe, done));
+}
+
+// 只观察章节链接：场次链接也在同一份目录里，混进来会把场次高亮抹掉，
+// 两级高亮本该并存（章 → 场）。
+function updateChapterNav(probe, done) {
+  const toc = $('.work-toc');
+  if (!toc) return;
+  const links = $$('a:not([data-scene])', toc);
+  if (!links.length) return;
+  let active = null;
+  if (!done) {
+    links.forEach(link => {
+      const target = document.getElementById(link.hash.slice(1));
+      if (target && target.getBoundingClientRect().top <= probe) active = link;
+    });
+  }
+  // 章节没变也要把 section 交回去：场次靠它判断自己属不属于当前这一节。
+  const section = active ? document.getElementById(active.hash.slice(1)) : null;
+  if (active === updateChapterNav.last) return section;
+  updateChapterNav.last = active;
+  links.forEach(link => {
+    const on = link === active;
+    link.classList.toggle('is-active', on);
+    if (on) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  return section;
+}
+
+function updateSceneNav(probe, done, chapter) {
   const links = $$('[data-scene]');
   if (!links.length) return;
-  const probe = innerHeight * 0.34;
   let active = null;
-  links.forEach(link => {
-    const target = document.getElementById(link.dataset.scene);
-    if (target && target.getBoundingClientRect().top <= probe) active = link;
-  });
+  // 场次只认当前章节里的：翻到没有场次的一节时，场次高亮不该还停在
+  // 上一节的最后一场，两级目录要指向同一节。
+  if (!done && chapter) {
+    links.forEach(link => {
+      const target = document.getElementById(link.dataset.scene);
+      if (target && target.closest('.reading-section') === chapter
+        && target.getBoundingClientRect().top <= probe) active = link;
+    });
+  }
   if (active === updateSceneNav.last) return;
   updateSceneNav.last = active;
   links.forEach(link => link.classList.toggle('is-active', link === active));
@@ -1189,6 +1238,12 @@ function updateSceneNav() {
       }
     }
   }
+}
+
+// 改字号会重排正文，缓存下来的 active 指向的可能是另一节了，强制重算。
+function resetReadingNav() {
+  updateChapterNav.last = null;
+  updateSceneNav.last = null;
 }
 
 function workBanner(work) {
@@ -1408,19 +1463,11 @@ function renderWork(work) {
   $('#header-back')?.replaceWith(returnLink(work.category, 'back-link'));
   document.title = `${work.title} · ${siteTitle}`;
 
-  // 目录进度
-  // 只观察章节链接。场次链接也在这份目录里，混进来以后 section observer
-  // 每次触发都会把场次高亮抹掉——两套高亮本该并存（章 → 场 两级）。
-  const tocLinks = $$('a:not([data-scene])', toc);
-  if (tocLinks.length && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        tocLinks.forEach(link => link.classList.toggle('is-active', link.hash === `#${entry.target.id}`));
-      });
-    }, { rootMargin: '-18% 0px -65% 0px', threshold: 0 });
-    $$('.reading-section', article).forEach(section => observer.observe(section));
-  }
+  // 目录进度交给 updateReadingNav()：章节与场次共用同一条 34% 判定线，
+  // 这里不再单独开 IntersectionObserver——18%–35% 的观察带和场次的 34% 探针
+  // 是两套阈值，文末会给出互相矛盾的答案。
+  resetReadingNav();
+  updateScrollUI();
   if (window.markLightboxTriggers) window.markLightboxTriggers();
 }
 
