@@ -1,10 +1,6 @@
-"""Compress local illustrations and subset the locally licensed WenKai font."""
+"""压缩本地插画。字体子集见 build-wenkai-pairs.py，不在这里。"""
 from pathlib import Path
-import json
-import re
-from html import unescape
 from PIL import Image
-from fontTools import subset
 
 root = Path(__file__).resolve().parents[1]
 source = root / 'source-assets'
@@ -27,40 +23,9 @@ for name in ('meadow', 'platform', 'rehearsal', 'river', 'listening', 'reading')
     small_path = output / 'images' / f'{name}-small.webp'
     small.save(small_path, 'WEBP', quality=76, method=6)
     print(f'{small_path.name}: {small_path.stat().st_size // 1024} KB')
-data = json.loads((root / 'dist/data/portfolio.json').read_text(encoding='utf-8'))
-# WenKai is used for headings, not the long body text. Include exactly those
-# strings instead of shipping hundreds of unused glyphs from the sample scripts.
-corpus = '文本排演回看听研展这篇作品还没有放进来。'
-corpus += data['profile']['name'] + data['profile']['siteTitle']
-corpus += '原创剧本影评随笔文学与戏剧研读札记影像成片舞台实践声音时间关于剧本研读札记声音展演影像'
-for work in data['works']:
-    corpus += work['title'] + work.get('excerpt', '')
-    corpus += ''.join(section.get('title', '') for section in work.get('sections', []))
-    # Pull quotes and dialogue excerpts also use the local hand-written face.
-    if work['category'] == 'essays':
-        opening = work.get('sections', [{}])[0].get('paragraphs', [])
-        if len(opening) > 1:
-            corpus += opening[1].split('。')[0] + '。'
-    # 论文的子标题用同一套手写体，一并收进子集
-    corpus += ''.join(block.get('text', '') for section in work.get('sections', []) for block in section.get('blocks', []) if block.get('type') == 'subhead')
-    if work['category'] == 'scripts':
-        corpus += ''.join(block.get('text', '') for section in work.get('sections', []) for block in section.get('blocks', []) if block.get('type') == 'dialogue')
-for path in (root / 'dist').glob('*.html'):
-    text = path.read_text(encoding='utf-8')
-    for match in re.finditer(r'<h[123][^>]*>(.*?)</h[123]>|<p class="hero-quote">(.*?)</p>|<a class="wordmark"[^>]*>(.*?)</a>', text, re.S):
-        corpus += unescape(re.sub(r'<[^>]+>', '', ''.join(value or '' for value in match.groups())))
-options = subset.Options()
-options.flavor = 'woff2'
-options.name_IDs = ['*']
-font = subset.load_font(str(source / 'LXGWWenKai-Regular.ttf'), options)
-subsetter = subset.Subsetter(options=options)
-subsetter.populate(text=corpus)
-subsetter.subset(font)
-# Give this subset its own name; retain all original license and copyright records.
-names = {1: 'Portfolio WenKai', 2: 'Regular', 3: 'Portfolio WenKai Regular 1.0', 4: 'Portfolio WenKai Regular', 6: 'PortfolioWenKai-Regular', 16: 'Portfolio WenKai', 17: 'Regular'}
-for record in font['name'].names:
-    if record.nameID in names:
-        record.string = names[record.nameID].encode(record.getEncoding(), errors='replace')
-destination = output / 'fonts' / 'wenkai-subset.woff2'
-subset.save_font(font, str(destination), options)
-print(f'wenkai-subset.woff2: {destination.stat().st_size // 1024} KB')
+# 字体不在这里生成。原来这里裁的是单包（475 字，缺 ？ ！ … 与数字），
+# 现在是两个按需加载的子集，见 scripts/build-wenkai-pairs.py：
+#   wenkai-title.woff2（865 字 / 179KB，全站 preload）
+#   wenkai-text.woff2（2482 字 / 550KB，只在有对白的页面由 --hand-text 触发下载）
+# 语料以浏览器算出来的 fontFamily 为准（scripts/dump-hand-corpus.mjs），
+# 静态猜测会漏掉靠继承生效的那部分文字。

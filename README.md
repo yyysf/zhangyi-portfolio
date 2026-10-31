@@ -114,19 +114,35 @@ npm start
 
 标题使用本地霞鹜文楷子集，字体项目：https://github.com/lxgw/LxgwWenKai 。原始字体按 SIL OFL 1.1 授权，许可证位于 `dist/assets/fonts/OFL.txt`。子集重命名为 Portfolio WenKai，保留原版权与许可记录。正文使用系统中文字体。
 
-新增标题汉字若不在字体子集中，会自动使用系统楷体或衬线字体，不会缺字。需要统一字形时运行：
+文楷拆成两个包，靠 `@font-face` 的 family 名做条件加载，没有 JS 判断：
+
+| 文件 | family | 内容 | 体积 | 谁下载 |
+| --- | --- | --- | --- | --- |
+| `wenkai-title.woff2` | `WenKai` | 页眉、章页大字、标题、题记、引语、图注、首页卡片钩子、详情页横幅导语 | 865 字 / 179KB | 全站 `preload` |
+| `wenkai-text.woff2` | `WenKaiText` | 上面全部 + 剧本正文（角色名、台词、舞台提示） | 2482 字 / 550KB | 只在有对白的页面，由 `--hand-text` 触发 |
+
+浏览器只在页面上真有元素解析到某个 family 时才发请求，所以影评、研读页永远不下载 B 包。`--hand-text` 只被三条剧本选择器引用，别处不要用——用一次就把 550KB 拉进那一页。不要给 B 包加 `preload`：preload 是无条件下载。
+
+**语料必须从渲染结果取，不能靠选择器白名单猜。** 文楷大量靠继承生效（`.index-list__title` 自己没写 `font-family`，从 `.index-dialog` 继承到 WenKai），白名单漏一处，那一处的字就落回系统楷体，一页里两种笔迹。所以改完文案或版式后按这个顺序重建：
 
 ```powershell
-python scripts/prepare-assets.py
+npm start                                          # 另开一个终端
+node scripts/dump-hand-corpus.mjs                  # 需 9222 调试端口，产出 scripts/wenkai-hand-corpus.txt
+python3 scripts/build-wenkai-pairs.py <207 个 woff2 切片的目录>
 ```
 
-该维护脚本需要 Pillow、fontTools 和 Brotli。剧本原页缩略图另需 PyMuPDF（`pip install pymupdf`），渲染命令见 `scripts/` 历史提交，或直接替换 `dist/assets/works/*-page*.webp`。
+`build-wenkai-pairs.py` 会打印两个包的缺字数，并断言 B ⊇ A；**缺字数必须是 0**，否则不要发布。注意 `source-assets/LXGWWenKai-Regular.ttf` 只有 475 字，是旧子集不是完整字库，拿它当输入会得到「缺字 390」——要传 207 个切片的目录。维护脚本需要 Pillow、fontTools 和 Brotli。
+剧本原页缩略图另需 PyMuPDF（`pip install pymupdf`），渲染命令见 `scripts/` 历史提交，或直接替换 `dist/assets/works/*-page*.webp`。
 
 本地截图脚本只用于开发自查（Chrome 无头 + CDP），不参与发布，也不要上传到静态目录。先用 `chrome --headless=new --remote-debugging-port=9222` 启动浏览器，再运行：
 
 - `node scripts/shot.mjs <url> <输出.png> [宽度] [full|viewport]` —— 整页分段截图，切片落在 `parts/`，需自行拼接。
 - `node scripts/shot-el.mjs <url> <选择器> <输出.png> [宽度] [上下留白] [缩放]` —— 按选择器截单个区块，内部按 1200px 切片后交给 `scripts/stitch.py` 拼回一张。本机无头 Chrome 一次性截超过约 1400px 高的视口会卡在 `Page.captureScreenshot`，所以必须切片；拼图按实际 `scrollY` 贴片，页面滚到底被夹住时不会重复内容。
 - `node scripts/audit.mjs` —— 在 1440 / 768 / 390 三档宽度下查横向溢出、影像框比例与章页大字字体回退。
+- `node scripts/console-check.mjs` —— 首页与详情页的控制台报错、失败请求与破图，结果写 `/tmp/console.log`。
+- `node scripts/dump-hand-corpus.mjs` —— 抓出真正以文楷渲染的文字，产出 `scripts/wenkai-hand-corpus.txt`，供字体子集使用。
+
+这几个脚本都会先 `Network.setCacheDisabled`。本地预览是 Python `SimpleHTTP`，只发 `Last-Modified` 不发 `Cache-Control`，无头浏览器会按启发式缓存旧资源，改完样式截出来还是上一版。
 
 普通预览、编辑与发布不需要 Python。原始字体与六张生成插画保留于 `source-assets/`，网站实际使用本地压缩 WebP。新增声音静物提供 1536px 与 768px 两种尺寸。插画使用内置 imagegen 生成，提示词与素材用途见 `source-assets/art-prompts.md`，不代表实际剧照或排练照片。仓库外 `素材/` 目录为本次改版参考图，不参与站点构建。
 

@@ -4,9 +4,23 @@
    A quiet exhibition that responds to the hand.
    ============================================================ */
 
+/* 两个文楷包，按需加载。
+   A 标题包：页眉、章页大字、标题、题记、引语、图注，865 字 / 179KB。
+   B 台词包：A 的全部 + 剧本正文，2482 字 / 550KB。
+   浏览器只在页面上真有元素解析到某个 family 时才发请求，
+   所以影评页永远不下载 B——纯 CSS，没有 JS 判断。
+   不要 preload B：preload 是无条件下载，会让每篇影评也多付 550KB。 */
 @font-face{
   font-family:WenKai;
-  src:url('./fonts/wenkai-subset.woff2') format('woff2');
+  src:url('./fonts/wenkai-title.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+@font-face{
+  font-family:WenKaiText;
+  src:url('./fonts/wenkai-text.woff2') format('woff2');
   font-weight:400;
   font-style:normal;
   font-display:swap;
@@ -51,6 +65,8 @@
   --room-showcase:#6c5660;
 
   --hand:WenKai,'Kaiti SC',KaiTi,serif;
+  /* 只被剧本正文的三条选择器引用。别处不要用——用一次就把 549KB 拉进那一页。 */
+  --hand-text:WenKaiText,WenKai,'Kaiti SC',KaiTi,serif;
   --serif:'Songti SC','Noto Serif SC','Source Han Serif SC','SimSun',serif;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   --display:'Bodoni 72','Didot','Bodoni MT','Times New Roman',serif;
@@ -3585,7 +3601,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .reading-section--script .dialogue dt{
   text-align:right;
-  font:400 var(--script-small)/var(--lh-label) var(--hand);
+  font:400 var(--script-small)/var(--lh-label) var(--hand-text);
   color:var(--accent-ink);
   letter-spacing:var(--ls-title);
   /* 允许换行：全站 400 多个角色名里有 8 字的一个，截断不给 title 等于丢字 */
@@ -3594,12 +3610,15 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .reading-section--script .dialogue dd{
   margin:0;
-  font:400 var(--fs-body)/var(--lh-script) var(--hand);
+  font:400 var(--fs-body)/var(--lh-script) var(--hand-text);
 }
 /* 舞台提示。:not(.script-scene) 把场次标题摘出去，
    两条规则各管各的，就不需要用 !important 互相压。 */
 .reading-section--script > p:not(.script-scene){
   padding-left:var(--script-indent);
+  /* 舞台提示原来没有 font-family，一路继承 body 的宋体，
+     和楷体台词混在一页里是两种笔迹。这里显式写文楷。 */
+  font-family:var(--hand-text);
   font-size:var(--script-small);
   line-height:var(--lh-script);
   color:var(--muted);
