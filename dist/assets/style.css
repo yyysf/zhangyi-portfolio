@@ -154,9 +154,34 @@
      36em → 40em：每行 36 → 40 字，仍在中文舒适上限（30–40 字）内；
      配合侧栏收窄，正文在整栏里的占比从 56% 提到 65%。 */
   --measure:40em;
+  /* 刘海屏安全区。两页的 viewport 都写了 viewport-fit=cover，
+     意思是「让页面铺到刘海和 Home 指示条下面」，那就要自己把内容让开——
+     在这之前全站没有一处 env(safe-area-inset-*)，等于在刘海屏上
+     页眉压着状态栏、页脚压着指示条。
+     先给 0 兜底，再用 @supports 覆盖：不支持 env() 的浏览器里
+     --safe-* 是 0px，calc 照常成立，不会因为「无效值」把整条声明打掉。 */
+  --safe-t:0px;
+  --safe-b:0px;
+  --safe-l:0px;
+  --safe-r:0px;
   --header:84px;
+  /* 页眉的实际占位＝栏高 + 顶部安全区。滚动锚点、滚动留白、侧栏 sticky
+     都要按这个总量算，否则刘海屏上锚点会落在页眉底下。 */
+  --header-total:calc(var(--header) + var(--safe-t));
   --ease:cubic-bezier(.19,1,.22,1);
   --ease-soft:cubic-bezier(.33,1,.68,1);
+}
+
+/* 只有真的支持 env() 才覆盖。写成 @supports 而不是直接 env(...,0px)：
+   后者在不支持的浏览器里是「解析期无效声明」，
+   会让依赖它的 calc 整条失效，版面直接塌。 */
+@supports (top:env(safe-area-inset-top)){
+  :root{
+    --safe-t:env(safe-area-inset-top);
+    --safe-b:env(safe-area-inset-bottom);
+    --safe-l:env(safe-area-inset-left);
+    --safe-r:env(safe-area-inset-right);
+  }
 }
 
 body[data-page="work"]{
@@ -167,13 +192,16 @@ body[data-page="work"]{
 *{box-sizing:border-box}
 html{
   scroll-behavior:smooth;
-  scroll-padding-top:calc(var(--header) + 18px);
+  scroll-padding-top:calc(var(--header-total) + 18px);
   -webkit-text-size-adjust:100%;
   text-size-adjust:100%;
 }
 body{
   margin:0;
   min-height:100svh;
+  /* 横屏时刘海只在一边（左或右），安全区不对称，所以左右分开给 */
+  padding-left:var(--safe-l);
+  padding-right:var(--safe-r);
   background:var(--paper);
   color:var(--ink);
   font:400 var(--fs-body)/var(--lh-body) var(--serif);
@@ -227,7 +255,7 @@ main section:focus{outline:none}
 .skip-link{
   position:fixed;
   top:-100px;
-  left:20px;
+  left:calc(20px + var(--safe-l));
   padding:var(--space-2) var(--space-4);
   background:var(--green-ink);
   color:var(--paper);
@@ -265,6 +293,12 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   top:0;
   left:0;
   right:0;
+  /* 背景通栏铺到屏幕边（含刘海下方），但内容让开安全区。
+     min-height 走 --header（栏高本身），padding-top 走 --safe-t，
+     两者相加正好是 --header-total，锚点才对得上。 */
+  padding-top:var(--safe-t);
+  padding-left:var(--safe-l);
+  padding-right:var(--safe-r);
   z-index:60;
   color:var(--ink);
   transition:background .4s ease,border-color .4s ease,box-shadow .4s ease;
@@ -428,7 +462,9 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 
 .index-dialog{
   border:0;
-  padding:0;
+  /* 它铺满整屏，四边都要让开安全区；box-sizing:border-box 已全局生效，
+     height:100% 会把 padding 算在里面，不会溢出。 */
+  padding:var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l);
   margin:0;
   width:100%;
   max-width:100%;
@@ -2995,7 +3031,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   justify-content:space-between;
   gap:28px;
-  padding-block:var(--space-5) 28px;
+  padding-block:var(--space-5) calc(28px + var(--safe-b));
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-caps);
   text-transform:uppercase;
@@ -3178,7 +3214,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   transform-origin:left;
   transition:transform .1s linear;
 }
-.work-main{padding:calc(var(--header) + clamp(44px,7vw,80px)) 0 clamp(70px,10vw,120px);min-height:80vh}
+.work-main{padding:calc(var(--header-total) + clamp(44px,7vw,80px)) 0 clamp(70px,10vw,120px);min-height:80vh}
 .work-container{
   width:min(1180px,calc(100% - var(--gutter) * 2));
   margin-inline:auto;
@@ -3433,7 +3469,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-article{min-width:0;font-size:var(--fs-body)}
 .work-toc{
   position:sticky;
-  top:calc(var(--header) + 28px);
+  top:calc(var(--header-total) + 28px);
   padding-top:6px;
 }
 .work-toc p{
@@ -3472,7 +3508,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
      顶出视口——900 高时侧栏底边只剩 58px 余量，1280×800 只剩 14px。
      三档取最小，1080 以上拿到满 640，900/800/768 自动让到 554/454/422。
      238 → 262 是给侧栏底部留 24px 呼吸，否则最后一条正好贴视口边缘。 */
-  max-height:min(70vh,640px,calc(100vh - var(--header) - 262px));
+  max-height:min(70vh,640px,calc(100vh - var(--header-total) - 262px));
   overflow-y:auto;
   overscroll-behavior:contain;
   scrollbar-width:thin;
@@ -3921,7 +3957,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .works-nav__next:hover .works-nav__arrow{transform:translateX(5px)}
 .work-side{
   position:sticky;
-  top:calc(var(--header) + 28px);
+  top:calc(var(--header-total) + 28px);
   display:flex;
   flex-direction:column;
   align-items:flex-end;
@@ -4158,7 +4194,7 @@ body[data-category="scripts"] .work-header{
   .site-header .wordmark{font-size:19px}
   .wordmark span{font-size:var(--fs-xs)}
   .menu-toggle{font-size:var(--fs-xs)}
-  .hero{min-height:auto;padding-top:calc(var(--header) + 8px)}
+  .hero{min-height:auto;padding-top:calc(var(--header-total) + 8px)}
   .hero-inner{padding-block:22px 26px;gap:20px}
   .hero h1{font-size:clamp(54px,17vw,88px)}
   .hero-quote{font-size:var(--fs-md);margin-top:18px;line-height:var(--lh-lead)}
@@ -4272,7 +4308,10 @@ body[data-category="scripts"] .work-header{
   .thanks-actions{gap:var(--space-4)}
   .thanks-strip__row{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
   .thanks-sign span{font-size:36px}
-  .site-footer .shell{flex-direction:column;gap:var(--space-2);padding-block:var(--space-4)}
+  /* 底部要带安全区：这条 padding-block 是整条覆盖，桌面上那条
+     calc(28px + var(--safe-b)) 到不了这里，写成 --space-4 会把 Home 指示条
+     的让位一起抹掉。 */
+  .site-footer .shell{flex-direction:column;gap:var(--space-2);padding-block:var(--space-4) calc(var(--space-4) + var(--safe-b))}
   .index-dialog__layout{grid-template-columns:1fr;gap:var(--space-5)}
   .index-dialog__head h2{font-size:38px}
   .index-dialog__head p{display:none}
@@ -4315,7 +4354,7 @@ body[data-category="scripts"] .work-header{
   .works-nav__link small{font-size:var(--fs-xs)}
   .lightbox{max-width:94vw}
   .lightbox-close{top:12px;right:12px}
-  .lightbox-nav{top:auto;bottom:var(--space-3);transform:none;padding:var(--space-2) var(--space-3);font-size:var(--fs-xs)}
+  .lightbox-nav{top:auto;bottom:calc(var(--space-3) + var(--safe-b));transform:none;padding:var(--space-2) var(--space-3);font-size:var(--fs-xs)}
   .lightbox-prev{left:14px}
   .lightbox-next{right:14px}
 }
