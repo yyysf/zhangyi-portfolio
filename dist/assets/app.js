@@ -117,6 +117,21 @@ function slug(index) { return `section-${index + 1}`; }
 /* ---------- 页面级交互 ---------- */
 
 let scrollTick = false;
+// 阅读进度的分母用正文高度，不用整页高度：
+// 整页口径下，文末的「感谢阅读」、上一篇/下一篇和页脚会把满格稀释掉，
+// 读到最后一个字时进度条才走到八成。
+// 不缓存 offsetHeight：图片解码后正文会继续长高，缓存下来的旧值
+// 会让文末停在六成多。这里读之前 updateScrollUI 已经量过 scrollHeight，
+// 布局是干净的，再读一次 offsetHeight 不会额外重排。
+function readingProgress(y, viewport) {
+  const article = document.querySelector('.work-article');
+  if (!article) return null;
+  const headerH = $('#site-header')?.offsetHeight || 0;
+  const start = article.offsetTop - headerH;
+  const span = article.offsetTop + article.offsetHeight - viewport - start;
+  if (span <= 0) return 1;
+  return Math.min(1, Math.max(0, (y - start) / span));
+}
 function updateScrollUI() {
   const y = window.scrollY || document.documentElement.scrollTop;
   const viewport = innerHeight;
@@ -150,7 +165,7 @@ function updateScrollUI() {
   const bar = $('#scroll-progress-bar');
   if (bar) bar.style.transform = `scaleX(${ratio})`;
   const reading = $('#reading-progress-bar');
-  if (reading) reading.style.transform = `scaleX(${ratio})`;
+  if (reading) reading.style.transform = `scaleX(${readingProgress(y, viewport) ?? ratio})`;
 
   if (isHome) {
     const sections = $$('main section[id]');
@@ -1088,6 +1103,25 @@ function setupFontSize() {
   });
 }
 
+// ≤980px 侧栏整列消失，场次导航也就没了。这里补一个在文档流里的折叠索引：
+// 可展开、可跳转、不跟随滚动——不用被否掉的「抽屉式吸顶」。
+function sceneIndexBlock(scenes) {
+  if (!scenes || scenes.length < 3) return null;
+  const box = element('details', 'scene-index');
+  box.id = 'scene-index';
+  box.append(element('summary', '', `场次索引 · 共 ${scenes.length} 场`));
+  const list = element('ol', 'scene-index__list');
+  scenes.forEach(scene => {
+    const item = element('li');
+    const link = element('a', '', scene.text);
+    link.href = `#${scene.id}`;
+    item.append(link);
+    list.append(item);
+  });
+  box.append(list);
+  return box;
+}
+
 function buildSceneNav(scenes, toc) {
   if (!scenes || scenes.length < 3) return;
   const groups = new Map();
@@ -1247,8 +1281,10 @@ function renderWork(work) {
   (work.sections || []).forEach((section, index) => {
     const block = element('section', 'reading-section');
     block.id = slug(index);
+    const sceneCountBefore = sceneNav.length;
     const hasScriptBlocks = (section.blocks || []).some(item => item.type === 'scene' || item.type === 'dialogue');
-    if (hasScriptBlocks) block.classList.add('reading-section--script');    if (section.title) {
+    if (hasScriptBlocks) block.classList.add('reading-section--script');
+    if (section.title) {
       const heading = element('h2', 'reveal', section.title);
       if (!/^[一二三四五六七八九十0-9]/.test(section.title)) {
         heading.prepend(element('span', 'reading-section__no', String(index + 1).padStart(2, '0')));
@@ -1275,9 +1311,22 @@ function renderWork(work) {
         block.append(paragraph);
       }
     });
+    // 一个剧本可能跨四五个 section，每段末尾给一个回索引的入口。
+    // 4 个而不是 98 个：按 section 给，不按场次给。
+    if (sceneNav.length > sceneCountBefore) {
+      const back = element('a', 'scene-index__back', '↑ 回到场次索引');
+      back.href = '#scene-index';
+      block.append(back);
+    }
     reading.append(block);
   });
   buildSceneNav(sceneNav, toc);
+  const sceneIndex = sceneIndexBlock(sceneNav);
+  if (sceneIndex) {
+    const firstSection = $('.reading-section', reading);
+    if (firstSection) reading.insertBefore(sceneIndex, firstSection);
+    else reading.append(sceneIndex);
+  }
   const gallery = workGallery(work);
   if (gallery) reading.append(gallery);
   const pages = pagePreviewBlock(work);
@@ -1291,7 +1340,12 @@ function renderWork(work) {
   article.append(reading);
 
   const end = element('div', 'work-end');
-  end.append(element('span', '', '感谢阅读'), returnLink(work.category));
+  // ≤1240px 右栏消失后，全站就没有「回到顶部」了。在文末给一个，
+  // 不做浮动按钮——浮层会一直压在文字上。
+  const toTop = element('button', 'work-end__top', '↑ 回到顶部');
+  toTop.type = 'button';
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+  end.append(element('span', '', '感谢阅读'), toTop, returnLink(work.category));
   article.append(end);
 
   const worksNav = element('nav', 'works-nav');
@@ -1339,7 +1393,9 @@ function renderWork(work) {
   document.title = `${work.title} · ${siteTitle}`;
 
   // 目录进度
-  const tocLinks = $$('a', toc);
+  // 只观察章节链接。场次链接也在这份目录里，混进来以后 section observer
+  // 每次触发都会把场次高亮抹掉——两套高亮本该并存（章 → 场 两级）。
+  const tocLinks = $$('a:not([data-scene])', toc);
   if (tocLinks.length && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -1386,9 +1442,16 @@ function showLoadError() {
 
 function setupReturnTracking() {
   window.addEventListener('pagehide', () => {
-    store(historyKey, { y: window.scrollY, hash: location.hash, time: Date.now() });
+    store(historyKey, {
+      y: window.scrollY,
+      hash: location.hash,
+      path: location.pathname + location.search,
+      time: Date.now(),
+    });
   });
   document.addEventListener('click', event => {
+    // 详情页的「上一篇 / 下一篇」不该覆盖首页的返回位置
+    if (!isHome) return;
     const link = event.target.closest('a.work-link-target');
     if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     store(returnKey, { y: window.scrollY, hash: location.hash, category: link.dataset.category, time: Date.now() });
@@ -1400,11 +1463,60 @@ function restorePosition() {
   if (!request) return;
   removeStored(restoreKey);
   if (!Number.isFinite(request.y) || Date.now() - request.time > 1000 * 60 * 120) return;
+  // historyKey 全站共用，从详情页退回来时带着的是详情页的路径，不能拿来定位首页
+  if (request.path && request.path !== location.pathname + location.search) return;
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
   ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
-    if (request.hash && /^#[a-z-]+$/.test(request.hash)) history.replaceState(null, '', request.hash);
+    if (request.hash && /^#[a-z0-9-]+$/.test(request.hash)) history.replaceState(null, '', request.hash);
     window.scrollTo({ top: request.y, behavior: 'instant' });
   })));
+}
+
+/* ---------- 详情页：位置恢复与深链 ---------- */
+
+// 正文里的图解码完高度才定型，字体同理。两样都就位再定位。
+// 懒加载的图在进入视口前 decode() 可能永远不落地，所以先改成 eager，
+// 再兜一个 700ms 上限——否则深链会一直等在那里不滚。
+function readingSettled() {
+  const imgs = [...document.querySelectorAll('.work-reading img')];
+  imgs.forEach(img => { if (!img.complete) img.loading = 'eager'; });
+  const settle = Promise.all([
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    ...imgs.map(img => img.decode().catch(() => {})),
+  ]);
+  return Promise.race([settle, new Promise(resolve => setTimeout(resolve, 700))]);
+}
+
+// 详情页没有 returnKey（那是首页的位置），只有 historyKey。
+// 只有从别的页面退回来、且路径对得上时才还位置。
+function restoreWorkPosition() {
+  const isHistoryReturn = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+  if (!isHistoryReturn) return;
+  const request = getStored(historyKey);
+  if (!request || !Number.isFinite(request.y)) return;
+  if (request.path !== location.pathname + location.search) return;
+  if (Date.now() - request.time > 1000 * 60 * 120) return;
+  readingSettled().then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.scrollTo({ top: request.y, behavior: 'instant' });
+  })));
+}
+
+// #scene-30 / #section-3 直达。图片解码会把位置顶走，所以解码后再滚，
+// 600ms 后再校正一次——只补超过 4px 的漂移。
+function scrollToDeepLink() {
+  if (!/^#(scene|section)-\d+$/.test(location.hash)) return false;
+  const target = document.getElementById(location.hash.slice(1));
+  if (!target) return false;
+  readingSettled().then(() => {
+    target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    setTimeout(() => {
+      const offset = ($('#site-header')?.offsetHeight || 0) + 18;
+      const drift = target.getBoundingClientRect().top - offset;
+      if (Math.abs(drift) > 4) window.scrollBy({ top: drift, behavior: 'instant' });
+      updateScrollUI();
+    }, 600);
+  });
+  return true;
 }
 
 /* ---------- 页面转场 ---------- */
@@ -1474,6 +1586,8 @@ async function loadContent() {
       if (work) {
         renderWork(work);
         observeReveals();
+        // 深链优先：有 #scene-N 就不还旧位置
+        if (!scrollToDeepLink()) restoreWorkPosition();
       } else renderNotFound();
     }
   } catch {
@@ -1506,5 +1620,6 @@ setupSoundPreview();
 setupCopyLink();
 setupPageTransitions();
 setupFontSize();
-if (isHome) setupReturnTracking();
+// 详情页也要挂：pagehide 里存的位置是「从详情页退回首页」时用的
+setupReturnTracking();
 loadContent();

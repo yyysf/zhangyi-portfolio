@@ -3289,21 +3289,25 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   list-style:none;
   margin:0 0 12px;
   padding:0;
-  max-height:min(34vh,280px);
+  /* 34vh/280px 只放得下 10 条，一个剧本 49 场，要滚五次才到底。
+     58vh/520px 约 18 条，仍然是一屏内可扫的长度。 */
+  max-height:min(58vh,520px);
   overflow-y:auto;
+  overscroll-behavior:contain;
   scrollbar-width:thin;
-  scrollbar-color:rgba(30,47,42,.24) transparent;
+  /* 3px/.22 对纸色只有约 1.2:1，等于没有滚动条；6px/.38 约 2.4:1 */
+  scrollbar-color:rgba(30,47,42,.38) transparent;
 }
-.toc-scenes::-webkit-scrollbar{width:3px}
-.toc-scenes::-webkit-scrollbar-thumb{background:rgba(30,47,42,.22);border-radius:2px}
+.toc-scenes::-webkit-scrollbar{width:6px}
+.toc-scenes::-webkit-scrollbar-thumb{background:rgba(30,47,42,.38);border-radius:3px}
 .toc-scenes a{
   display:block;
   padding:5px 4px 5px 10px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  /* 场次名不再截断：`1.2 付家张淑真卧室-日-内（回忆）` 17 字，
+     180px 栏宽也放不下，截断后每条都长得一样，认不出是哪一场。 */
+  overflow-wrap:break-word;
   border-left:1px solid var(--line-soft);
-  font:400 12px/var(--lh-label) var(--sans);
+  font:400 var(--fs-sm)/var(--lh-label) var(--sans);
   color:var(--muted);
   transition:color .2s ease,border-color .2s ease;
 }
@@ -3312,6 +3316,59 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--green-ink);
   border-left-color:var(--accent);
   box-shadow:inset 1px 0 0 var(--accent);
+}
+
+/* 场次索引：≤980px 侧栏整列消失后，这是唯一的场次导航。
+   在文档流里、可折叠、不跟随滚动——不做吸顶条也不做浮动按钮。 */
+.scene-index{
+  display:none;
+  margin:0 0 clamp(28px,4vw,40px);
+  border:1px solid var(--line-soft);
+  background:var(--paper-soft);
+}
+.scene-index summary{
+  padding:14px 16px;
+  font:500 var(--fs-xs)/var(--lh-label) var(--sans);
+  letter-spacing:var(--ls-label);
+  color:var(--green-ink);
+  cursor:pointer;
+  list-style:none;
+}
+.scene-index summary::-webkit-details-marker{display:none}
+.scene-index summary::after{content:'＋';float:right;color:var(--accent-ink)}
+.scene-index[open] summary::after{content:'−'}
+.scene-index[open] summary{border-bottom:1px solid var(--line-soft)}
+.scene-index__list{
+  margin:0;
+  padding:8px 16px 14px;
+  list-style:none;
+  max-height:min(62vh,560px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(30,47,42,.38) transparent;
+}
+/* 场次名自带「1.」「2.1」编号，这里不再加一层计数器，否则会变成「1. 1.田埂-日-外」 */
+.scene-index__list a{
+  display:block;
+  padding:7px 0;
+  font:400 var(--fs-sm)/var(--lh-label) var(--sans);
+  color:var(--ink-soft);
+  border-bottom:1px solid var(--line-soft);
+}
+.scene-index__list li:last-child a{border-bottom:0}
+.scene-index__back{display:none}
+@media(max-width:980px){
+  .scene-index{display:block}
+  .scene-index__back{
+    display:inline-block;
+    margin-top:22px;
+    padding-bottom:2px;
+    font:400 var(--fs-xs)/var(--lh-label) var(--sans);
+    letter-spacing:var(--ls-label);
+    color:var(--muted);
+    border-bottom:1px solid var(--line-soft);
+  }
 }
 .work-header{padding-top:4px}
 .work-header h1{
@@ -3476,11 +3533,13 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   background:var(--accent);
   transform:translateY(-.32em);
 }
+/* 场次标题。这条是通配的（首页剧本卡也在用），不要写 !important：
+   剧本正文里的覆盖规则靠选择器长度赢，不靠权重标记。 */
 .script-scene{
-  color:var(--green-ink)!important;
-  font:500 var(--fs-xs)/var(--lh-lead) var(--sans)!important;
+  color:var(--green-ink);
+  font:500 var(--fs-xs)/var(--lh-lead) var(--sans);
   letter-spacing:var(--ls-wide);
-  margin-top:34px!important;
+  margin-top:34px;
   margin-bottom:18px;
   padding-left:0;
 }
@@ -3500,47 +3559,64 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   overflow-wrap:break-word;
 }
 
-/* 剧本全文：角色名左对齐成一列，台词右栏，场次与舞台提示与台词左边缘对齐 */
+/* 剧本全文：角色名右对齐成一列，台词在右栏，场次与舞台提示与台词左边缘对齐。
+   三层全部用 em，挂在 --fs-body 上：字号档位一变，三层的比例不变。
+   17px 下 角色名/舞台提示 13px、场次标题 11px，与原来的固定值一致；
+   19px 下变成 14.5 / 14.5 / 12.3，而不再被拉成 19 / 13 / 11。
+   列宽 5.6em 而不是写死 88px：88÷13=6.8 字，四字名刚好、六字名要换行，
+   但换成 em 后每一档都是 6.8 字，不会在大字号下突然放不下。 */
 .reading-section--script{
   margin-top:clamp(44px,6vw,68px);
+  /* 列宽、列间距、缩进都用 --fs-body 的倍数算，不用 em。
+     舞台提示自己只有 .765 倍字号，用 em 会按 13px 解析，缩进就比台词短一截
+     ——三层的左边缘必须落在同一个 x 上。 */
+  --script-col:calc(var(--fs-body) * 5.6);
+  --script-gap:calc(var(--fs-body) * 1.06);
+  --script-indent:calc(var(--fs-body) * 6.66);
+  --script-small:calc(var(--fs-body) * .765);
 }
 .reading-section--script .dialogue{
   display:grid;
-  grid-template-columns:88px minmax(0,1fr);
-  gap:0 18px;
+  grid-template-columns:var(--script-col) minmax(0,1fr);
+  gap:0 var(--script-gap);
   margin:13px 0;
   padding-left:0;
   border-left:0;
 }
 .reading-section--script .dialogue dt{
   text-align:right;
-  font:400 var(--fs-sm)/var(--lh-label) var(--hand);
+  font:400 var(--script-small)/var(--lh-label) var(--hand);
   color:var(--accent-ink);
   letter-spacing:var(--ls-title);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  /* 允许换行：全站 400 多个角色名里有 8 字的一个，截断不给 title 等于丢字 */
+  white-space:normal;
+  overflow-wrap:break-word;
 }
 .reading-section--script .dialogue dd{
   margin:0;
   font:400 var(--fs-body)/var(--lh-script) var(--hand);
 }
-.reading-section--script > p{
-  padding-left:106px;
-  font-size:var(--fs-sm);
+/* 舞台提示。:not(.script-scene) 把场次标题摘出去，
+   两条规则各管各的，就不需要用 !important 互相压。 */
+.reading-section--script > p:not(.script-scene){
+  padding-left:var(--script-indent);
+  font-size:var(--script-small);
   line-height:var(--lh-script);
   color:var(--muted);
   margin-top:12px;
 }
 .reading-section--script > p:first-of-type{color:var(--muted)}
 .reading-section--script > .script-scene{
-  padding-left:0!important;
-  margin-top:40px!important;
-  margin-bottom:6px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--line-soft);
+  padding-left:0;
+  font-size:calc(var(--fs-body) * .647);
+  /* 上 2.35em / 下 .35em：靠这段呼吸差把场次切开，不靠符号。
+     分隔线用 --line 而不是 --line-soft——后者对纸色只有约 1.15:1，等于没有。 */
+  margin-top:2.35em;
+  margin-bottom:.35em;
+  padding-bottom:.55em;
+  border-bottom:1px solid var(--line);
 }
-.reading-section--script > .script-scene:first-child{margin-top:6px!important}
+.reading-section--script > .script-scene:first-child{margin-top:6px}
 .work-end{
   margin-top:clamp(50px,7vw,76px);
   border-top:1px solid var(--line);
@@ -3554,6 +3630,21 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
 }
 .work-end .line-link{font-size:var(--fs-sm)}
+/* ≤1240px 右栏（含「回到顶部」）整列隐藏，文末补一个出口。
+   只在需要时出现，宽屏上右栏已经有了，不重复。 */
+.work-end__top{
+  display:none;
+  padding:0 0 2px;
+  border:0;
+  border-bottom:1px solid var(--line-soft);
+  background:none;
+  font:inherit;
+  letter-spacing:var(--ls-label);
+  color:var(--green-ink);
+  transition:color var(--t-fast) var(--ease-soft);
+}
+.work-end__top:hover{color:var(--accent-ink)}
+@media(max-width:1240px){.work-end__top{display:inline-block}}
 .work-gallery{
   margin-top:clamp(42px,6vw,60px);
   padding-top:clamp(26px,4vw,38px);
@@ -3862,12 +3953,12 @@ body[data-category="scripts"] .work-header{
   .about-meta{margin-top:24px}
   .about-sign{font-size:var(--fs-lg);margin-top:30px}
   .about-strip{grid-template-columns:1fr;gap:14px;margin-top:34px}
-  .about-strip img{var(--ar-photo)}
+  .about-strip img{aspect-ratio:var(--ar-photo)}
   .about-strip figcaption{display:block;padding:10px 12px 11px}
   .room-title{font-size:var(--fs-md)}
   .room{padding-block:15px}
   .room-preview{margin-top:18px}
-  .room-preview img{var(--ar-wide)}
+  .room-preview img{aspect-ratio:var(--ar-wide)}
   .demo-notice{margin-top:40px}
   .script-card{gap:26px}
   .script-title{font-size:clamp(30px,8.8vw,42px);margin-top:10px}
@@ -3950,14 +4041,20 @@ body[data-category="scripts"] .work-header{
   .work-top{font-size:var(--fs-xs);flex-wrap:wrap;gap:8px}
   .work-header h1{font-size:clamp(34px,10vw,48px)}
   .work-lead{font-size:18px}
-  .image-toggle img{var(--ar-photo)}
+  .image-toggle img{aspect-ratio:var(--ar-photo)}
   .work-gallery{grid-template-columns:1fr;gap:18px}
   .work-gallery__item:last-child:nth-child(odd){grid-column:auto}
-  .work-gallery__item:last-child:nth-child(odd) .work-gallery__button img{var(--ar-photo)}
-  .reading-section p,.dialogue dd{line-height:var(--lh-body)}
-  .reading-section--script .dialogue{grid-template-columns:60px minmax(0,1fr);gap:0 12px;margin:11px 0}
-  .reading-section--script .dialogue dt{font-size:12px;line-height:var(--lh-label);white-space:normal;overflow:visible;text-overflow:clip}
-  .reading-section--script > p{padding-left:72px}
+  .work-gallery__item:last-child:nth-child(odd) .work-gallery__button img{aspect-ratio:var(--ar-photo)}
+  /* 台词行高统一走 --lh-script，这里不再把 .dialogue dd 拉回 --lh-body */
+  .reading-section p{line-height:var(--lh-body)}
+  /* 窄屏只改三个输入，列宽/缩进/小字号全部跟着缩 */
+  .reading-section--script{
+    --script-col:calc(var(--fs-body) * 4.2);
+    --script-gap:calc(var(--fs-body) * .6);
+    --script-indent:calc(var(--fs-body) * 4.8);
+    --script-small:calc(var(--fs-body) * .75);
+  }
+  .reading-section--script .dialogue{margin:11px 0}
   .work-end{flex-wrap:wrap}
   .works-nav{grid-template-columns:1fr;gap:0}
   .works-nav__link{padding-block:16px}
