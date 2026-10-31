@@ -3333,6 +3333,9 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
 }
 .work-epigraph__note p + p{margin-top:.85em}
+/* 没有创作手记时题记只有一个子元素，两列会空掉一列 */
+.work-epigraph--solo{grid-template-columns:minmax(0,1fr)}
+.work-epigraph--solo .work-epigraph__inner{max-width:var(--measure)}
 .work-layout{
   display:grid;
   /* 两侧栏用 clamp 而不是写死 180：最宽档（19px）行宽 684px，

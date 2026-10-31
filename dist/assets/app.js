@@ -1269,12 +1269,17 @@ function renderWork(work) {
     const inner = element('div', 'work-epigraph__inner');
     inner.append(element('p', 'work-epigraph__text', work.epigraph.text));
     if (work.epigraph.from) inner.append(element('cite', 'work-epigraph__from', work.epigraph.from));
-    if (Array.isArray(work.epigraph.note) && work.epigraph.note.length) {
-      const note = element('div', 'work-epigraph__note');
-      work.epigraph.note.forEach(text => note.append(element('p', '', text)));
-      inner.append(note);
-    }
     band.append(inner);
+    // 创作手记是题记网格的第二列，不是引言内的一段：
+    // 挂在 inner 里会让两列只剩一列有内容，右栏整片留白。
+    const notes = Array.isArray(work.epigraph.note) ? work.epigraph.note.filter(Boolean) : [];
+    if (notes.length) {
+      const note = element('div', 'work-epigraph__note');
+      notes.forEach(text => note.append(element('p', '', text)));
+      band.append(note);
+    } else {
+      band.classList.add('work-epigraph--solo');
+    }
     container.append(band);
   }
 
