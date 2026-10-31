@@ -1006,7 +1006,10 @@ function workGallery(work) {
   return wrap;
 }
 
-const FONT_SIZES = { sm: '15px', md: '17px', lg: '19px' };
+// 字号档位只写倍率，绝对字号归 :root 的 --fs-body-base 管。
+// 窄屏媒体查询改的是基数，内联样式改的是倍率，两个不同的输入，
+// 所以内联值不会像以前那样把媒体查询整个压掉。
+const FONT_SCALES = { sm: 0.882, md: 1, lg: 1.118 };
 const FONT_LABELS = [['sm', '小'], ['md', '中'], ['lg', '大']];
 
 function fontSizeControl() {
@@ -1023,10 +1026,38 @@ function fontSizeControl() {
   return group;
 }
 
+// 切档后正文会重排，视口里正在读的那一段必须留在原处。
+// 用元素锚定，不按比例补 scrollY——banner 与页眉不缩放，按比例补会漂。
+function readingAnchor() {
+  const limit = innerHeight * 0.25;
+  for (const node of $$('.reading-section > *')) {
+    if (node.getBoundingClientRect().bottom > limit) return node;
+  }
+  return null;
+}
+
 function applyFontSize(key) {
-  const size = FONT_SIZES[key];
-  if (!size) return;
-  document.documentElement.style.setProperty('--fs-body', size);
+  const scale = FONT_SCALES[key];
+  if (!scale) return;
+  const anchor = readingAnchor();
+  const before = anchor ? anchor.getBoundingClientRect().top : 0;
+  document.documentElement.style.setProperty('--fs-scale', String(scale));
+  if (anchor) {
+    // 先读后写，读之前已经完成一次同步布局，这里拿到的是新位置。
+    // behavior 必须 instant：html 上有 scroll-behavior:smooth，
+    // 'auto' 会继承成异步动画，下一帧测量就落在动画中途。
+    const delta = anchor.getBoundingClientRect().top - before;
+    if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: 'instant' });
+    // 换行位置会晚一帧定型，等字体就绪再补一次
+    document.fonts?.ready.then(() => {
+      const drift = anchor.getBoundingClientRect().top - before;
+      if (Math.abs(drift) > 2) window.scrollBy({ top: drift, behavior: 'instant' });
+      updateSceneNav.last = null;
+      updateScrollUI();
+    });
+  }
+  updateSceneNav.last = null;
+  updateScrollUI();
   $$('.font-size button').forEach(button => {
     button.setAttribute('aria-pressed', String(button.dataset.size === key));
   });
@@ -1037,7 +1068,7 @@ function setupFontSize() {
   if (!group) return;
   let saved = null;
   try { saved = localStorage.getItem('zy-font-size'); } catch { /* storage optional */ }
-  if (saved && FONT_SIZES[saved]) applyFontSize(saved);
+  if (saved && FONT_SCALES[saved]) applyFontSize(saved);
   else $$('.font-size button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.size === 'md')));
   group.addEventListener('click', event => {
     const button = event.target.closest('button[data-size]');
