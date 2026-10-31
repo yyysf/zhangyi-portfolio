@@ -7,9 +7,10 @@
 /* 两个文楷包，按需加载。
    A 标题包：页眉、章页大字、标题、题记、引语、图注，865 字 / 179KB。
    B 台词包：A 的全部 + 剧本正文，2482 字 / 550KB。
-   浏览器只在页面上真有元素解析到某个 family 时才发请求，
-   所以影评页永远不下载 B——纯 CSS，没有 JS 判断。
-   不要 preload B：preload 是无条件下载，会让每篇影评也多付 550KB。 */
+   浏览器只在页面上真有元素解析到某个 family 时才发请求。
+   2026-10-31 起阅读页（work.html）正文也用 B：work.html 内联把 --serif
+   提到 WenKaiText 并 preload——13 篇共享一个文件、跨篇缓存，
+   Windows 访客正文不再掉进中易宋体。首页不声明该覆盖，正文仍系统宋体、零下载。 */
 @font-face{
   font-family:WenKai;
   src:url('./fonts/wenkai-title.woff2') format('woff2');
@@ -39,8 +40,12 @@
   --green-deep:#12302b;
   --accent:#b4553a;
   --green-ink:#1f5348;
-  --accent-ink:#9c4a31;
+  /* 舞台「开灯」灯光专属：发光点 + 暖沙晕。全站仅此一处用金，
+     176,154,120 系 alpha 是它的晕家族，别拿去做通用强调色。 */
   --gold:#c08a4b;
+  /* 与 --room-scripts 同值：赭红强调与剧本房间色是同一支色，
+     RGB 各差 1 的两支定义已合并，改色时一起改。 */
+  --accent-ink:#9b4932;
   --line:rgba(30,47,42,.16);
   --line-soft:rgba(30,47,42,.09);
   --film:#0e2723;
@@ -50,7 +55,7 @@
      所以这里用带 alpha 的暖白，一支到底，不再逐处手写。 */
   --on-dark-1:#f7f3e9;
   --on-dark-2:rgba(247,243,233,.78);
-  --on-dark-3:rgba(247,243,233,.56);
+  --on-dark-3:rgba(247,243,233,.6);
   --on-dark-line:rgba(247,243,233,.18);
   --on-dark-line-soft:rgba(247,243,233,.1);
   --on-dark-focus:#f7f3e9;
@@ -1218,6 +1223,18 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   color:var(--muted);
 }
 .room-index{position:relative}
+/* 房间索引 = 左目录 + 右相纸的并排单元。原来预览叠在列表下面，矮窗口下
+   列表+预览高约 950px，滚到预览时列表已出屏，只剩一句引文加一张图，
+   中间全是空纸。并排后整块约 450px，悬停与预览同屏，单元本身也密了。 */
+.room-index{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  column-gap:clamp(18px,2.4vw,36px);
+  align-items:end;
+}
+.room-index__hint{grid-column:1/-1}
+.room-list{grid-row:2;align-self:center}
+.room-foot{grid-column:1/-1}
 .room-index__hint{
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-wide);
@@ -1254,9 +1271,12 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .room:hover .room-bar,.room.is-active .room-bar{transform:scaleX(1.6)}
 .room:hover .room-arrow,.room.is-active .room-arrow{opacity:1;transform:none}
 .room-preview{
-  margin-top:var(--space-5);
-  max-width:82%;
-  margin-left:auto;
+  grid-column:2;
+  grid-row:2;
+  justify-self:end;
+  width:100%;
+  max-width:none;
+  margin:0 0 var(--space-2);
   padding:var(--space-2) var(--space-2) 0;
   background:var(--paper-soft);
   border:1px solid var(--line-soft);
@@ -2169,7 +2189,24 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .showcase .chapter-plate::after{background:var(--on-dark-accent);opacity:.45}
 .showcase-group--films .showcase-head{color:var(--on-dark-2);border-bottom-color:var(--on-dark-line)}
 .showcase-group--films .loading-message{color:var(--on-dark-2)}
-.film-card{position:relative}
+/* P2-14 编辑式对页：画框不再通栏，改成 ~58% 宽图版 + 右侧文字栏，
+   左右交替像画册跨页。topline 仍横贯两栏当分隔线。
+   竖片（时间"贷"价）单独走窄图版列——画框窄、文字栏宽，
+   原来那片黑底空场正好被文字填掉。 */
+.film-card{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+  gap:clamp(26px,4vw,58px);
+  align-items:center;
+}
+.film-card + .film-card{margin-top:clamp(40px,6vw,72px)}
+.film-topline{grid-column:1/-1}
+.film-card:nth-of-type(even) .film-frame{order:2}
+/* 只有三部片：even 换边被竖片的 order:0 抵消，三张会全落左边。
+   让最后一部镜像到右，节奏是 标准→竖片特写→镜像。 */
+.film-card:last-of-type .film-frame{order:2}
+.film-card .film-copy{grid-template-columns:minmax(0,1fr);gap:var(--space-5);margin-top:0}
 .film-topline{
   display:flex;
   justify-content:space-between;
@@ -2203,6 +2240,10 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .film-frame.is-portrait{max-width:min(430px,64vw);margin-inline:auto}
 .film-frame.is-portrait img{object-fit:contain;background:#08130f}
+/* 竖片对页：窄图版列在左、宽文字栏在右。nth-of-type(even) 带伪类是 (0,3,0)，
+   这里也提到 (0,3,0) 且写在其后，才能把换边压回去。 */
+.film-card.film-card--portrait{grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr)}
+.film-card.film-card--portrait .film-frame{order:0;max-width:none;margin-inline:0}
 .film-frame::after{
   content:'';
   position:absolute;
@@ -2273,7 +2314,8 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .film-copy .work-meta{color:var(--on-dark-2)}
 .film-copy .award-label{color:var(--on-dark-accent)}
 .film-copy h3{
-  font-size:clamp(34px,4.3vw,58px);
+  /* 对页右栏 ~440px，58px 的大标题一行只放 7 个字会叠四行，收一档 */
+  font-size:clamp(28px,3vw,42px);
   line-height:var(--lh-heading);
   margin-top:var(--space-3);
 }
@@ -2341,7 +2383,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 
 .showcase-group--stage{
   background:linear-gradient(to bottom,var(--paper),var(--tint) 75%,var(--paper));
-  padding-block:var(--band-y);
+  /* 一件作品撑一节，band 收紧一点，别让留白替内容撑场面 */
+  padding-block:clamp(40px,5.4vw,72px);
 }
 .stage-card{
   display:grid;
@@ -2436,7 +2479,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   display:flex;
   align-items:center;
   gap:var(--space-4);
-  margin-top:var(--space-5);
+  margin-top:var(--space-4);
 }
 .light-switch{
   display:flex;
@@ -2478,14 +2521,14 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
 }
 .stage-notes{
-  margin-top:clamp(28px,3.4vw,40px);
+  margin-top:clamp(18px,2.4vw,26px);
   border-top:1px solid var(--line);
 }
 .stage-note{
   display:grid;
   grid-template-columns:34px minmax(0,1fr);
   gap:var(--space-3);
-  padding:var(--space-4) 0;
+  padding:var(--space-3) 0;
   border-bottom:1px solid var(--line);
 }
 .stage-note-no{
@@ -2506,12 +2549,12 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   color:var(--muted);
   max-width:26em;
 }
-.stage-body .line-link{margin-top:26px}
+.stage-body .line-link{margin-top:18px}
 .stage-strip{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:var(--space-2);
-  margin-top:clamp(22px,2.6vw,30px);
+  margin-top:clamp(14px,1.8vw,20px);
 }
 .stage-strip__item{
   padding:var(--space-1);
@@ -2530,8 +2573,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .stage-strip__item:hover{transform:translateY(-3px);box-shadow:var(--shadow-1)}
 .stage-strip__item:hover img{transform:scale(1.03)}
 .stage-quote{
-  margin-top:clamp(48px,7vw,86px);
-  padding-top:clamp(26px,4vw,40px);
+  margin-top:clamp(24px,3.4vw,44px);
+  padding-top:clamp(20px,3vw,32px);
   border-top:1px solid var(--line);
   font:400 clamp(24px,2.9vw,38px)/var(--lh-lead) var(--hand);
   color:var(--ink);
@@ -2555,7 +2598,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   /* 上一段是 --film，这一段是 --green-deep，下一段又是 --film；两头都化开 */
   background:linear-gradient(to bottom,var(--film) 0%,var(--green-deep) 22%,var(--green-deep) 78%,var(--film) 100%);
   color:var(--on-dark-1);
-  padding-block:clamp(76px,11vw,142px);
+  /* 一句话的过场：原来是 11vw 的呼吸，太大，压到 6.4vw 仍够隔开亮—暗—亮 */
+  padding-block:clamp(44px,6.4vw,84px);
 }
 .pause::before{
   content:'声';
@@ -3728,12 +3772,31 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   text-indent:2em;
   margin-top:.85em;
 }
+/* 中文书籍惯例：正文两端对齐。左对齐下纯中文每行右缘自然漂移 ±1 字
+   （实测一段五行相差 27px），读感是「每行结尾不对应」；justify 后
+   只有段末行例外，与纸书一致。text-spacing-trim 压缩相邻全角标点，
+   防 justify 把引号空洞撑宽（Chrome 123+ 渐进增强，旧浏览器忽略）。 */
+.reading-section:not(.reading-section--script) > p{
+  text-align:justify;
+  text-spacing-trim:space-first;
+}
+/* 剧本保持左对齐（台词列短行多，justify 会拉出大洞），
+   用 pretty 避免段末一两个字孤悬成行；孤行防护全站生效。 */
+.reading-section--script :is(p,dd){
+  text-wrap:pretty;
+}
+.reading-section :is(p,dd){
+  orphans:2;
+  widows:2;
+}
 .reading-subhead{
   display:flex;
   align-items:baseline;
   gap:var(--space-2);
   margin-top:clamp(26px,3vw,34px);
-  font:400 clamp(16px,1.5vw,19px)/var(--lh-label) var(--hand);
+  /* 上限 21px：19px 对 17px 正文只有 1.12 倍，层级全靠字体族硬撑；
+     21px 后有 1.24 倍的尺寸差可依。 */
+  font:400 clamp(17px,1.6vw,21px)/var(--lh-label) var(--hand);
   letter-spacing:var(--ls-title);
   color:var(--green-ink);
 }
@@ -4150,6 +4213,15 @@ body[data-category="scripts"] .work-header{
   }
   .essay-visual--portrait{max-width:280px}
   .film-copy{grid-template-columns:1fr;gap:var(--space-6)}
+  /* 对页在窄屏回退单栏：图版在上、文字在下，换边与竖片窄列全部还原。
+     竖片要带上桌面的 .film-card 前缀——桌面那条是 (0,2,0)，
+     裸写 .film-card--portrait 会被压掉，390 下会退回双栏窄图。 */
+  .film-card,
+  .film-card.film-card--portrait{grid-template-columns:1fr;gap:var(--space-5);align-items:start}
+  .film-card:nth-of-type(even) .film-frame,
+  .film-card:last-of-type .film-frame,
+  .film-card.film-card--portrait .film-frame{order:0}
+  .film-card.film-card--portrait .film-frame{max-width:min(430px,64vw);margin-inline:auto}
   .stage-card{grid-template-columns:1fr;gap:var(--space-6)}
   .stage-quote{text-align:left}
   .sound-grid{grid-template-columns:1fr;gap:48px}
@@ -4227,7 +4299,8 @@ body[data-category="scripts"] .work-header{
   .about-strip figcaption{display:block;padding:var(--space-2) var(--space-3) var(--space-3)}
   .room-title{font-size:var(--fs-md)}
   .room{padding-block:var(--space-4)}
-  .room-preview{margin-top:var(--space-4)}
+  .room-index{display:block}
+  .room-preview{max-width:82%;margin-left:auto;margin-top:var(--space-4)}
   .room-preview img{aspect-ratio:var(--ar-wide)}
   .demo-notice{margin-top:40px}
   /* 只改 --seam-gap 不改 gap：row-gap 在 980 断点里已经绑在它上面，

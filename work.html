@@ -18,8 +18,15 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="assets/fonts/wenkai-title.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/wenkai-text.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/style.css">
   <script type="module" src="assets/app.js"></script>
+  <style>
+    /* 阅读页正文统一文楷 Text。首页不声明这条覆盖，--serif 仍走系统宋体栈、零下载；
+       本文件 13 篇共享一个字体文件（源字体本就是按全站文字裁的 2.5k 字子集，
+       再子集只差 16KB，不值得加管线），跨篇缓存，Windows 访客不再掉进中易宋体。 */
+    :root{--serif:WenKaiText,'Songti SC','Noto Serif SC','Source Han Serif SC','SimSun',serif}
+  </style>
 </head>
 <body data-page="work">
   <a class="skip-link" href="#main">跳到作品正文</a>

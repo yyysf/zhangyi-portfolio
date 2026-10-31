@@ -728,6 +728,7 @@ function renderFilms(works, container) {
       const figure = element('figure', `film-frame reveal-figure ${ratioClass(work)}`);
       const frameWidth = Number(work.imageWidth) || 16;
       const frameHeight = Number(work.imageHeight) || 9;
+      if (frameHeight > frameWidth) article.classList.add('film-card--portrait');
       figure.style.setProperty('--ar', `${frameWidth} / ${frameHeight}`);
       if (frameHeight > frameWidth) figure.classList.add('is-portrait');
       const link = coverLink(work, 'film-frame__link');
