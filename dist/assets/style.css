@@ -3767,6 +3767,23 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   text-indent:2em;
   margin-top:.85em;
 }
+/* 中文书籍惯例：正文两端对齐。左对齐下纯中文每行右缘自然漂移 ±1 字
+   （实测一段五行相差 27px），读感是「每行结尾不对应」；justify 后
+   只有段末行例外，与纸书一致。text-spacing-trim 压缩相邻全角标点，
+   防 justify 把引号空洞撑宽（Chrome 123+ 渐进增强，旧浏览器忽略）。 */
+.reading-section:not(.reading-section--script) > p{
+  text-align:justify;
+  text-spacing-trim:space-first;
+}
+/* 剧本保持左对齐（台词列短行多，justify 会拉出大洞），
+   用 pretty 避免段末一两个字孤悬成行；孤行防护全站生效。 */
+.reading-section--script :is(p,dd){
+  text-wrap:pretty;
+}
+.reading-section :is(p,dd){
+  orphans:2;
+  widows:2;
+}
 .reading-subhead{
   display:flex;
   align-items:baseline;
