@@ -21,7 +21,14 @@
   <meta property="og:image:alt" content="张艺的作品集分享封面：随笔《我观葡萄》与剧本《她的秋》">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="assets/fonts/wenkai-title.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/images/meadow.webp">
+  <!-- imagesrcset/imagesizes 必须与首屏 hero 的 img 逐字一致：
+       只写 href 的话浏览器无条件下 1536w 的 350KB，而 img 自己按 sizes="100vw"
+       在 1x 窄屏上挑的是 768w 的 57KB——大图白下一趟。
+       实测 390@1x / 768@1x：407KB → 57KB。2x 手机（780 设备像素 > 768w）
+       本来就取大图，这里不影响。 -->
+  <link rel="preload" as="image" href="assets/images/meadow.webp"
+        imagesrcset="assets/images/meadow-small.webp 768w, assets/images/meadow.webp 1536w"
+        imagesizes="100vw">
   <link rel="stylesheet" href="assets/style.css">
   <script type="module" src="assets/app.js"></script>
 </head>
