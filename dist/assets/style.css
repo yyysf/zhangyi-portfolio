@@ -133,8 +133,10 @@
   --hairline:var(--line-soft);
   --gutter:clamp(20px,4.6vw,74px);
   --shell:1320px;
-  /* 行宽用 em 不用 px：字号档位一变，每行汉字数必须不变 */
-  --measure:36em;
+  /* 行宽用 em 不用 px：字号档位一变，每行汉字数必须不变。
+     36em → 40em：每行 36 → 40 字，仍在中文舒适上限（30–40 字）内；
+     配合侧栏收窄，正文在整栏里的占比从 56% 提到 65%。 */
+  --measure:40em;
   --header:84px;
   --ease:cubic-bezier(.19,1,.22,1);
   --ease-soft:cubic-bezier(.33,1,.68,1);
@@ -3349,12 +3351,17 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .work-epigraph--solo .work-epigraph__inner{max-width:var(--measure)}
 .work-layout{
   display:grid;
-  /* 两侧栏用 clamp 而不是写死 180：最宽档（19px）行宽 684px，
-     1240 视口下 container 只有 1126，150+684+150+124=1108 才塞得下。
-     180 只在 ≥1500 视口出现，那时余量足够。 */
-  grid-template-columns:clamp(150px,12vw,180px) minmax(0,var(--measure)) clamp(150px,12vw,180px);
+  /* 两侧栏 173px（12vw）→ 152px 上限（10.6vw），栏间距 64 → 44。
+     没有收到评审建议的 140：左栏是场次目录，140 下《百元大钞》的短场名
+     从「每条 1 行」变成「平均 1.75 行」，520px 框里可见条数 16.8 → 13.3，
+     等于把 P1-3 要加回来的可见条数先扣掉了；两个剧本实测只有《她的秋》
+     （49 场、场名本身就长）对栏宽不敏感，11.6 vs 10.6 条。
+     152 是折中：占比 56% → 63%，同时两个剧本的可见场次都涨。
+     左右仍等宽——正文现在精确居中（.work-article 与 .works-nav 中心偏移 0），
+     改成左宽右窄会把它推离容器中心 35px。 */
+  grid-template-columns:clamp(140px,10.6vw,152px) minmax(0,var(--measure)) clamp(140px,10.6vw,152px);
   justify-content:center;
-  gap:clamp(30px,5vw,64px);
+  gap:clamp(28px,3vw,44px);
   align-items:start;
 }
 /* grid item 的 min-width:auto 会在大字号下把中栏撑破，
@@ -3953,7 +3960,9 @@ body[data-category="scripts"] .work-header{
      塌成单列后封面区变成整幅 1124px 宽、里面只放一张 400px 的图，
      方形封面填充率掉到 35.6%，横幅高度却从 417px 涨到 778px。
      堆叠推到 ≤980，那时容器窄了，空洞比例自然小一半。 */
-  .work-layout{grid-template-columns:clamp(132px,13vw,168px) minmax(0,var(--measure))}
+  /* 两栏档：右栏整列消失，左栏是唯一的场次导航，
+     所以下限比三栏档宽一点（132 而不是 140 都不到时取 132）。 */
+  .work-layout{grid-template-columns:clamp(132px,11vw,152px) minmax(0,var(--measure))}
   .work-side{display:none}
   .sound-item__meta{display:none}
 }
