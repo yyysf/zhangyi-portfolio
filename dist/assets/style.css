@@ -114,7 +114,11 @@
   --band-y-end:clamp(60px,7.5vw,104px);
   --section-y:clamp(76px,10vw,138px);
   --finale-y:clamp(90px,13vw,170px);
-  /* 阴影四档：静置小件 / 版面 / 大图版 / 深色底。交互态的抬升不在此列。 */
+  /* 深浅两段相接时，深色一侧压暗的高度。纸色和墨绿之间没有好看的中点，
+     所以不做色相过渡，只做「上一块亮面投下的影子」。 */
+  --dissolve:clamp(96px,11vw,150px);
+  /* 阴影四档：静置小件 / 版面 / 大图版 / 深色底。
+     悬停抬升直接复用最小一档，不要再手写一组差 2px 的 rgba。 */
   --shadow-1:0 18px 30px -24px rgba(31,54,46,.55);
   --shadow-2:0 30px 55px -42px rgba(31,54,46,.55);
   --shadow-3:0 34px 60px -46px rgba(31,54,46,.55);
@@ -292,6 +296,10 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   letter-spacing:var(--ls-caps);
   color:var(--muted);
 }
+/* 站名本身是链接，但它是页眉里唯一没有任何反馈的可点元素。
+   只动后面那个小字，不动 21px 的主标题——主标题变朱砂太吵。 */
+.wordmark:hover span{color:var(--accent-ink)}
+.site-header.is-on-dark .wordmark:hover span{color:var(--on-dark-accent)}
 .header-nav{
   display:flex;
   align-items:center;
@@ -1266,7 +1274,11 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   color:var(--paper);
   font:400 var(--fs-sm)/var(--lh-label) var(--sans);
   padding:10px 16px;
+  transition:background var(--t-fast) var(--ease);
 }
+/* 只在图片加载失败时出现。既然出现了，就得像个按钮。 */
+.retry-button:hover{background:var(--green-ink)}
+.retry-button:active{background:var(--green-deep)}
 .work-meta{
   display:flex;
   align-items:center;
@@ -1537,7 +1549,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .script-page:nth-child(odd){transform:rotate(-1.2deg)}
 .script-page:nth-child(even){transform:rotate(1.4deg)}
-.script-page:hover{transform:translateY(-4px) rotate(0);box-shadow:0 22px 32px -24px rgba(31,54,46,.55)}
+.script-page:hover{transform:translateY(-4px) rotate(0);box-shadow:var(--shadow-1)}
 .script-page img{
   display:block;
   width:100%;
@@ -1731,7 +1743,10 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   aspect-ratio:var(--ar-portrait);
   overflow:hidden;
   background:var(--paper-soft);
-  border:1px solid var(--line-soft);
+  /* 描边改 outline：border 会从比例框里吃掉 2px，96px 宽的缩略图看不出，
+     44px 的方形缩略图里那是 4.5% 的宽度。outline 不占布局，框还是准的。 */
+  outline:1px solid var(--hairline);
+  outline-offset:-1px;
 }
 .paper-thumb img{
   width:100%;
@@ -2181,6 +2196,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .media-status p{font-size:var(--fs-xs);line-height:var(--lh-lead);color:var(--on-dark-2);margin-top:2px}
 .media-block{margin:18px 0 26px}
 .media-external{font-size:12px;display:inline-block;color:var(--on-dark-accent);text-decoration:underline}
+.media-external:hover{color:var(--on-dark-1)}
 video,audio{display:block;width:100%;max-width:100%;margin-block:18px}
 video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .media-error{
@@ -2379,7 +2395,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   object-fit:cover;
   transition:transform .9s var(--ease);
 }
-.stage-strip__item:hover{transform:translateY(-3px);box-shadow:0 18px 28px -24px rgba(31,54,46,.55)}
+.stage-strip__item:hover{transform:translateY(-3px);box-shadow:var(--shadow-1)}
 .stage-strip__item:hover img{transform:scale(1.03)}
 .stage-quote{
   margin-top:clamp(48px,7vw,86px);
@@ -2658,7 +2674,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   aspect-ratio:var(--ar-square);
   overflow:hidden;
   background:var(--tint);
-  border:1px solid var(--line-soft);
+  outline:1px solid var(--hairline);
+  outline-offset:-1px;
   display:block;
 }
 .sound-item__thumb.is-empty{background:none;border:0}
@@ -2751,6 +2768,15 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 
 .thanks{
   background:
+    /* 舞台组结尾是纸色，致谢是深墨绿，这里原来是一条直线切下去。
+       试过在纸色和墨绿之间做线性渐变：150px 高的过渡会停在一段发灰的
+       橄榄绿上，像一层雾压在页脚，比硬边还难看。所以边保持干净，
+       只在深色内部压暗顶部 150px——读起来是上面那块亮面投下来的影子。 */
+    /* 纸色和墨绿之间没有好看的中点：直接做线性混合，中段会停在一段
+       发灰的橄榄绿上，150px 高，像一层雾压在页面底部——试过，比硬边还难看。
+       所以不在两个色相之间过渡，只在深色内部压暗：顶部 150px 叠一层更深的墨，
+       读起来是上面那块亮面投下来的影子，边还是那条干净的边。 */
+    linear-gradient(to bottom,rgba(6,20,18,.5),transparent var(--dissolve)),
     radial-gradient(ellipse 55% 55% at 78% 24%,rgba(72,110,104,.32),transparent 68%),
     radial-gradient(ellipse 42% 40% at 4% 96%,rgba(90,124,117,.16),transparent 70%),
     var(--green-deep);
@@ -2922,6 +2948,14 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .lightbox-close i::before{transform:rotate(45deg)}
 .lightbox-close i::after{transform:rotate(-45deg)}
+/* 灯箱是全屏深色层，关掉按钮原来只有键盘焦点环、鼠标移上去毫无变化。
+   给一点圆形底，让它看起来像可以按。 */
+.lightbox-close{
+  border-radius:999px;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
+}
+.lightbox-close:hover{background:rgba(247,243,233,.14)}
+.lightbox-close:active{background:rgba(247,243,233,.24)}
 .lightbox-close:focus-visible{outline:1px solid rgba(247,243,233,.65);outline-offset:8px}
 .lightbox-nav{
   position:fixed;
@@ -3133,13 +3167,19 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   border-radius:999px;
 }
 .font-size button{
-  min-width:32px;
-  padding:4px 0;
+  /* 原来是 32px 宽、19px 高，触屏上根本点不准。
+     三个字是「小 / 中 / 大」，是详情页唯一需要反复点的控件。 */
+  min-width:40px;
+  min-height:32px;
+  display:grid;
+  place-items:center;
+  padding:0;
   border:0;
   border-radius:999px;
   background:none;
   color:rgba(247,243,233,.62);
-  font:400 var(--fs-xs)/1 var(--sans);
+  /* 11px 在 40×32 的格子里显得空，13px 才撑得住 */
+  font:400 var(--fs-sm)/1 var(--sans);
   letter-spacing:var(--ls-label);
   transition:background .3s ease,color .3s ease;
 }
@@ -3825,6 +3865,13 @@ body[data-category="scripts"] .work-header{
 .sound .sound-item__head:active{background:rgba(247,243,233,.06)}
 .script-card .script-media:active img{transform:scale(1.008)}
 .index-list a:active{background:rgba(30,47,42,.05)}
+
+/* 兜底：上面逐条点名的是最常按的十几处，但全站还有二十来个可点元素
+   （灯箱上一张 / 下一张、播放控制、复制链接、场次索引折叠头、致谢里那排
+   照片……）都没有按下反馈。用 :where() 给零权重的一档统一补上，
+   任何写了 :active 的地方都能原样压掉它，不需要 !important。
+   不用 transform：很多元素身上已经有 translate，叠加会把位置挪错。 */
+:where(a,button,summary,[role="button"]):active{opacity:.86}
 
 /* ---------- 断点 ---------- */
 
