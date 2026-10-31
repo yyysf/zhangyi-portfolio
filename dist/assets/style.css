@@ -79,7 +79,6 @@
   --shell:1320px;
   --measure:640px;
   --header:84px;
-  --spine:150px;
   --ease:cubic-bezier(.19,1,.22,1);
   --ease-soft:cubic-bezier(.33,1,.68,1);
 }
@@ -893,139 +892,6 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 #sound,[data-room="sound"]{--room-accent:var(--room-sound)}
 #showcase,[data-room="showcase"]{--room-accent:var(--room-showcase)}
 
-/* ---------- 书脊：取代四张全幅章页 ---------- */
-
-/* 02–05 不再各占一屏水彩，改为一条窄章条。
-   水彩没丢——被裁成一条纸边，压在章条底下。
-   注意：这里刻意不做 position:sticky。试过吸顶，会一层层叠在页眉下面，
-   像抽屉，滚起来很吵；章条只是「翻过去的一页」，不该跟着人走。 */
-.spine{
-  position:relative;
-  z-index:20;
-  min-height:var(--spine);
-  display:flex;
-  align-items:center;
-  padding-block:clamp(22px,3vw,34px);
-  overflow:hidden;
-  isolation:isolate;
-  background:var(--paper);
-  border-top:1px solid var(--line-soft);
-  border-bottom:1px solid var(--line-soft);
-}
-.spine__bg{position:absolute;inset:0;z-index:-2}
-.spine__bg img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 44%;
-  opacity:.46;
-  filter:saturate(1.18) contrast(1.12);
-}
-.spine__bg::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to right,
-    var(--paper) 0%,
-    rgba(247,243,233,.95) 30%,
-    rgba(247,243,233,.76) 58%,
-    rgba(247,243,233,.34) 100%);
-}
-.spine__char{
-  position:absolute;
-  right:calc(var(--gutter) - .06em);
-  top:50%;
-  transform:translateY(-50%);
-  z-index:-1;
-  font:400 92px/1 var(--hand);
-  color:var(--room-accent,var(--accent-ink));
-  opacity:.13;
-  pointer-events:none;
-  user-select:none;
-}
-.spine__inner{
-  display:flex;
-  align-items:center;
-  gap:clamp(14px,2vw,26px);
-  width:100%;
-  min-width:0;
-}
-.spine__rule{
-  flex:0 0 2px;
-  height:52px;
-  background:var(--room-accent,var(--accent));
-}
-.spine__no{
-  font:400 var(--fs-xs)/1 var(--sans);
-  letter-spacing:var(--ls-label);
-  color:var(--room-accent,var(--accent-ink));
-  padding-top:2px;
-}
-.spine__name{
-  writing-mode:vertical-rl;
-  font:400 var(--fs-xs)/1 var(--sans);
-  letter-spacing:var(--ls-caps);
-  color:var(--muted);
-  max-height:88px;
-  white-space:nowrap;
-}
-.spine__copy{
-  display:flex;
-  align-items:baseline;
-  flex-wrap:wrap;
-  gap:clamp(12px,2.4vw,36px);
-  min-width:0;
-  padding-left:clamp(10px,1.6vw,22px);
-}
-.spine__copy h2{
-  font-size:clamp(25px,3.3vw,40px);
-  line-height:1.2;
-  letter-spacing:var(--ls-title);
-  white-space:nowrap;
-}
-.spine__side{
-  font:400 var(--fs-sm)/var(--lh-label) var(--sans);
-  color:var(--muted);
-  max-width:30em;
-}
-.spine__side br{display:none}
-@media(max-width:980px){
-  .spine__side{display:none}
-  .spine__name{max-height:76px}
-}
-@media(max-width:767px){
-  :root{--spine:104px}
-  .spine{top:var(--header)}
-  .spine__rule{height:34px}
-  .spine__name{display:none}
-  .spine__copy{padding-left:0;gap:8px}
-  .spine__copy h2{font-size:clamp(21px,6.2vw,28px);white-space:normal}
-  .spine__char{font-size:64px;right:calc(var(--gutter) - .04em)}
-}
-
-/* 书脊的深色变体：05 声音从这里开始转入暗场 */
-.spine--dark{
-  background:var(--film);
-  border-color:var(--on-dark-line-soft);
-}
-.spine--dark .spine__bg img{
-  opacity:.32;
-  filter:saturate(1.05) contrast(1.15) brightness(.82);
-}
-.spine--dark .spine__bg::after{
-  background:linear-gradient(to right,
-    rgba(14,39,35,.97) 0%,
-    rgba(14,39,35,.92) 30%,
-    rgba(14,39,35,.7) 62%,
-    rgba(14,39,35,.3) 100%);
-}
-.spine--dark .spine__char{color:var(--on-dark-1);opacity:.14}
-.spine--dark .spine__rule{background:var(--on-dark-accent)}
-.spine--dark .spine__no{color:var(--on-dark-accent)}
-.spine--dark .spine__name{color:var(--on-dark-3)}
-.spine--dark .spine__copy h2{color:var(--on-dark-1)}
-.spine--dark .spine__side{color:var(--on-dark-2)}
-
 /* ---------- 整幅水彩章页 ---------- */
 
 .chapter-plate{
@@ -1120,8 +986,8 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   margin-top:8px;
 }
 .chapter-plate .chapter-side{grid-column:2;justify-self:start;margin-top:14px;max-width:min(22em,46%);padding-bottom:0;color:var(--muted)}
-.section--plated,.section--spined{padding-top:0}
-.section--plated > .shell,.section--spined > .shell{padding-top:clamp(44px,6.5vw,86px)}
+.section--plated{padding-top:0}
+.section--plated > .shell{padding-top:clamp(44px,6.5vw,86px)}
 @media(max-width:980px){
   .chapter-plate{min-height:380px;padding-block:90px 40px}
   .chapter-plate__inner{grid-template-columns:32px minmax(0,1fr);align-items:start}
@@ -2539,8 +2405,21 @@ video{aspect-ratio:16/9;background:#0c1a17}
   position:relative;
   isolation:isolate;
   background:var(--film);
-  color:var(--on-dark-2);
 }
+/* 章页是纸的，正文才是暗的——关灯发生在章页之后。
+   这条带子把纸色化进 --film，让「翻开这一页」有个过渡，
+   也顺手抹掉了 papers 纸色直接撞 --film 的那道硬边。
+   前 30% 保持实纸色再开始掉，否则中间那段会糊成一层灰雾。 */
+.sound-fade{
+  height:132px;
+  background:linear-gradient(to bottom,
+    var(--paper) 0%,
+    rgba(247,243,233,.88) 22%,
+    rgba(247,243,233,.55) 45%,
+    rgba(247,243,233,.26) 68%,
+    transparent 100%);
+}
+.sound-panel{position:relative;color:var(--on-dark-2)}
 .sound::before{
   content:'';
   position:absolute;
@@ -2555,7 +2434,6 @@ video{aspect-ratio:16/9;background:#0c1a17}
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 26%,#000 74%,transparent);
   mask-image:linear-gradient(to bottom,transparent,#000 26%,#000 74%,transparent);
 }
-.sound .chapter-head::before{background:var(--line)}
 .sound-grid{
   display:grid;
   grid-template-columns:minmax(0,.9fr) minmax(0,.72fr) minmax(0,1.08fr);
@@ -3926,8 +3804,9 @@ body[data-category="scripts"] .work-header{
   .hero-index .room-bar{width:10px}
   .scroll-cue{display:none}
   .section{padding-block:64px}
-  /* 窄屏这条 .section 会把 padding-top 一起改掉，章条/章页上方会多出一条纸色带 */
-  .section--plated,.section--spined{padding-top:0}
+  /* 窄屏这条 .section 会把 padding-top 一起改掉，章页上方会多出一条纸色带 */
+  .section--plated{padding-top:0}
+  .sound-fade{height:88px}
   .chapter-head{grid-template-columns:42px minmax(0,1fr);gap:14px;margin-bottom:34px;padding-top:15px}
   .chapter-no{font-size:42px}
   .chapter-heading h2{font-size:clamp(30px,8.4vw,40px);line-height:1.35}
