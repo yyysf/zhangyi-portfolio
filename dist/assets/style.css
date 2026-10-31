@@ -1218,6 +1218,18 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   color:var(--muted);
 }
 .room-index{position:relative}
+/* 房间索引 = 左目录 + 右相纸的并排单元。原来预览叠在列表下面，矮窗口下
+   列表+预览高约 950px，滚到预览时列表已出屏，只剩一句引文加一张图，
+   中间全是空纸。并排后整块约 450px，悬停与预览同屏，单元本身也密了。 */
+.room-index{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  column-gap:clamp(18px,2.4vw,36px);
+  align-items:end;
+}
+.room-index__hint{grid-column:1/-1}
+.room-list{grid-row:2;align-self:center}
+.room-foot{grid-column:1/-1}
 .room-index__hint{
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-wide);
@@ -1254,9 +1266,12 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 .room:hover .room-bar,.room.is-active .room-bar{transform:scaleX(1.6)}
 .room:hover .room-arrow,.room.is-active .room-arrow{opacity:1;transform:none}
 .room-preview{
-  margin-top:var(--space-5);
-  max-width:82%;
-  margin-left:auto;
+  grid-column:2;
+  grid-row:2;
+  justify-self:end;
+  width:100%;
+  max-width:none;
+  margin:0 0 var(--space-2);
   padding:var(--space-2) var(--space-2) 0;
   background:var(--paper-soft);
   border:1px solid var(--line-soft);
@@ -4260,7 +4275,8 @@ body[data-category="scripts"] .work-header{
   .about-strip figcaption{display:block;padding:var(--space-2) var(--space-3) var(--space-3)}
   .room-title{font-size:var(--fs-md)}
   .room{padding-block:var(--space-4)}
-  .room-preview{margin-top:var(--space-4)}
+  .room-index{display:block}
+  .room-preview{max-width:82%;margin-left:auto;margin-top:var(--space-4)}
   .room-preview img{aspect-ratio:var(--ar-wide)}
   .demo-notice{margin-top:40px}
   /* 只改 --seam-gap 不改 gap：row-gap 在 980 断点里已经绑在它上面，
