@@ -1358,6 +1358,8 @@ function renderWork(work) {
   const toc = element('aside', 'work-toc');
   toc.append(element('p', '', '本文目录'));
   const article = element('article', 'work-article');
+  // 房间标记：书页信纸底纹按房间取图（work.html 内联样式按 [data-room] 换 --art）
+  article.dataset.room = work.category;
 
   // 篇名首字（书耳）：取字规则——数据给 mark 优先，否则书名号内取首字
   // （易卜生《玩偶之家》→玩），再否则篇名首字。挂在右侧栏，不挂正文：

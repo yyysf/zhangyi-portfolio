@@ -49,12 +49,14 @@
       /* 书页比 40em 栏各侧外扩 --book-x（吃进栏间沟，桌面仍留 24px），
          内边距恰好抵消外扩：正文行宽 680px 一字不变。 */
       --book-x:clamp(14px,1.4vw,20px);
+      /* 信纸底纹按房间取图：剧本/舞台=竹叶（默认），影评/影像=桂花白墙，研读/声音=月下桂枝 */
+      --art:url('assets/img/paper-bamboo.jpg');
       position:relative;
       background:
         repeating-linear-gradient(90deg,rgba(30,47,42,.02) 0 1px,transparent 1px 34px),
-        /* 信纸底纹：纸底已归一到 --paper，上缘用同色渐变隐缝 */
-        linear-gradient(to bottom,var(--paper) calc(100% - 1000px),rgba(242,236,220,0) calc(100% - 760px)),
-        url('assets/img/paper-bamboo.jpg') bottom center/100% auto no-repeat,
+        /* 底纹上缘隐缝：三张图 720 宽时高 960–1010px，fade 区间 950–1250px 恰盖各图上缘，花体不伤 */
+        linear-gradient(to bottom,var(--paper) calc(100% - 1250px),rgba(242,236,220,0) calc(100% - 950px)),
+        var(--art) bottom center/100% auto no-repeat,
         var(--paper);
       border:0;
       border-radius:1px;
@@ -95,6 +97,11 @@
       .work-article{--book-x:12px;padding-block:16px}
       .work-scrap{width:86px;margin-block:6px -14px}
     }
+    /* 房间信纸：影评/影像=桂花白墙，研读/声音=月下桂枝；剧本/舞台走默认竹叶 */
+    .work-article[data-room="essays"],
+    .work-article[data-room="films"]{--art:url('assets/img/paper-osmanthus.jpg')}
+    .work-article[data-room="papers"],
+    .work-article[data-room="sound"]{--art:url('assets/img/paper-moon.jpg')}
   </style>
 </head>
 <body data-page="work">
