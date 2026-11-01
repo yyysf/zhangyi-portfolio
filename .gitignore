@@ -8,3 +8,4 @@ source-assets/*
 *.tar
 *.tar.gz
 .env*
+.wrangler/
