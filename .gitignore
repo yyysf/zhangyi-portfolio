@@ -9,3 +9,4 @@ source-assets/*
 *.tar.gz
 .env*
 .wrangler/
+.claude/

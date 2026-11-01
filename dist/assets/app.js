@@ -365,7 +365,7 @@ function setupLightbox() {
   };
   const open = trigger => {
     lastTrigger = trigger;
-    const gallery = trigger.closest('.work-gallery');
+    const gallery = trigger.closest('.work-gallery, .section-chats');
     group = gallery ? $$('[data-lightbox-src]', gallery) : [trigger];
     show(trigger);
     lightbox.showModal();
@@ -1047,6 +1047,31 @@ function pagePreviewBlock(work) {
   return strip;
 }
 
+// 聊天记录截图（现场反响等）：原始截图并排轻搭在纸面上，点击走同一套灯箱。
+// 分组选择器在灯箱 open() 里限定为 .work-gallery, .section-chats。
+function sectionChats(images) {
+  const strip = element('div', 'section-chats');
+  (Array.isArray(images) ? images : []).forEach(item => {
+    if (!safeUrl(item?.image)) return;
+    const figure = element('figure', 'section-chats__item reveal-figure');
+    const button = element('button', 'section-chats__button');
+    button.type = 'button';
+    button.dataset.lightboxSrc = safeUrl(item.image);
+    button.dataset.lightboxCaption = item.caption || '';
+    button.dataset.lightboxAlt = item.imageAlt || '';
+    button.setAttribute('aria-label', `放大查看${item.caption || '聊天记录截图'}`);
+    button.append(image({ ...item, title: item.caption || '微信聊天记录' }, false, '(max-width: 767px) 76vw, 360px'));
+    figure.append(button);
+    if (item.caption) {
+      const caption = element('figcaption', 'illustration-caption');
+      caption.append(element('span', 'caption-no', item.caption));
+      figure.append(caption);
+    }
+    strip.append(figure);
+  });
+  return strip.children.length ? strip : null;
+}
+
 function workGallery(work) {
   if (!Array.isArray(work.gallery) || !work.gallery.length) return null;
   const wrap = element('div', 'work-gallery');
@@ -1443,6 +1468,8 @@ function renderWork(work) {
       toc.append(tocLink);
     }
     (section.paragraphs || []).forEach(text => block.append(element('p', '', text)));
+    const chats = sectionChats(section.images);
+    if (chats) block.append(chats);
     (section.blocks || []).forEach(item => {
       if (item.type === 'dialogue') {
         const dialogue = element('dl', 'dialogue');

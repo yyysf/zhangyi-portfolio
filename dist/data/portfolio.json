@@ -4157,10 +4157,21 @@
         {
           "title": "现场反响",
           "paragraphs": [
-            "散场之后，聊天记录里留下这些话：",
-            "「你们今年真的演得非常好，非常感人，我右边那个学姐哭得上气不接下气。」",
-            "「当时观众反应非常好，都是哭成一片。」",
-            "「给我看哭了。」「氛围感。」"
+            "散场之后，聊天记录里留下这些话——原样贴在这里，不再转述。"
+          ],
+          "images": [
+            {
+              "image": "assets/works/tree-chat-1.webp",
+              "imageSmall": "assets/works/tree-chat-1-small.webp",
+              "imageWidth": 913,
+              "imageHeight": 906
+            },
+            {
+              "image": "assets/works/tree-chat-2.webp",
+              "imageSmall": "assets/works/tree-chat-2-small.webp",
+              "imageWidth": 730,
+              "imageHeight": 1195
+            }
           ]
         },
         {

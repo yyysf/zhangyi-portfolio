@@ -3973,6 +3973,34 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
    文字证据裁掉一行就不再是证据。保留原始长宽比，单数满宽也不吃 16:9。 */
 .work-gallery__item--flat .work-gallery__button img{aspect-ratio:auto}
 .work-gallery__item--flat:last-child:nth-child(odd) .work-gallery__button img{aspect-ratio:auto}
+/* 聊天记录截图（现场反响）：两张原始截图并排轻搭在纸面，错落角度，点击进灯箱。
+   不进照片网格——聊天记录按 4:3 裁切会切掉气泡，必须保留原始长宽比。 */
+.section-chats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:clamp(20px,3.4vw,40px);
+  align-items:flex-start;
+  margin-top:clamp(26px,3.4vw,42px);
+}
+.section-chats__item{width:min(44%,400px);margin:0}
+.section-chats__button{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.section-chats__button img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(31,42,36,.08),0 22px 48px rgba(31,42,36,.14);
+  transition:transform .5s var(--ease);
+}
+.section-chats__item:nth-child(odd){transform:rotate(-1.2deg)}
+.section-chats__item:nth-child(even){transform:rotate(1deg);margin-top:clamp(14px,2.6vw,32px)}
+.section-chats__button:hover img{transform:scale(1.015)}
+.section-chats .illustration-caption{margin-top:10px}
+@media (max-width:767px){
+  .section-chats{flex-direction:column;align-items:center}
+  .section-chats__item{width:min(82%,420px)}
+  .section-chats__item:nth-child(even){margin-top:0}
+}
 .works-nav{
   margin-top:clamp(56px,8vw,90px);
   display:grid;
