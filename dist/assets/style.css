@@ -4309,8 +4309,10 @@ body[data-category="scripts"] .work-header{
   .room-title{font-size:var(--fs-md)}
   .room{padding-block:var(--space-4)}
   .room-index{display:block}
-  .room-preview{max-width:82%;margin-left:auto;margin-top:var(--space-4)}
-  .room-preview img{aspect-ratio:var(--ar-wide)}
+  /* 触屏没有 hover：预览相纸在手机上永远是静态的《她的秋》，轻触=直接跳转，
+     换图交互根本不会发生 → 连同提示语一起收掉，别让它在列表和照片墙之间白吃高度。 */
+  .room-preview{display:none}
+  .room-index__hint{display:none}
   .demo-notice{margin-top:40px}
   /* 只改 --seam-gap 不改 gap：row-gap 在 980 断点里已经绑在它上面，
      这里再写 gap 会把 row-gap 顶掉，横缝就不再落在图与字中间。 */
