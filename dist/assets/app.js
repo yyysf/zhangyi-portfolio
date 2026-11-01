@@ -70,6 +70,9 @@ function ratioClass(work) {
     : work.imageRatio === 'square' ? 'ratio-square'
       : 'ratio-landscape';
 }
+function cjkYear(value) {
+  return String(value).replace(/\d/g, digit => '〇一二三四五六七八九'[Number(digit)]);
+}
 function image(work, eager = false, sizes = '(max-width: 767px) calc(100vw - 40px), (max-width: 980px) 90vw, 760px') {
   const img = element('img');
   const full = safeUrl(work.image);
@@ -516,7 +519,7 @@ function setupSoundPreview() {
   const reset = () => {
     wrapper?.classList.remove('is-playing');
     button.setAttribute('aria-pressed', 'false');
-    if (label) label.textContent = '试听《今晚，稻田没有睡》';
+    if (label) label.textContent = `试听《${wrapper?.dataset.title || '今晚，稻田没有睡'}》`;
     if (time) time.textContent = format(audio.duration || 241);
   };
 
@@ -720,9 +723,6 @@ function renderPapers(works, container) {
 function renderFilms(works, container) {
   works.forEach((work, index) => {
     const article = element('article', 'film-card reveal');
-    const top = element('div', 'film-topline');
-    top.append(element('span', '', `影像 ${String(index + 1).padStart(2, '0')}`), element('span', '', work.subtitle || work.categoryLabel), element('span', '', '静帧'));
-    article.append(top);
 
     if (safeUrl(work.image)) {
       const figure = element('figure', `film-frame reveal-figure ${ratioClass(work)}`);
@@ -749,14 +749,14 @@ function renderFilms(works, container) {
       }
       figure.append(link, cue('阅读'), play);
       const caption = element('figcaption', 'film-frame-caption');
-      caption.append(element('span', '', work.imageCaption || '作品静帧'), element('span', '', '二〇二五'));
+      caption.append(element('span', '', work.imageCaption || '作品静帧'), element('span', '', cjkYear(work.year || 2025)));
       figure.append(caption);
       article.append(figure);
     }
 
     const copy = element('div', 'film-copy');
     const main = element('div');
-    main.append(metadata(work));
+    main.append(element('p', 'film-eyebrow', `影像 ${String(index + 1).padStart(2, '0')}`), metadata(work));
     const heading = element('h3');
     const link = workLink(work, work.title, '');
     link.lastElementChild.remove();
@@ -767,9 +767,12 @@ function renderFilms(works, container) {
 
     const meta = element('div', 'film-meta');
     const dl = element('dl');
-    [['形式', work.subtitle || '影像'], ['职责', work.role || '文案'], ['获奖', work.award || '—'], ['年份', work.year || '2025']].forEach(([term, value]) => {
-      dl.append(element('dt', '', term), element('dd', '', value));
-    });
+    // 空值的规格行（如无获奖）不渲染——破折号行是未完成感的主要来源
+    [['形式', work.subtitle], ['职责', work.role], ['获奖', work.award], ['年份', work.year]]
+      .filter(([, value]) => value)
+      .forEach(([term, value]) => {
+        dl.append(element('dt', '', term), element('dd', '', String(value)));
+      });
     meta.append(dl, workLink(work, '阅读作品解析'));
     copy.append(main, meta);
     article.append(copy);
@@ -897,6 +900,16 @@ function renderSound(works, container) {
     body.setAttribute('aria-labelledby', head.id);
     const inner = element('div', 'sound-item__inner');
     inner.append(element('p', 'sound-item__summary', work.summary));
+    // 首条目收编独立试听播放器——原来左栏「试听」与目录条目双入口指向同一内容
+    if (index === 0) {
+      const preview = $('#sound-preview');
+      if (preview) {
+        preview.dataset.title = work.title;
+        const label = $('.sound-preview__label', preview);
+        if (label) label.textContent = `试听《${work.title}》`;
+        inner.append(preview);
+      }
+    }
     const layers = element('div', 'sound-item__layers');
     (work.sections || []).slice(1, 3).forEach(section => {
       (section.paragraphs || []).slice(0, 2).forEach(text => layers.append(element('span', '', text)));
@@ -909,6 +922,13 @@ function renderSound(works, container) {
     article.append(head, body);
     container.append(article);
   });
+
+  // 首条默认展开——折叠态下整个房间只有两行细条，像没建完
+  const first = $('.sound-item', container);
+  if (first) {
+    first.classList.add('is-open');
+    $('.sound-item__head', first)?.setAttribute('aria-expanded', 'true');
+  }
 
   container.addEventListener('click', event => {
     const head = event.target.closest('.sound-item__head');

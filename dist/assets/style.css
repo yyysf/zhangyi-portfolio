@@ -2201,23 +2201,19 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   align-items:center;
 }
 .film-card + .film-card{margin-top:clamp(40px,6vw,72px)}
-.film-topline{grid-column:1/-1}
+/* 序号眉标跟标题走（原先整宽 topline 行与内容隔大段留白，滚动时孤行） */
+.film-eyebrow{
+  font:400 var(--fs-sm)/var(--lh-label) var(--sans);
+  letter-spacing:var(--ls-caps);
+  text-transform:uppercase;
+  color:var(--on-dark-accent);
+  margin:0 0 var(--space-2);
+}
 .film-card:nth-of-type(even) .film-frame{order:2}
 /* 只有三部片：even 换边被竖片的 order:0 抵消，三张会全落左边。
    让最后一部镜像到右，节奏是 标准→竖片特写→镜像。 */
 .film-card:last-of-type .film-frame{order:2}
 .film-card .film-copy{grid-template-columns:minmax(0,1fr);gap:var(--space-5);margin-top:0}
-.film-topline{
-  display:flex;
-  justify-content:space-between;
-  gap:var(--space-5);
-  border-top:1px solid var(--on-dark-line);
-  padding-top:var(--space-4);
-  font:400 var(--fs-xs)/var(--lh-label) var(--sans);
-  letter-spacing:var(--ls-caps);
-  text-transform:uppercase;
-  color:var(--on-dark-2);
-}
 .film-frame{
   position:relative;
   margin-top:clamp(22px,3vw,34px);
@@ -2337,7 +2333,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   display:grid;
   grid-template-columns:auto 1fr;
   gap:var(--space-2) var(--space-4);
-  font:400 var(--fs-xs)/var(--lh-label) var(--sans);
+  font:400 var(--fs-sm)/var(--lh-label) var(--sans);
   letter-spacing:var(--ls-label);
 }
 .film-meta dt{color:var(--on-dark-3);text-transform:uppercase}
@@ -2675,10 +2671,10 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
      390 下是 202.8×300，竖向被拉 2.14×，波形退化成一片竖条纹。
      桌面原来就是 420×300（比例 1.40 vs 原图 1.444，差 3%），几乎没动；
      只有窄屏会变——tile 变成 433×300，一屏放不满一条，反而是想要的效果。 */
-  background-size:auto min(46vh,300px);
+  background-size:auto min(40vh,260px);
   background-repeat:repeat-x;
   background-position:center 62%;
-  opacity:.16;
+  opacity:.1;
   pointer-events:none;
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 26%,#000 74%,transparent);
   mask-image:linear-gradient(to bottom,transparent,#000 26%,#000 74%,transparent);
@@ -2690,7 +2686,6 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   align-items:stretch;
 }
 .sound-intro{display:flex;flex-direction:column;min-width:0}
-.sound-intro .sound-preview{margin-top:auto}
 .sound-lead{
   font:400 clamp(19px,2vw,24px)/var(--lh-lead) var(--hand);
   letter-spacing:var(--ls-title);
@@ -2840,7 +2835,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 .sound-item__head{
   width:100%;
   display:grid;
-  grid-template-columns:44px 24px minmax(0,1fr) auto 18px;
+  grid-template-columns:64px 24px minmax(0,1fr) auto 18px;
   align-items:center;
   gap:var(--space-3);
   padding:clamp(16px,2.2vw,22px) 2px;
@@ -2850,7 +2845,7 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   transition:padding-left .4s var(--ease),color .25s ease;
 }
 .sound-item__thumb{
-  width:44px;
+  width:64px;
   aspect-ratio:var(--ar-square);
   overflow:hidden;
   background:var(--tint);
@@ -2887,7 +2882,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .sound-item.is-open .sound-item__body{grid-template-rows:1fr}
 .sound-item__body > div{overflow:hidden}
-.sound-item__inner{padding:0 2px 26px 94px}
+.sound-item__inner{padding:0 2px 26px 114px}
+.sound-item__inner .sound-preview{margin-top:var(--space-4)}
 .sound-item__summary{
   max-width:26em;
   font-size:var(--fs-sm);
@@ -4346,7 +4342,6 @@ body[data-category="scripts"] .work-header{
   .essay-quote{font-size:19px;margin-top:var(--space-4)}
   .essay-foot{flex-wrap:wrap;margin-top:24px}
   .films{padding-bottom:64px}
-  .film-topline{font-size:var(--fs-xs);flex-wrap:wrap;gap:8px 16px}
   .film-frame{padding:8px;margin-top:20px}
   .film-frame img{aspect-ratio:var(--ar-film)}
   /* 窄屏统一压成 16:9 只对横片成立；竖片要留住自己的比例，否则会被裁成横的 */
@@ -4366,10 +4361,10 @@ body[data-category="scripts"] .work-header{
   .stage-quote{font-size:var(--fs-md)}
   .sound-lead{font-size:19px}
   .sound-art{padding:8px 8px 0}
-  .sound-item__head{grid-template-columns:44px 20px minmax(0,1fr) 15px;gap:var(--space-2)}
+  .sound-item__head{grid-template-columns:56px 20px minmax(0,1fr) 15px;gap:var(--space-2)}
   .sound-item__thumb{width:44px}
   .sound-item__meta{display:none}
-  .sound-item__inner{padding-left:84px}
+  .sound-item__inner{padding-left:96px}
   .sound-list-wrap{min-width:0}
   .sound-list-head{font-size:var(--fs-xs)}
   .sound-preview__label{white-space:normal}
