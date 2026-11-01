@@ -734,16 +734,23 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   letter-spacing:var(--ls-caps);
   color:var(--green-ink);
 }
+/* P1-4 评审修改：
+   1) 去掉 white-space:nowrap——它防换行但防不住溢出：上限 118px × 5 字 = 590px，
+      超过 1440 视口下约 580px 的左栏宽，超宽屏上「。」已画出栏外。
+      上限收到 110px（550px，留约 5% 余量），常规视口 7.3vw 完全不变；
+   2) 极端 fallback 字体变宽时允许自然折行，而不是画出容器。 */
 .hero h1{
-  font-size:clamp(60px,7.3vw,118px);
+  font-size:clamp(60px,7.3vw,110px);
   line-height:var(--lh-display);
   letter-spacing:var(--ls-title);
   color:var(--ink);
-  white-space:nowrap;
 }
+/* P0-2/P0-3 评审修改：
+   1) hero-quote 上限 29 → 33px，补上 15px 正文与 118px h1 之间的中段节奏（~1.3 倍模数）；
+   2) 平板档 4164 行同步跟涨，手机档维持 --fs-md 不动。 */
 .hero-quote{
   margin-top:clamp(20px,3.5vh,34px);
-  font:400 clamp(21px,2.2vw,29px)/var(--lh-lead) var(--hand);
+  font:400 clamp(23px,2.4vw,33px)/var(--lh-lead) var(--hand);
   letter-spacing:var(--ls-title);
   color:var(--ink);
 }
@@ -851,42 +858,27 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   letter-spacing:var(--ls-label);
   color:var(--muted);
 }
+/* P1-4 评审修改：整组明信片原偏坠右下、左上空。
+   主卡左移上移（left 14→8%、top 5→2%）把重心拉向左上；
+   小卡右缘与底缘各收 2%，右下角留出呼吸。移动端断点另有覆盖，不受影响。 */
 .postcard--main{
   --rot:-2deg;
   width:50%;
-  left:14%;
-  top:5%;
+  left:8%;
+  top:2%;
   z-index:3;
   padding-bottom:var(--space-3);
 }
 .postcard--small{
   --rot:4deg;
   width:33%;
-  right:4%;
-  bottom:6%;
+  right:6%;
+  bottom:8%;
   z-index:4;
 }
 .postcard:hover{z-index:8;transform:translate3d(var(--px),calc(var(--py) - 5px),0) rotate(0deg)}
-.hero-index{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:clamp(14px,2.6vw,34px);
-  margin-right:auto;
-}
-.hero-index a{
-  display:flex;
-  align-items:center;
-  gap:var(--space-2);
-  min-height:2.9em;
-  padding-bottom:var(--space-1);
-  border-bottom:1px solid transparent;
-  color:var(--muted);
-  letter-spacing:var(--ls-caps);
-  transition:color .3s ease,border-color .3s ease;
-}
-/* 房间色小色条：12×2px。房间的记号不是数字，是颜色。
-   放大用 scaleX 而不是 width——不推动后面的字，悬停时不会抖。 */
+/* P1-6 评审修改：.hero-index 五格索引已随 HTML 撤下（第 4 套冗余导航），
+   相关规则已删。.room-bar 保留——关于页 room-list 仍在使用。 */
 .room-bar{
   display:block;
   flex:0 0 auto;
@@ -896,8 +888,6 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   transform-origin:left center;
   transition:transform var(--t-mid) var(--ease);
 }
-.hero-index a:hover{color:var(--green-ink);border-bottom-color:var(--accent)}
-.hero-index a:hover .room-bar{transform:scaleX(1.7)}
 .hero-foot{
   position:relative;
   width:min(1380px,calc(100% - var(--gutter) * 2));
@@ -1073,16 +1063,25 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
     linear-gradient(100deg,var(--paper) 0%,rgba(247,243,233,.96) 30%,rgba(247,243,233,.72) 48%,rgba(247,243,233,.16) 80%,rgba(247,243,233,.02) 100%),
     linear-gradient(to top,var(--paper) 0%,rgba(247,243,233,.42) 10%,transparent 32%);
 }
+/* 章节大字水印：房间色 multiply 低透明度——multiply 让色只「染」进水彩笔触，
+   normal 的彩色巨字在纸面上会有印刷贴图感。
+   浅色章页用 multiply 融合；深色章页（06）multiply 会沉底，另用纸白 normal 覆盖。 */
 .chapter-plate__char{
   position:absolute;
   right:-.04em;
   bottom:-.12em;
   z-index:-1;
   font:400 clamp(220px,28vw,440px)/1 var(--hand);
-  color:rgba(247,243,233,.62);
-  mix-blend-mode:soft-light;
+  color:var(--room-accent,var(--accent));
+  mix-blend-mode:multiply;
+  opacity:.08;
   pointer-events:none;
   user-select:none;
+}
+.chapter-plate[data-dark] .chapter-plate__char{
+  color:var(--on-dark-1);
+  mix-blend-mode:normal;
+  opacity:.1;
 }
 .chapter-plate__inner{
   position:relative;
@@ -1881,18 +1880,25 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .paper-thumb:hover img{transform:scale(1.03)}
 .paper-body{min-width:0}
+/* P0-3 评审修改：论文标题是必然折行的长句（最长 24 字），
+   原行高 --lh-label(1.6) 是标签档，两行标题会稀疏如正文、丧失标题密度。
+   标题专用 1.4（介于 --lh-heading 1.28 与标签档之间）；
+   字号 26 → 30px，与 .essay-card h3 的 30px 起点对齐，中段层级连贯。
+   text-wrap:balance 由全局 h1,h2,h3 规则（第 234 行）提供，不在此重复。 */
 .paper-title{
   margin-top:var(--space-1);
-  font-size:clamp(20px,2.1vw,26px);
-  line-height:var(--lh-label);
+  font-size:clamp(21px,2.3vw,30px);
+  line-height:1.4;
   letter-spacing:var(--ls-title);
 }
 .paper-title a{transition:color .25s}
 .paper-title a:hover{color:var(--green-ink)}
+/* P0-2 评审修改：摘要原 --fs-sm(13px) 在中文可读下限，
+   且落在新 30px 标题下层级断崖过大。固定 14px 补中段。 */
 .paper-summary{
   margin-top:var(--space-2);
   max-width:30em;
-  font-size:var(--fs-sm);
+  font-size:14px;
   line-height:var(--lh-body);
   color:var(--muted);
 }
@@ -1927,6 +1933,8 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   padding:clamp(32px,4.2vw,56px) 0;
   border-bottom:1px solid var(--line);
 }
+/* P1-5 评审修改：悬停顶线从全局赭红改为章节房间色——
+   与 room-bar、章页 eyebrow、章页底条同一支色，房间语义贯穿到卡片层。 */
 .essay-card::before{
   content:'';
   position:absolute;
@@ -1934,7 +1942,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   top:0;
   width:100%;
   height:1px;
-  background:var(--accent);
+  background:var(--room-accent,var(--accent));
   transform:scaleX(0);
   transform-origin:left;
   transition:transform .6s var(--ease);
@@ -1984,12 +1992,16 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   color:var(--accent-ink);
   margin-bottom:var(--space-3);
 }
+/* essay-card h3 唯一定义。
+   此前本块与下方 2105 行附近存在第二条 .essay-card h3（font-size clamp(30px,3.9vw,50px) +
+   lh-heading + max-width 17em），同特异性靠源码顺序静默覆盖本块——已合并为这一处，
+   以免未来只改其中一条而另一条继续生效。 */
 .essay-card h3{
   text-wrap:balance;
-  font-size:clamp(29px,3.2vw,43px);
-  line-height:var(--lh-label);
+  font-size:clamp(30px,3.9vw,50px);
+  line-height:var(--lh-heading);
   margin-top:var(--space-3);
-  max-width:13em;
+  max-width:17em;
 }
 .essay-card h3 a{transition:color .25s ease}
 .essay-card h3 a:hover{color:var(--green-ink)}
@@ -2102,7 +2114,6 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
    两栏收在同一条基线上。横版竖版都要，否则一件齐底、一件齐顶。 */
 .essay-card .essay-content{align-self:stretch;max-width:46em}
 .essay-card .essay-foot{margin-top:auto}
-.essay-card h3{font-size:clamp(30px,3.9vw,50px);line-height:var(--lh-heading);max-width:17em}
 .essay-summary{max-width:34em}
 .essay-foot{margin-top:clamp(22px,3vw,32px)}
 /* 并排撑不住就回到单栏：560px 的图版 + 56px 间距，在 900 以下
@@ -3958,6 +3969,10 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
 }
 .work-gallery__item:last-child:nth-child(odd){grid-column:1/-1}
 .work-gallery__item:last-child:nth-child(odd) .work-gallery__button img{aspect-ratio:var(--ar-film)}
+/* flat（文档类证据图，如获奖公示截图）：照片网格按 4:3/16:9 裁构图，
+   文字证据裁掉一行就不再是证据。保留原始长宽比，单数满宽也不吃 16:9。 */
+.work-gallery__item--flat .work-gallery__button img{aspect-ratio:auto}
+.work-gallery__item--flat:last-child:nth-child(odd) .work-gallery__button img{aspect-ratio:auto}
 .works-nav{
   margin-top:clamp(56px,8vw,90px);
   display:grid;
@@ -3997,10 +4012,15 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   transition:color .25s ease;
   /* keep-all 让中文标题只在空格处断行：《日掛中天：日挂中天上 爱恨无尽时》
      于是断成「…日挂中天上 / 爱恨无尽时」，不再把「天上」或「爱恨」拆开。
-     整串比一列还长时由 overflow-wrap 接回普通断行，不会溢出。
-     不要加 text-wrap:balance——它会把两行拉平，反而断在「日挂中 / 天上」。 */
+     不要加 text-wrap:balance——它会把两行拉平，反而断在「日挂中 / 天上」。
+     兜底必须用 overflow-wrap:anywhere 而不是 break-word：
+     Chrome/Safari 里 keep-all 会拦掉 break-word 的兜底断行——
+     《气味叙事：为曹禺剧作提供生命元素丰富情感支撑》18 字无标点，
+     keep-all 找不到断点、break-word 又不生效，整行在 text-align:right
+     下向左溢出，直接压到左列「上一篇」的标题上（已实际发生）。
+     anywhere 优先正常断点、只在放不下时允许任意字断，两者兼得。 */
   word-break:keep-all;
-  overflow-wrap:break-word;
+  overflow-wrap:anywhere;
 }
 .works-nav__arrow{
   color:var(--green-ink);
@@ -4161,7 +4181,7 @@ body[data-category="scripts"] .work-header{
   }
   .hero-copy{padding-left:0}
   .hero h1{font-size:clamp(58px,12vw,112px)}
-  .hero-quote{font-size:clamp(21px,3.4vw,28px)}
+  .hero-quote{font-size:clamp(22px,3.4vw,30px)}
   .hero-intro{max-width:26em}
   .hero-stage{
     height:clamp(400px,54vh,540px);
@@ -4273,11 +4293,7 @@ body[data-category="scripts"] .work-header{
   .postcard--main{width:56%;left:10%;top:2%}
   .postcard--small{width:34%;right:2%;bottom:2%}
   .hero-foot{padding-block:12px 14px;font-size:var(--fs-xs);flex-wrap:wrap;gap:10px 18px}
-  /* 五格索引在 390px 里要排成一行：色条 10 + 内距 7 + 4 字 44 = 61，五格 305 + 四个 10px 间距。
-     字距必须写在 a 上——`.hero-index a` 自己带 var(--ls-caps)，写在容器上会被它盖掉。 */
-  .hero-index{gap:8px;width:100%}
-  .hero-index a{gap:7px;letter-spacing:0}
-  .hero-index .room-bar{width:10px}
+  /* P1-6：hero 五格索引已撤，原断点规则随之删除。 */
   .scroll-cue{display:none}
   .section{padding-block:64px}
   /* 窄屏这条 .section 会把 padding-top 一起改掉，章页上方会多出一条纸色带 */

@@ -3,7 +3,7 @@
     "name": "张艺",
     "siteTitle": "张艺的作品集",
     "intro": "我探索故事如何被书写、被表演、被听见、被看见。",
-    "school": "浙江越秀外国语学院 · 中国语言文化学院",
+    "school": "浙江越秀外国语学院",
     "major": "戏剧影视文学 2301"
   },
   "works": [
@@ -14,7 +14,7 @@
       "title": "百元大钞",
       "subtitle": "话剧剧本 · 三幕",
       "role": "编剧",
-      "summary": "青羊社区只剩最后一户不肯搬迁。即将退休的社区警察戎青轩带着新来的张末一次次登门，直到他们听见付尧舜唱的那出《霸王别姬》，也听见一张百元大钞背后五十年的承诺。",
+      "summary": "青羊社区只剩最后一户不肯搬迁。即将退休的社区警察戎青轩带着新来的张末一次次登门，直到他们听见付尧舜唱的那出《霸王别姬》，也听见一张百元大钞背后的承诺。",
       "image": "assets/works/baiyuan.webp",
       "imageSmall": "assets/works/baiyuan-small.webp",
       "imageAlt": "《百元大钞》剧本封面：黑底金黄的楚霸王与青衣人物，中间是手写体标题",
@@ -43,8 +43,8 @@
         {
           "title": "故事梗概",
           "paragraphs": [
-            "青羊社区只剩下付尧舜一户没有搬。因为要修建公共文化设施，即将退休的社区警察戎青轩带着新来的张末，一次次敲开老人的门。",
-            "付尧舜不签字。他在门口的大柳树下唱《霸王别姬》，一个人演完一整出戏。直到两个警察慢慢知道，他不肯离开，不是因为钱，而是因为一棵树、一件戏服，和一张五十年前的百元大钞。"
+            "青羊社区只剩下付尧舜一户没有搬。因为要修建公共设施，即将退休的社区警察戎青轩带着新来的张末，一次次敲开老人的门。",
+            "付尧舜不签字。他在门口的大柳树下唱《霸王别姬》，一个人演完一整出戏。直到两个警察慢慢知道，他不肯离开，不是因为钱，而是因为一棵树、一件戏服，和一张当年的百元大钞。"
           ]
         },
         {
@@ -697,7 +697,7 @@
           "text": "她把她的戏服，头钗，卖了，工资攒的，嫁妆都搬出来的，能凑的都凑了，换了张百元大钞。百元大钞呢又给我换了个戏服。"
         }
       ],
-      "hook": "青羊社区只剩最后一户没搬。他不签字的理由，是一张五十年前的百元钞票。",
+      "hook": "青羊社区只剩最后一户没搬。他不签字的理由，藏在一张当年的百元钞票里。",
       "pullQuote": "这辈子我要给她用这身楚霸王的袍子，唱够一百出戏，就给她唱！",
       "pullFrom": "付尧舜 · 第三幕"
     },
@@ -2546,6 +2546,17 @@
             "在导演团队专业性的手法下，使得作品充满了理性的思维内涵，成功的引得观众反思这种社会现象和电影本身的艺术价值。而回归到电影构造出的感性世界本身，故事在人潮拥挤中落幕，南方小城郁热还未散去，而生命的气味却悄然消逝，就像那场跨越多年的“罪与罚”，在生命的尽头也未真正赎清，日挂中天的烈日依旧没能照透人性的沟壑。我想起《窄门》的一句话“靠近你就靠近了痛苦，远离你就远离了幸福”，美云一直被困在这个情感悖论里走不出去，最后酿成悲剧。所以，生活从未给过错者留足忏悔的时间，影片最终留下的，是比“月缺弥缝”更残酷的真相——有些亏欠注定此生无法偿还。唯有直面内心，带着伤痛向前看，才能在烈日与阴影的夹缝中，寻得与自己和解的光。"
           ]
         }
+      ],
+      "gallery": [
+        {
+          "image": "assets/works/rigua-award.webp",
+          "imageSmall": "assets/works/rigua-award-small.webp",
+          "imageAlt": "2025 丽水市大学生电影季获奖名单公示页：专业组一等奖，张艺（浙江越秀外国语学院）《日掛中天：日挂中天上 爱恨无尽时》",
+          "imageWidth": 1320,
+          "imageHeight": 920,
+          "caption": "获奖名单公示 · 专业组一等奖",
+          "flat": true
+        }
       ]
     },
     {
@@ -2632,20 +2643,42 @@
         {
           "image": "assets/works/shaoxing-reading.webp",
           "imageSmall": "assets/works/shaoxing-reading-small.webp",
-          "imageAlt": "绍兴冬日，一位女孩在窗边读书",
-          "caption": "镜头里的绍兴冬日"
+          "imageAlt": "影片画面 · 01",
+          "caption": "影片画面 · 01",
+          "imageWidth": 1320,
+          "imageHeight": 719
         },
         {
           "image": "assets/works/shaoxing-corridor.webp",
           "imageSmall": "assets/works/shaoxing-corridor-small.webp",
-          "imageAlt": "绍兴园林长廊里的光与影子",
-          "caption": "长廊、光与未说完的话"
+          "imageAlt": "影片画面 · 02",
+          "caption": "影片画面 · 02",
+          "imageWidth": 1262,
+          "imageHeight": 842
+        },
+        {
+          "image": "assets/works/shaoxing-set.webp",
+          "imageSmall": "assets/works/shaoxing-set-small.webp",
+          "imageAlt": "幕后 · 茶馆",
+          "caption": "幕后 · 茶馆",
+          "imageWidth": 1320,
+          "imageHeight": 990
         },
         {
           "image": "assets/works/shaoxing-group.webp",
           "imageSmall": "assets/works/shaoxing-group-small.webp",
-          "imageAlt": "《绍兴暖契》拍摄现场合影",
-          "caption": "拍摄现场"
+          "imageAlt": "片外合影 · 01",
+          "caption": "片外合影 · 01",
+          "imageWidth": 1400,
+          "imageHeight": 844
+        },
+        {
+          "image": "assets/works/shaoxing-group-2.webp",
+          "imageSmall": "assets/works/shaoxing-group-2-small.webp",
+          "imageAlt": "片外合影 · 02",
+          "caption": "片外合影 · 02",
+          "imageWidth": 1320,
+          "imageHeight": 796
         }
       ],
       "demo": false,
@@ -2742,6 +2775,22 @@
             "「我与中国的美丽邂逅」二等奖。"
           ]
         }
+      ],
+      "extraMedia": [
+        {
+          "type": "video",
+          "src": "assets/media/shaoxing-2.mp4",
+          "poster": "assets/works/shaoxing-clip-2.webp",
+          "title": "片段一 · 「紹興」墙前 · 00:57",
+          "description": "「紹興」两个字底下，两个女孩对着镜头，把这个冬天讲给镜头听。"
+        },
+        {
+          "type": "video",
+          "src": "assets/media/shaoxing-3.mp4",
+          "poster": "assets/works/shaoxing-clip-3.webp",
+          "title": "片段二 · 独白 · 00:37",
+          "description": "书窗、老墙、一盏茶，镜头慢慢走过旧城；字幕落在「文化是一种摸得到的温度」。"
+        }
       ]
     },
     {
@@ -2755,7 +2804,7 @@
       "summary": "一段从村口田埂走回家的夜路。风、虫声、碗筷和远处的人声，把“安静”重新还给耳朵，也把“此心安处是吾乡”轻轻放回肩上。",
       "image": "assets/works/daotian.webp",
       "imageSmall": "assets/works/daotian-small.webp",
-      "imageAlt": "《今晚，稻田没有睡》封面：暮色中的金色稻田",
+      "imageAlt": "《今晚，稻田没有睡》封面：金色的稻田与音符插画",
       "imageCaption": "《今晚，稻田没有睡》封面",
       "imageRatio": "portrait",
       "imageWidth": 1153,
@@ -2809,7 +2858,7 @@
       "title": "守岁的电波",
       "subtitle": "音频戏剧 · 01:34",
       "role": "音频导演 / 制作人 / 文案",
-      "summary": "除夕夜，一通从值班室打回家的视频电话。热闹的饭桌与安静的值班室在声音里来回切换，把“团圆”与“坚守”放进同一段电波。",
+      "summary": "过年夜，家里和值班中的妈妈视频通话。热闹的饭桌与安静的所在在声音里来回切换，把“团圆”与“坚守”放进同一段电波。",
       "image": "assets/images/listening.webp",
       "imageSmall": "assets/images/listening-small.webp",
       "imageAlt": "青绿录音机、耳机与空白信纸的水彩静物插画",
@@ -3007,26 +3056,107 @@
         {
           "image": "assets/works/tree-stage-1.webp",
           "imageSmall": "assets/works/tree-stage-1-small.webp",
-          "imageAlt": "《作为树的形象》舞台剧照：演员坐在树影前",
-          "caption": "舞台剧照 · 村口树下"
+          "imageAlt": "舞台剧照 · 01",
+          "caption": "舞台剧照 · 01",
+          "imageWidth": 1399,
+          "imageHeight": 1050
         },
         {
           "image": "assets/works/tree-stage-2.webp",
           "imageSmall": "assets/works/tree-stage-2-small.webp",
-          "imageAlt": "《作为树的形象》舞台剧照：几位演员在树影布景前交谈",
-          "caption": "舞台剧照 · 桥头闲话"
+          "imageAlt": "舞台剧照 · 02",
+          "caption": "舞台剧照 · 02",
+          "imageWidth": 1399,
+          "imageHeight": 1050
         },
         {
           "image": "assets/works/tree-stage-3.webp",
           "imageSmall": "assets/works/tree-stage-3-small.webp",
-          "imageAlt": "《作为树的形象》舞台剧照：演员在教堂布景前",
-          "caption": "舞台剧照 · 礼拜堂"
+          "imageAlt": "舞台剧照 · 03",
+          "caption": "舞台剧照 · 03",
+          "imageWidth": 1399,
+          "imageHeight": 1050
+        },
+        {
+          "image": "assets/works/tree-stage-4.webp",
+          "imageSmall": "assets/works/tree-stage-4-small.webp",
+          "imageAlt": "舞台剧照 · 04",
+          "caption": "舞台剧照 · 04",
+          "imageWidth": 1320,
+          "imageHeight": 880
+        },
+        {
+          "image": "assets/works/tree-stage-5.webp",
+          "imageSmall": "assets/works/tree-stage-5-small.webp",
+          "imageAlt": "舞台剧照 · 05",
+          "caption": "舞台剧照 · 05",
+          "imageWidth": 1320,
+          "imageHeight": 991
+        },
+        {
+          "image": "assets/works/tree-stage-6.webp",
+          "imageSmall": "assets/works/tree-stage-6-small.webp",
+          "imageAlt": "舞台剧照 · 06",
+          "caption": "舞台剧照 · 06",
+          "imageWidth": 1320,
+          "imageHeight": 991
+        },
+        {
+          "image": "assets/works/tree-stage-7.webp",
+          "imageSmall": "assets/works/tree-stage-7-small.webp",
+          "imageAlt": "舞台剧照 · 07",
+          "caption": "舞台剧照 · 07",
+          "imageWidth": 1320,
+          "imageHeight": 990
+        },
+        {
+          "image": "assets/works/tree-quote.webp",
+          "imageSmall": "assets/works/tree-quote-small.webp",
+          "imageAlt": "黑底投影文字，引舒婷《致橡树》：「我甘愿化作你近旁的一株木棉，作为树的形象和你站在一起」",
+          "caption": "投影 · 《致橡树》",
+          "imageWidth": 1320,
+          "imageHeight": 857,
+          "flat": true
+        },
+        {
+          "image": "assets/works/tree-backstage.webp",
+          "imageSmall": "assets/works/tree-backstage-small.webp",
+          "imageAlt": "幕后 · 第六幕",
+          "caption": "幕后 · 第六幕",
+          "imageWidth": 1320,
+          "imageHeight": 880
+        },
+        {
+          "image": "assets/works/tree-scene.webp",
+          "imageSmall": "assets/works/tree-scene-small.webp",
+          "imageAlt": "幕后 · 海报",
+          "caption": "幕后 · 海报",
+          "imageWidth": 1320,
+          "imageHeight": 880
+        },
+        {
+          "image": "assets/works/tree-group.webp",
+          "imageSmall": "assets/works/tree-group-small.webp",
+          "imageAlt": "幕后 · 化妆间",
+          "caption": "幕后 · 化妆间",
+          "imageWidth": 1320,
+          "imageHeight": 879
+        },
+        {
+          "image": "assets/works/tree-stage-8.webp",
+          "imageSmall": "assets/works/tree-stage-8-small.webp",
+          "imageAlt": "舞台剧照 · 08",
+          "caption": "舞台剧照 · 08",
+          "imageWidth": 1320,
+          "imageHeight": 991
         },
         {
           "image": "assets/works/tree-cast.webp",
           "imageSmall": "assets/works/tree-cast-small.webp",
-          "imageAlt": "《作为树的形象》剧组在化妆间合影",
-          "caption": "剧组 · 演出前"
+          "imageAlt": "幕后 · 化妆间 02",
+          "caption": "幕后 · 化妆间 02",
+          "imageWidth": 1400,
+          "imageHeight": 933
         }
       ],
       "demo": false,
@@ -4019,9 +4149,18 @@
           "title": "排演与主创",
           "paragraphs": [
             "编剧 / 导演：张艺",
-            "总控：朱晓欣、叶佳",
-            "演出：浙江越秀外国语学院 中国语言文化学院",
+            "总控：朱婉欣、叶佳",
+            "演出：浙江越秀外国语学院",
             "剧照：演出与排练现场记录"
+          ]
+        },
+        {
+          "title": "现场反响",
+          "paragraphs": [
+            "散场之后，聊天记录里留下这些话：",
+            "「你们今年真的演得非常好，非常感人，我右边那个学姐哭得上气不接下气。」",
+            "「当时观众反应非常好，都是哭成一片。」",
+            "「给我看哭了。」「氛围感。」"
           ]
         },
         {
@@ -4351,13 +4490,17 @@
           "image": "assets/works/shijian-still.webp",
           "imageSmall": "assets/works/shijian-still-small.webp",
           "imageAlt": "昏暗的教室，只有窗口透进一点光",
-          "caption": "镜头 3 · 醒来时的那间教室"
+          "caption": "镜头 3 · 醒来时的那间教室",
+          "imageWidth": 1320,
+          "imageHeight": 1631
         },
         {
           "image": "assets/works/shijian-end.webp",
           "imageSmall": "assets/works/shijian-end-small.webp",
           "imageAlt": "《时间“贷”价》结尾字幕卡",
-          "caption": "结尾字幕"
+          "caption": "结尾字幕",
+          "imageWidth": 1320,
+          "imageHeight": 2344
         }
       ],
       "demo": false,
@@ -4428,7 +4571,7 @@
         "src": "assets/media/zhulin-shenchu.mp4",
         "externalUrl": null,
         "caption": "纪录短片 · 04:18",
-        "description": "文本 / 参与拍摄：张艺。1280×960 网页版本，保留原片上下黑边与字幕。"
+        "description": "文本 / 参与拍摄：张艺。竖版网页版本，画面上下带黑边、保留原字幕。"
       },
       "epigraph": {
         "text": "看见是理解的开始，而理解，是改变的前提。",
@@ -4658,6 +4801,22 @@
               "text": "人文纪实：呈现底层救助者不为人知的付出与生命重量"
             }
           ]
+        }
+      ],
+      "extraMedia": [
+        {
+          "type": "video",
+          "src": "assets/media/zhulin-raw-1.mp4",
+          "poster": "assets/works/zhulin-clip-1.webp",
+          "title": "片段一 · 采访 · 01:08",
+          "description": "「阿姨不肯放」「儿媳妇对她意见很大」。采访间隙，镜头扫过狗舍、喂食，和三轮车旁的狗。"
+        },
+        {
+          "type": "video",
+          "src": "assets/media/zhulin-raw-2.mp4",
+          "poster": "assets/works/zhulin-clip-2.webp",
+          "title": "片段二 · 数猫 · 00:36",
+          "description": "「猫猫今天跑了」。隔着窗数猫：「一、二、三……」字幕停在「回不来了」。"
         }
       ]
     }

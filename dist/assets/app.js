@@ -1051,7 +1051,9 @@ function workGallery(work) {
   if (!Array.isArray(work.gallery) || !work.gallery.length) return null;
   const wrap = element('div', 'work-gallery');
   work.gallery.forEach(item => {
-    const figure = element('figure', 'work-gallery__item reveal-figure');
+    // flat：文档类证据图（获奖公示等）。照片网格会按 4:3 / 16:9 裁构图，
+    // 文字证据裁掉一行就不再是证据——flat 项保留原始长宽比。
+    const figure = element('figure', `work-gallery__item reveal-figure${item.flat ? ' work-gallery__item--flat' : ''}`);
     const button = element('button', 'work-gallery__button');
     button.type = 'button';
     button.dataset.lightboxSrc = safeUrl(item.image) || '';
@@ -1068,6 +1070,37 @@ function workGallery(work) {
   return wrap;
 }
 
+// 补充片段（extraMedia）：正片之外的拍摄素材。走内联播放器而非灯箱——
+// 素材的意义在「翻看」不在「放映」，与正文同栏宽，控制条直接可用。
+// 标题挂 reading-subhead，说明文字走普通段落：不新增任何样式类。
+function extraClipsBlock(work, index) {
+  const clips = Array.isArray(work.extraMedia) ? work.extraMedia.filter(clip => safeUrl(clip.src)) : [];
+  if (!clips.length) return null;
+  const block = element('section', 'reading-section');
+  block.id = slug(index);
+  const heading = element('h2', 'reveal', '补充片段');
+  heading.prepend(element('span', 'reading-section__no', String(index + 1).padStart(2, '0')));
+  block.append(heading);
+  clips.forEach(clip => {
+    if (clip.title) block.append(element('h3', 'reading-subhead', clip.title));
+    const player = element('video');
+    player.controls = true;
+    player.preload = 'none';
+    player.playsInline = true;
+    player.src = safeUrl(clip.src);
+    if (safeUrl(clip.poster)) player.poster = safeUrl(clip.poster);
+    player.setAttribute('aria-label', `${work.title} · ${clip.title || '补充片段'}`);
+    // 全站约定：同一时刻只允许一个媒体在响
+    player.addEventListener('play', () => {
+      $$('audio,video').forEach(other => { if (other !== player) other.pause(); });
+    });
+    block.append(player);
+    if (clip.description) block.append(element('p', '', clip.description));
+  });
+  const tocLink = element('a', '', '补充片段');
+  tocLink.href = `#${slug(index)}`;
+  return { block, link: tocLink };
+}
 // 字号档位只写倍率，绝对字号归 :root 的 --fs-body-base 管。
 // 窄屏媒体查询改的是基数，内联样式改的是倍率，两个不同的输入，
 // 所以内联值不会像以前那样把媒体查询整个压掉。
@@ -1435,6 +1468,12 @@ function renderWork(work) {
     }
     reading.append(block);
   });
+  // 补充片段：正文之后、图集之前，作为独立小节进入目录
+  const extra = extraClipsBlock(work, (work.sections || []).length);
+  if (extra) {
+    reading.append(extra.block);
+    toc.append(extra.link);
+  }
   buildSceneNav(sceneNav, toc);
   const sceneIndex = sceneIndexBlock(sceneNav);
   if (sceneIndex) {

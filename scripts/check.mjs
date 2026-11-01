@@ -21,6 +21,11 @@ for (const work of data.works) {
       if (!/^https?:\/\//.test(asset)) assert.ok((await stat(resolve(root, asset))).isFile(), `Missing gallery asset ${asset}`);
     }
   }
+  for (const clip of work.extraMedia || []) {
+    for (const asset of [clip.src, clip.poster].filter(Boolean)) {
+      if (!/^https?:\/\//.test(asset)) assert.ok((await stat(resolve(root, asset))).isFile(), `Missing extra media asset ${asset}`);
+    }
+  }
 }
 const home = await load('index.html');
 assert.equal((home.match(/<section\b/g) || []).length, 9, 'Homepage must have nine sections');
