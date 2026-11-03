@@ -1284,7 +1284,8 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
 }
 .room-preview img{
   width:100%;
-  aspect-ratio:var(--ar-portrait);
+  /* 4/5 比 3/4 矮一档：右栏不把 about 行撑得比左栏低，底部与左栏签名区齐平 */
+  aspect-ratio:4/5;
   object-fit:cover;
   object-position:center 22%;
   background:var(--paper-soft);
