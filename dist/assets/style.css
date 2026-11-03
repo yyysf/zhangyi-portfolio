@@ -1232,7 +1232,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   align-items:end;
 }
 .room-index__hint{grid-column:1/-1}
-.room-list{grid-row:2;align-self:center}
+.room-list{grid-row:2;align-self:end}
 .room-foot{grid-column:1/-1}
 .room-index__hint{
   font:400 var(--fs-xs)/var(--lh-label) var(--sans);
@@ -1275,7 +1275,7 @@ body.is-leaving .page-fade{opacity:1;pointer-events:auto}
   justify-self:end;
   width:100%;
   max-width:none;
-  margin:0 0 var(--space-2);
+  margin:0;
   padding:var(--space-2) var(--space-2) 0;
   background:var(--paper-soft);
   border:1px solid var(--line-soft);
