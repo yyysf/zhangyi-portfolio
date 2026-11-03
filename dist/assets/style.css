@@ -3801,6 +3801,8 @@ video{aspect-ratio:var(--ar-film);background:#0c1a17}
   align-items:baseline;
   gap:var(--space-2);
   margin-top:clamp(26px,3vw,34px);
+  /* 长标题折行时两行长度均衡，避免出现单字孤行式的难看断口 */
+  text-wrap:balance;
   /* 上限 21px：19px 对 17px 正文只有 1.12 倍，层级全靠字体族硬撑；
      21px 后有 1.24 倍的尺寸差可依。 */
   font:400 clamp(17px,1.6vw,21px)/var(--lh-label) var(--hand);
